@@ -20,12 +20,31 @@ sudo apt install docker-compose
 sudo usermod -aG docker $USER
 ```
 
-### step 2: build docker packages
+### step 2: build docker packages (optional)
 ```bash
 sudo docker-compose -f docker-compose-public.yaml build
 ```
 If you have problem fetch the network, build them on one machine and use `docker save -o` and `docker load` to use in another.
 There exists some bugs in `dockeripv6` in startup.sh, which is not compatible with ipv6. you need to make sure that you can connect to `http://ipv6.mirrors.ustc.edu.cn` in docker to build those images...
+
+### step 3: use the pre-build package
+check releases in this repo, and you can download those pre-build docker images, and load to your system with
+```bash
+dir=$(dirname $(readlink -f $0))
+docker image load -i $dir/images/goserve.busybox.tar.gz
+docker image load -i $dir/images/portainer.portainer-ce.latest.tar.gz
+docker image load -i $dir/images/kodcloud.kodbox.latest.tar.gz
+docker image load -i $dir/images/transmission.alpine.tar.gz
+docker image load -i $dir/images/aria2.alpine.tar.gz
+docker image load -i $dir/images/firefox.debian.tar.gz
+docker image load -i $dir/images/baidunetdisk.debian.tar.gz
+docker image load -i $dir/images/code-server.debian.tar.gz
+docker image load -i $dir/images/ftpd.alpine.tar.gz
+docker image load -i $dir/images/webdav.busybox.tar.gz
+docker image load -i $dir/images/ngrok.alpine.tar.gz
+docker image load -i $dir/images/flynatc.alpine.tar.gz
+```
+
 
 ### step 3: use
 ```bash

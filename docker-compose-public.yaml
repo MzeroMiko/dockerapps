@@ -1,0 +1,230 @@
+version: "3"
+
+services:
+  goserve:
+    restart: unless-stopped
+    network_mode: bridge
+    image: goserve:busybox
+    container_name: goserve
+    build:
+      context: ./builds/goserve
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - USERNAME=user
+      - PASSWORD=pass
+      - SESSIONTIME=10
+    ports:
+      - 8001:8000
+      - 8002:8001
+    volumes:
+      - ./volumes/goserve.data:/config
+      - /media/Share:/data
+  
+  portainer: 
+    restart: unless-stopped
+    network_mode: bridge
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - 8003:9000
+      - 8004:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/portainer.data:/data
+
+  transmission:
+    restart: unless-stopped
+    network_mode: bridge
+    image: transmission:alpine
+    container_name: transmission
+    build:
+      context: ./builds/transmission
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - USERNAME=user
+      - PASSWORD=pass
+      - PEERPORT=51413
+    ports:
+      - 8006:8000
+      - 8007:8001
+      - 51413:51413
+      - 51413:51413/udp
+    volumes:
+      - ./volumes/transmission.data:/config
+      - /media/Data/Downloads:/downloads
+
+  aria2:
+    restart: unless-stopped
+    network_mode: bridge
+    image: aria2:alpine
+    container_name: aria2
+    build:
+      context: ./builds/aria2
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - SECRET=pass
+      - BTPORT=35216
+    ports:
+      - 8008:8000
+      - 8009:8001
+      - 35216:35216
+      - 35216:35216/udp
+    volumes:
+      - ./volumes/aria2.data:/config
+      - /media/Data/Downloads:/downloads
+
+  firefox:
+    restart: unless-stopped
+    network_mode: bridge
+    image: firefox:debian
+    container_name: firefox
+    build:
+      context: ./builds/firefox
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - PASSWORD=pass
+    ports:
+      - 8011:8000
+      - 8012:8001
+    volumes:
+      - ./volumes/firefox.data:/config
+      - /media/Data/Downloads:/downloads
+
+  baidunetdisk:
+    restart: unless-stopped
+    network_mode: bridge
+    image: baidunetdisk:debian
+    container_name: baidunetdisk
+    build:
+      context: ./builds/baidunetdisk
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - PASSWORD=pass
+    ports:
+      - 8013:8000
+      - 8014:8001
+    volumes:
+      - ./volumes/baidunetdisk.data:/config
+      - /media/Data/Downloads:/downloads
+
+  code-server:
+    restart: unless-stopped
+    network_mode: bridge
+    image: code-server:debian
+    container_name: code-server
+    build:
+      context: ./builds/code-server
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - PASSWORD=pass
+    ports:
+      - 8015:8000
+      - 8016:8001
+    volumes:
+      - ./volumes/code-server.data:/config
+      - /home:/workspace
+
+  ftpd:
+    restart: unless-stopped
+    network_mode: bridge
+    image: ftpd:alpine
+    container_name: ftpd
+    build:
+      context: ./builds/ftpd
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - ROOTPASS=root
+      - FTPUSERS=aftp:pass demo:pass
+      - PASV_ADDRESS=10.10.10.10
+      - PASV_MIN=32150
+      - PASV_MAX=32160
+    ports:
+      - "8020:20"
+      - "8021:21"
+      - "8022:22"
+      - "32150-32160:32150-32160"
+    volumes:
+      - ./volumes/ftpd.data:/config
+      - /media/Share:/data/ftp
+      - /media:/data/aftp
+      - /media/Share:/data/demo
+
+  webdav:
+    restart: unless-stopped
+    network_mode: bridge
+    image: webdav:busybox
+    container_name: webdav
+    build:
+      context: ./builds/webdav
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - DEFUSER=/data/share:/:false
+      - APPEND_USERS=-user user:pass:/data/all:/:true -user share:share2020:/data/wshare:/:true -user demo:demo:/data/share:/:false
+    ports:
+      - 8023:8000
+      - 8024:8001
+    volumes:
+      - ./volumes/webdav.data:/config
+      - /media/Share:/data/share
+      - /media/TmpShare:/data/wshare
+      - /media:/data/all
+
+  kodbox:
+    restart: unless-stopped
+    network_mode: bridge
+    image: kodcloud/kodbox:latest
+    container_name: kodbox
+    environment: 
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 8025:80
+      - 8026:443
+      - 8027:9000
+    volumes:
+      - ./volumes/kodbox.data:/var/www/html
+      - /media/Share:/var/www/html/data/files/share
+      - /media/TmpShare:/var/www/html/data/files/wshare
+      - /media:/var/www/html/data/files/all
+       
+  ngrok:
+    restart: unless-stopped
+    network_mode: bridge
+    image: ngrok:alpine
+    container_name: ngrok
+    build:
+      context: ./builds/ngroks/ngrok
+      dockerfile: ./Dockerfile
+    environment: 
+      - ROOTPASS=root
+      - TOKEN=token
+      - SERVE=tcp 22
+    
+  flynatc:
+    restart: unless-stopped
+    network_mode: bridge
+    image: flynatc:alpine
+    container_name: flynatc
+    build:
+      context: ./builds/ngroks/flynatc
+      dockerfile: ./Dockerfile
+    environment: 
+      - ROOTPASS=root
+      - TOKEN=token
+      - USER=emczero

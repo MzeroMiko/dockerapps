@@ -1,0 +1,48 @@
+{
+    "address": "[::]:7001",
+    "tls": false,
+    "crtfile": "",
+    "keyfile": "",
+    "root": "./public",
+    "prefix": "/home",
+    "scope": "/media/Share",
+    "autoIndex": true,
+    "sessionTime": 10,
+    "username": "miko",
+    "password": "mikosite3721",
+    "plugins": [
+        {
+            "__PATH__": "./plugins/postAction.so",
+            "__FUNC__": "NewPostAction",
+            "__AUTH__": true,
+            "maxFromMem": 5000000,
+            "trashDir": ".trash",
+            "signPass": "pass",
+            "signExist": "exist",
+            "signFail": "fail"
+        },
+        {
+            "__PATH__": "",
+            "__FUNC__": "NewMonitor",
+            "__AUTH__": false
+        },
+        {
+            "__PATH__": "",
+            "__FUNC__": "NewPostAction",
+            "__AUTH__": true,
+            "maxFromMem": 5000000,
+            "trashDir": ".trash",
+            "signPass": "pass",
+            "signExist": "exist",
+            "signFail": "fail"
+        }
+    ],
+    "comments": {
+        "plugins": "plugins means external plugins or iplugins is inner plugins",
+        "ports_set": "use port 80: sudo iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-port 8888",
+        "build_amd64": "go build -ldflags '-w -s' out.go && upx out",
+        "static": "CGO_ENABLED=0 go build -ldflags '-extldflags \"-static\" -w -s' .",
+        "build_mipsel": "GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=0 go build",
+        "build_plugin_amd64": "go build -buildmode=plugin"
+    }
+}

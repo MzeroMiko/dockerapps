@@ -1,0 +1,10 @@
+{
+    "cockpit":"https://__IP__:9090",
+    "portainer":"https://__IP__:8012",            
+    "trweb": "http://__IP__:8014",
+    "aria2": "http://__IP__:8015",
+    "code": "http://__IP__:8017",
+    "firefox": "https://__IP__:8018/?path=websockify&autoconnect=true&resize=scale", 
+    "baidunetdisk": "https://__IP__:8019/?path=websockify&autoconnect=true&resize=scale", 
+    "jellyfin": "http://__IP__:8096"           
+}

@@ -8,6 +8,7 @@ COPY ./goserve/public /goserve/public
 COPY ./entrypoint.sh /entrypoint.sh
 COPY ./entrypoint_user.sh /entrypoint_user.sh
 RUN chmod +x /entrypoint.sh /entrypoint_user.sh
+RUN chmod +x /goserve/goserve
 ENV PUID=0 PGID=0 TZ=Asia/Shanghai USERNAME="user" PASSWORD="pass" SESSIONTIME=10 SCOPE="/data" PREFIX="/home" \
     CERTFILE="ssl.crt" KEYFILE="ssl.key" ROOTPASS="root" USERPASS="user" \
     PLUGIN="-plugin \"/config/plugins/postAction.so:NewPostAction:true:maxFromMem:5000000:trashDir:.trash:signPass:pass:signExist:exist:signFail:fail\""

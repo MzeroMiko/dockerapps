@@ -2,7 +2,7 @@ FROM alpine:3.18
 MAINTAINER mzero "3496274007@qq.com"
 
 # update sourcelist
-ENV SOURCE_ADDR="http://ipv6.mirrors.ustc.edu.cn"
+ENV SOURCE_ADDR="http://mirrors.ustc.edu.cn"
 RUN /bin/echo -e "\
     \n${SOURCE_ADDR}/alpine/v3.18/main\n# \
     \n${SOURCE_ADDR}/alpine/v3.18/community\n# \

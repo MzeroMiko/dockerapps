@@ -121,7 +121,7 @@ function changemac(){
 function startop() {
     umountall;
     mountall;
-    sleep 90 && changemac; # change after previous mac being banned
+    # sleep 90 && changemac; # change after previous mac being banned
     # docker-compose -f $HOME/docker-compose.yaml build container
     # docker-compose -f $HOME/docker-compose.yaml up -d container
     # docker-compose -f $HOME/docker-compose.yaml restart container

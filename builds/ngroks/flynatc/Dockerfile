@@ -22,8 +22,9 @@ RUN echo -e "Port 22\nPermitRootLogin yes" >> /etc/ssh/sshd_config \
 
 
 # build entry 
-COPY ./flynatc /flynatc
+COPY ./flynatc*/flynatc /flynatc
 COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /flynatc
 RUN chmod +x /entrypoint.sh
 ENV TOKEN="yourtoken" USER="name" ROOTPASS="root"
 ENTRYPOINT ["/entrypoint.sh"]

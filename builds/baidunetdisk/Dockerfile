@@ -30,7 +30,7 @@ COPY ./entrypoint.sh /entrypoint.sh
 COPY ./entrypoint_user.sh /entrypoint_user.sh
 RUN cp /novnc/noVNC/vnc.html /novnc/noVNC/index.html \
     && chmod +x /entrypoint.sh /entrypoint_user.sh
-ENV PUID=0 PGID=0 TZ=Asia/Shanghai DISPLAY=":1" RESOLUTION=1600x900x24 VNCPATH="/websockify" PASSWORD="" \
+ENV PUID=0 PGID=0 TZ=Asia/Shanghai DISPLAY=":1" RESOLUTION=1280x720x24 VNCPATH="/websockify" PASSWORD="" \
     CERTFILE="ssl.crt" KEYFILE="ssl.key" ROOTPASS="root" USERPASS="user"
 VOLUME ["/downloads", "/config"]
 EXPOSE 8000 8001

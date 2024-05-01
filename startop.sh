@@ -149,5 +149,6 @@ else
     set -x
     eval $1;
 fi;
+# ncat --sh-exec "ncat 127.0.0.1 10000" -l 10001 --keep-open &
 
 

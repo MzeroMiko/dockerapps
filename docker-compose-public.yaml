@@ -228,3 +228,18 @@ services:
       - ROOTPASS=root
       - TOKEN=token
       - USER=emczero
+
+  v2raya:
+    restart: unless-stopped
+    network_mode: bridge
+    privileged: true
+    image: mzz2017/v2raya
+    container_name: v2raya
+    environment:
+      - V2RAYA_LOG_FILE=/tmp/v2raya.log
+      - V2RAYA_V2RAY_BIN=/usr/local/bin/v2ray
+    ports:
+      - 20170-20172:20170-20172
+    volumes:
+      - /etc/v2raya:/etc/v2raya
+

@@ -85,32 +85,34 @@ function saveimages() {
 }
 
 function mountall() {
-    sudo mkdir -p /media/Data /media/Data2 /media/Data4 /media/Share /media/TmpShare
-    sudo mount -U 52e648d8-e9c2-4cb3-b860-70bc65847669 /media/Data
-    sudo mount -U f168d291-b7ca-ec4e-8046-fa6028e2bf0c /media/Data2
-    sudo mount -U 3ac08f06-6105-415c-b2dd-ad215efa766d /media/Data4
-    sudo mkdir -p /media/Data/Downloads /media/Data/TmpShare /media/Data2/FileStorage /media/Data/Downloads/Data3
-    sudo mount -U 363a52dc-47ba-4048-a898-fe8231372b88 /media/Data/Downloads/Data3
-    sudo mkdir -p /media/Share/Downloads /media/Share/FileStorage
-    sudo mount -R /media/Data/TmpShare /media/TmpShare
-    sudo mount -R /media/Data/Downloads /media/Share/Downloads
-    sudo mount -R /media/Data2/FileStorage /media/Share/FileStorage
+    # sudo mkdir -p /media/Data /media/Data2 /media/Data4 /media/Share /media/TmpShare
+    # sudo mount -U 52e648d8-e9c2-4cb3-b860-70bc65847669 /media/Data
+    # sudo mount -U f168d291-b7ca-ec4e-8046-fa6028e2bf0c /media/Data2
+    # sudo mount -U 3ac08f06-6105-415c-b2dd-ad215efa766d /media/Data4
+    # sudo mkdir -p /media/Data/Downloads /media/Data/TmpShare /media/Data2/FileStorage /media/Data/Downloads/Data3
+    # sudo mount -U 363a52dc-47ba-4048-a898-fe8231372b88 /media/Data/Downloads/Data3
+    # sudo mkdir -p /media/Share/Downloads /media/Share/FileStorage
+    # sudo mount -R /media/Data/TmpShare /media/TmpShare
+    # sudo mount -R /media/Data/Downloads /media/Share/Downloads
+    # sudo mount -R /media/Data2/FileStorage /media/Share/FileStorage
+    sudo mkdir -p /media/Data
+    sudo mount -U 9643bfff-f139-44d3-ac82-27da6d13ece6 /media/Data 
 }
 
 function umountall() {
-    sudo umount /media/TmpShare
-    sudo umount /media/Share/Downloads
-    sudo umount /media/Share/FileStorage
-    sudo umount /media/Data/Downloads/Data3
-    sudo umount /media/Data4
-    sudo umount /media/Data2
+    # sudo umount /media/TmpShare
+    # sudo umount /media/Share/Downloads
+    # sudo umount /media/Share/FileStorage
+    # sudo umount /media/Data/Downloads/Data3
+    # sudo umount /media/Data4
+    # sudo umount /media/Data2
     sudo umount /media/Data
 }
 
 function changemac(){
-    dev=enp3s0
+    dev=eno1
     rand=$(echo $RANDOM | xargs  printf "%x")
-    mac=f4:4d:30:46:${rand:0:2}:${rand:2}
+    mac=f4:4d:30:47:${rand:0:2}:${rand:2}
     sudo ip link set dev $dev down
     sudo ip link set dev $dev address $mac
     sudo ip link set dev $dev up

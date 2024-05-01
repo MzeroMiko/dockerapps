@@ -24,5 +24,6 @@ RUN echo -e "Port 22\nPermitRootLogin yes" >> /etc/ssh/sshd_config \
 COPY ./ngrok /ngrok
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN chmod +x /ngrok
 ENV TOKEN="yourtoken" SERVE="tcp 22" ROOTPASS="root"
 ENTRYPOINT ["/entrypoint.sh"]

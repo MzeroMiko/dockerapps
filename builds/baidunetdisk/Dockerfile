@@ -28,8 +28,9 @@ COPY ./novnc/noVNC* /novnc/noVNC
 COPY ./novnc/wsnovnc /novnc/wsnovnc
 COPY ./entrypoint.sh /entrypoint.sh
 COPY ./entrypoint_user.sh /entrypoint_user.sh
-RUN cp /novnc/noVNC/vnc.html /novnc/noVNC/index.html \
-    && chmod +x /entrypoint.sh /entrypoint_user.sh
+RUN cp /novnc/noVNC/vnc.html /novnc/noVNC/index.html
+RUN chmod +x /novnc/wsnovnc
+RUN chmod +x /entrypoint.sh /entrypoint_user.sh
 ENV PUID=0 PGID=0 TZ=Asia/Shanghai DISPLAY=":1" RESOLUTION=1280x720x24 VNCPATH="/websockify" PASSWORD="" \
     CERTFILE="ssl.crt" KEYFILE="ssl.key" ROOTPASS="root" USERPASS="user"
 VOLUME ["/downloads", "/config"]

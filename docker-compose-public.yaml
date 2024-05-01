@@ -241,5 +241,6 @@ services:
     ports:
       - 20170-20172:20170-20172
     volumes:
-      - /etc/v2raya:/etc/v2raya
+      - /etc/v2raya:./volumes/v2raya.data
+
 

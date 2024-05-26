@@ -1,10 +1,8 @@
 {
     "cockpit":"https://__IP__:9090",
-    "portainer":"https://__IP__:8004",            
-    "trweb": "https://__IP__:8007",
-    "aria2": "https://__IP__:8009",
-    "firefox": "https://__IP__:8012/?path=websockify&autoconnect=true&resize=scale", 
-    "baidunetdisk": "https://__IP__:8014/?path=websockify&autoconnect=true&resize=scale", 
-    "code": "https://__IP__:8016",
-    "kodbox": "http://__IP__:8025"
+    "portainer":"https://__IP__:8002",            
+    "trweb": "https://__IP__:8003",
+    "aria2": "https://__IP__:8004",
+    "firefox": "https://__IP__:8005/?path=websockify&autoconnect=true&resize=scale", 
+    "baidunetdisk": "https://__IP__:8006/?path=websockify&autoconnect=true&resize=scale" 
 }

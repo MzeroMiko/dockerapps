@@ -16,8 +16,9 @@ services:
       - PASSWORD=pass
       - SESSIONTIME=10
     ports:
-      - 8001:8000
-      - 8002:8001
+      # - 8001:8000
+      # - 8002:8001
+      - 8001:8001
     volumes:
       - ./volumes/goserve.data:/config
       - /media/Share:/data
@@ -28,8 +29,9 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     ports:
-      - 8003:9000
-      - 8004:9443
+      # - 8003:9000
+      # - 8004:9443
+      - 8002:9443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volumes/portainer.data:/data
@@ -49,8 +51,9 @@ services:
       - PASSWORD=pass
       - PEERPORT=51413
     ports:
-      - 8006:8000
-      - 8007:8001
+      # - 8006:8000
+      # - 8007:8001
+      - 8003:8001
       - 51413:51413
       - 51413:51413/udp
     volumes:
@@ -69,12 +72,13 @@ services:
       - PUID=1000
       - PGID=1000
       - SECRET=pass
-      - BTPORT=35216
+      - BTPORT=35217
     ports:
-      - 8008:8000
-      - 8009:8001
-      - 35216:35216
-      - 35216:35216/udp
+      # - 8008:8000
+      # - 8009:8001
+      - 8004:8001
+      - 35217:35217
+      - 35217:35217/udp
     volumes:
       - ./volumes/aria2.data:/config
       - /media/Data/Downloads:/downloads
@@ -92,8 +96,9 @@ services:
       - PGID=1000
       - PASSWORD=pass
     ports:
-      - 8011:8000
-      - 8012:8001
+      # - 8011:8000
+      # - 8012:8001
+      - 8005:8001
     volumes:
       - ./volumes/firefox.data:/config
       - /media/Data/Downloads:/downloads
@@ -111,31 +116,51 @@ services:
       - PGID=1000
       - PASSWORD=pass
     ports:
-      - 8013:8000
-      - 8014:8001
+      # - 8013:8000
+      # - 8014:8001
+      - 8006:8001
     volumes:
       - ./volumes/baidunetdisk.data:/config
       - /media/Data/Downloads:/downloads
 
-  code-server:
+  # code-server:
+  #   restart: unless-stopped
+  #   network_mode: bridge
+  #   image: code-server:debian
+  #   container_name: code-server
+  #   build:
+  #     context: ./builds/code-server
+  #     dockerfile: ./Dockerfile
+  #   environment: 
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - PASSWORD=pass
+  #   ports:
+  #     # - 8015:8000
+  #     # - 8016:8001
+  #     - 8007:8001
+  #   volumes:
+  #     - ./volumes/code-server.data:/config
+  #     - /home:/workspace
+  
+  kodbox:
     restart: unless-stopped
     network_mode: bridge
-    image: code-server:debian
-    container_name: code-server
-    build:
-      context: ./builds/code-server
-      dockerfile: ./Dockerfile
+    image: kodcloud/kodbox:latest
+    container_name: kodbox
     environment: 
       - PUID=1000
       - PGID=1000
-      - PASSWORD=pass
     ports:
-      - 8015:8000
-      - 8016:8001
+      - 8025:80
+      - 8026:443
+      - 8027:9000
     volumes:
-      - ./volumes/code-server.data:/config
-      - /home:/workspace
-
+      - ./volumes/kodbox.data:/var/www/html
+      - /media/Share:/var/www/html/data/files/share
+      - /media/TmpShare:/var/www/html/data/files/wshare
+      - /media:/var/www/html/data/files/all
+ 
   ftpd:
     restart: unless-stopped
     network_mode: bridge
@@ -184,25 +209,7 @@ services:
       - /media/Share:/data/share
       - /media/TmpShare:/data/wshare
       - /media:/data/all
-
-  kodbox:
-    restart: unless-stopped
-    network_mode: bridge
-    image: kodcloud/kodbox:latest
-    container_name: kodbox
-    environment: 
-      - PUID=1000
-      - PGID=1000
-    ports:
-      - 8025:80
-      - 8026:443
-      - 8027:9000
-    volumes:
-      - ./volumes/kodbox.data:/var/www/html
-      - /media/Share:/var/www/html/data/files/share
-      - /media/TmpShare:/var/www/html/data/files/wshare
-      - /media:/var/www/html/data/files/all
-       
+     
   ngrok:
     restart: unless-stopped
     network_mode: bridge

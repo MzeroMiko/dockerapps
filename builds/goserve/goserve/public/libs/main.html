@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+">
+    <title>MikoSite</title>
+    <!-- load in the head to prevent flash, but will slow the loading -->
+    <!-- <script type="text/javascript" src="/libs/icons.js"></script>
+    <script type="text/javascript" src="/libs/main.js"></script>
+    <script type="text/javascript" src="/libs/viewers.js"></script>
+    <script type="text/javascript" src="/libs/players.js"></script>
+    <script type="text/javascript" src="/outLibs/spark-md5.min.js"></script>
+    <script type="text/javascript" src="/outLibs/showdown.min.js"></script>
+    <script type="text/javascript" src="/outLibs/highlight.min.js"></script> -->
+    <style>
+        * {
+            font-family: sans-serif, 'Segoe UI', 'Sans', Arial, 'Microsoft Yahei', Helvetica;
+            font-size: 14px;
+        }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+            background-color: #f4f4f4;
+        }
+
+        *::-webkit-scrollbar-track {
+            border-radius: 6px;
+            background-color: #f4f4f4;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            border-radius: 6px;
+            background-color: #888;
+        }
+    </style>
+
+</head>
+
+<body style="background-color: #f4f4f4; padding:0; margin:0;">
+    <div class="mainPage">
+        
+        <style>
+            @font-face {
+                font-family: "iconfont";
+                src: url('./fonts/iconfont.woff2') format('woff2'),
+                url('./fonts/iconfont.woff') format('woff'),
+                url('./fonts/iconfont.ttf') format('truetype');
+            }
+
+            /* .iconfont {
+                font-family: "iconfont" !important;
+                font-size: 16px;
+                font-style: normal;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            } */
+
+            div.headLine {
+                position:fixed;
+                z-index: 100;
+                top:5px;
+                right:5px;
+                left:5px;
+                padding:0.5em;
+                background:#fefefe;
+                box-shadow:6px 0px 6px #ddd;
+            }
+            div.padding_headline {
+                position: relative;
+                height: 6em;
+                width: 100%;
+            }
+            div.clock {
+                /* box-shadow:6px 0px 6px #ddd; */
+                position: relative;
+                width: 100%;
+                color: #666;
+            }
+            div.search {
+                margin-top: 1em;
+                margin-bottom: 1em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                display: none;
+            }
+        </style>
+        <div class="headLine">
+            <style>
+                /* .mainBox.ID1424340480253{overflow:hidden;position:absolute;top:0;right:0;bottom:0;left:0;            font-size:14px;}  */
+                /* .viewBox.ID1424340480253{overflow:hidden;position:absolute;top:3em;right:0;bottom:0;left:0;}  */
+                .headTitle{
+                    float:left;
+                    padding:0 0.5em;
+                    cursor:pointer;
+                    color:#ead;
+                    font-weight:600;
+                    font-size:1.4em;
+                } 
+                ._headMenu{
+                    display:flex; 
+                    overflow: auto;
+                    flex-direction:row-reverse;
+                } 
+                .headMenu{
+                    display:flex; 
+                    overflow: auto;
+                } 
+                .headMenu .item{
+                    cursor:pointer; 
+                    font-weight:600;
+                    font-size:1em;
+                    margin:0 0.2em;
+                    padding:0.2em 1em;  
+                    align-content: center;          
+                }
+                .item.link {
+                    border-radius:0.5em;
+                    border:2px solid #eee;
+                    background:#f4f4f4;
+                    background: rgb(238, 238, 255);
+                }
+                .headMenu .item .login {
+                    font-family: 'iconfont' !important;
+                    /* background: rgb(238, 238, 238); */
+                    font-style: normal;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                }
+                .headMenu .item .login::before {
+                    content: "\e61e";
+                }
+            </style>
+            <div class="headTitle">MikoSite</div>
+            <div class="_headMenu">
+                <div class="headMenu">
+                    <div class="item link">cockpit</div>
+                    <div class="item link">portainer</div>
+                    <div class="item link">trweb</div>
+                    <div class="item link">aria2</div>
+                    <div class="item link">code</div>
+                    <div class="item link">firefox</div>
+                    <div class="item link">baidunetdisk</div>
+                    <div class="item link">jellyfin</div>
+                    <div class="item"><div class="login"></div></div>
+                </div>
+            </div>
+            <script>
+                // when click login, login would be logout, the color changes two
+                // onclick + change inserted line 
+            </script>
+        </div>
+        <div class="padding_headline"></div>
+        <div class="clock">
+            <style>
+                div.time {
+                    align-content: center;
+                    text-align: center;
+                    font-size: 3em;
+                    color: #666;
+                    width: 100%;
+                }
+            </style>
+            <div class="time">18:07</div>
+        </div>
+        <div class="search">
+            <style>
+                .flex-center {
+                    display: flex
+                ;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .search {
+    max-width: 100%;
+    margin: 0 20px;
+}
+.bg-gray-200, [bg-gray-200=""] {
+    --un-bg-opacity: 1;
+    background-color: rgba(229, 231, 235, var(--un-bg-opacity));
+}
+.flex, [flex=""] {
+    display: flex
+;
+}
+.h-44, [h-44=""] {
+    height: 44px;
+}
+.search-sel {
+    height: 100%;
+    color: var(--dark-color);
+    align-items: center;
+    cursor: pointer;
+    transition: opacity .1s ease;
+}
+.z-9, [z-9=""] {
+    z-index: 9;
+}
+.absolute, [absolute=""] {
+    position: absolute;
+}
+.relative, [relative=""] {
+    position: relative;
+}
+.w-44, [w-44=""] {
+    width: 44px;
+}
+.search-sel {
+    height: 100%;
+    color: var(--dark-color);
+    align-items: center;
+    cursor: pointer;
+    transition: opacity .1s ease;
+}
+.absolute, [absolute=""] {
+    position: absolute;
+}
+
+.bg-fff, [bg-fff=""] {
+    background-color: #fff;
+}
+.border-2, [border-2=""] {
+    border-width: 2px;
+}
+.t-100p, [t-100p=""] {
+    top: 100%;
+}
+.l-0, [l-0=""] {
+    left: 0;
+}
+.w-200, [w-200=""] {
+    width: 200px;
+}
+.text-14, [text-14=""], [text~="14"] {
+    font-size: 3.5rem;
+}
+.justify-between, [justify-between=""] {
+    justify-content: space-between;
+}
+.items-center, [items-center=""] {
+    align-items: center;
+}
+.cursor-pointer, [cursor-pointer=""] {
+    cursor: pointer;
+}
+.flex, [flex=""] {
+    display: flex
+;
+}
+.p-5, [p-5=""] {
+    padding: 5px;
+}
+.dark .dark\:op-80, .dark .dark\:op-80\>, .dark [dark\:op-80=""], .op-80, [hover~=op-80]:hover, [op-80=""] {
+    opacity: .8;
+}
+[text~="15"] {
+    font-size: 3.75rem;
+}
+.bg-inherit, [bg-inherit=""] {
+    background-color: inherit;
+}
+.w-full, [w-full=""] {
+    width: 100%;
+}
+.h-full, [h-full=""] {
+    height: 100%;
+}
+input {
+    outline: none;
+}
+            </style>
+            <div flex="" bg-gray-200="" h-44="" class="search" dark="bg-18181a" style="position: relative;">
+                <div absolute="" z-9="" class="search-sel" style="top: 100%; width: 100%; height: 10rem; display: none;">
+                    <div z-9="" bg-fff="" l-0="" t-100p="" dark="border-grey-8 bg-18181a"></div>
+                </div>
+                <div relative="" flex-center="" w-44="" class="search-sel">
+                    <div class="search-img" style="width: inherit; height: inherit;">
+                        <img decoding="async" loading="lazy" src="/svg/bing.svg" cursor-pointer="" circle="" h-26="" w-26="" style="opacity: 0.8; filter: saturate(64%); margin: auto; position: relative; top: 50%; transform: translateY(-50%);">
+                    </div>
+                    <div absolute="" z-9="" border-2="" bg-fff="" l-0="" t-100p="" w-200="" dark="border-black-20 bg-$dark-main-bg-c" style="display: none;">
+                        <div flex="" cursor-pointer="" items-center="" justify-between="" text-14="" md="text-16" lg="text-16" p-5="" hover="bg-$site-hover-c">
+                            <div flex-center="" gap-x-8="" style="margin: 0.75rem 0.75rem 0.75rem 2rem;">
+                                <img decoding="async" loading="lazy" src="/svg/bing.svg" circle="" h-20="" w-20="" style="opacity: 0.8; filter: saturate(72%);">
+                                <div>必应</div>
+                            </div><div i-carbon:checkmark="" text-18=""></div>
+                        </div>
+                        <div flex="" cursor-pointer="" items-center="" justify-between="" text-14="" md="text-16" lg="text-16" p-5="" hover="bg-$site-hover-c">
+                            <div flex-center="" gap-x-8="" style="margin: 0.75rem 0.75rem 0.75rem 2rem;">
+                                <img decoding="async" loading="lazy" src="/svg/baidu.svg" circle="" h-20="" w-20="" style="opacity: 0.8; filter: saturate(72%);">
+                                <div>百度</div>
+                            </div><!---->
+                        </div>
+                        <div flex="" cursor-pointer="" items-center="" justify-between="" text-14="" md="text-16" lg="text-16" p-5="" hover="bg-$site-hover-c">
+                            <div flex-center="" gap-x-8="" style="margin: 0.75rem 0.75rem 0.75rem 2rem;">
+                                <img decoding="async" loading="lazy" src="/svg/google.svg" circle="" h-20="" w-20="" style="opacity: 0.8; filter: saturate(72%);">
+                                <div>谷歌</div>
+                            </div><!---->
+                        </div>
+                    </div>
+                </div>
+                <div flex="" items-center="" w-320="">
+                    <input h-full="" w-full="" bg-inherit="" op-80="" text="15 text-$text-c-1" dark="text-$text-dark-c-1">
+                </div><!---->
+                <div flex-center="" gap-x-4="" w-44="" cursor-pointer="" class="search-img" style="background: transparent;">
+                    <span i-carbon:search="" inline-block="" text-14="" md="text-16" lg="text-16" w-44="" h-20="" style="background-color: var(--primary-c); opacity: 0.8; filter: saturate(84%); margin: auto;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+        </div>
+    </div>
+</body>
+
+</html>

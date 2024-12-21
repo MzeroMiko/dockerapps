@@ -61,7 +61,7 @@
                 -moz-osx-font-smoothing: grayscale;
             } */
 
-            div.headLine {
+            div.headline {
                 position:fixed;
                 z-index: 100;
                 top:5px;
@@ -76,26 +76,32 @@
                 height: 6em;
                 width: 100%;
             }
-            div.clock {
-                /* box-shadow:6px 0px 6px #ddd; */
+            div.clockline {
                 position: relative;
                 width: 100%;
                 color: #666;
             }
-            div.search {
+            div.searchline {
                 margin-top: 1em;
                 margin-bottom: 1em;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                display: none;
+            }
+            div.mainline {
+                position: relative;
+                display: block;
+                top: 2em;
+                /* background: #fff; */
+                /* height: 100px; */
+                margin: 2em;
             }
         </style>
-        <div class="headLine">
+        <div class="headline">
             <style>
                 /* .mainBox.ID1424340480253{overflow:hidden;position:absolute;top:0;right:0;bottom:0;left:0;            font-size:14px;}  */
                 /* .viewBox.ID1424340480253{overflow:hidden;position:absolute;top:3em;right:0;bottom:0;left:0;}  */
-                .headTitle{
+                .head_title{
                     float:left;
                     padding:0 0.5em;
                     cursor:pointer;
@@ -103,16 +109,16 @@
                     font-weight:600;
                     font-size:1.4em;
                 } 
-                ._headMenu{
+                .head_menu_wrapper{
                     display:flex; 
                     overflow: auto;
                     flex-direction:row-reverse;
                 } 
-                .headMenu{
+                .head_menu{
                     display:flex; 
                     overflow: auto;
                 } 
-                .headMenu .item{
+                .head_menu .item{
                     cursor:pointer; 
                     font-weight:600;
                     font-size:1em;
@@ -126,29 +132,30 @@
                     background:#f4f4f4;
                     background: rgb(238, 238, 255);
                 }
-                .headMenu .item .login {
+                .item.login {
                     font-family: 'iconfont' !important;
-                    /* background: rgb(238, 238, 238); */
                     font-style: normal;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
+                    text-align: center;
+                    font-size: 1.2em;
+                    /* -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale; */
                 }
-                .headMenu .item .login::before {
+                .item.login::before {
                     content: "\e61e";
                 }
             </style>
-            <div class="headTitle">MikoSite</div>
-            <div class="_headMenu">
-                <div class="headMenu">
-                    <div class="item link">cockpit</div>
+            <div class="head_title">MikoSite</div>
+            <div class="head_menu_wrapper">
+                <div class="head_menu">
+                    <!-- <div class="item link">cockpit</div>
                     <div class="item link">portainer</div>
                     <div class="item link">trweb</div>
                     <div class="item link">aria2</div>
                     <div class="item link">code</div>
                     <div class="item link">firefox</div>
                     <div class="item link">baidunetdisk</div>
-                    <div class="item link">jellyfin</div>
-                    <div class="item"><div class="login"></div></div>
+                    <div class="item link">jellyfin</div> -->
+                    <div class="item login"></div>
                 </div>
             </div>
             <script>
@@ -157,7 +164,7 @@
             </script>
         </div>
         <div class="padding_headline"></div>
-        <div class="clock">
+        <div class="clockline">
             <style>
                 div.time {
                     align-content: center;
@@ -168,151 +175,203 @@
                 }
             </style>
             <div class="time">18:07</div>
-        </div>
-        <div class="search">
-            <style>
-                .flex-center {
-                    display: flex
-                ;
-                    align-items: center;
-                    justify-content: center;
+            <script>
+                function get_time() {
+                    const now = new Date()
+                    const hours = ('0' + now.getHours()).slice(-2)
+                    const minutes = ('0' + now.getMinutes()).slice(-2)
+                    document.querySelector(".clockline").querySelector(".time").innerText = hours + ":" + minutes;
                 }
+                get_time()
+                setInterval(get_time, 10000)
+            </script>
+        </div>
+        <div class="searchline">
+            <style>
                 .search {
-    max-width: 100%;
-    margin: 0 20px;
-}
-.bg-gray-200, [bg-gray-200=""] {
-    --un-bg-opacity: 1;
-    background-color: rgba(229, 231, 235, var(--un-bg-opacity));
-}
-.flex, [flex=""] {
-    display: flex
-;
-}
-.h-44, [h-44=""] {
-    height: 44px;
-}
-.search-sel {
-    height: 100%;
-    color: var(--dark-color);
-    align-items: center;
-    cursor: pointer;
-    transition: opacity .1s ease;
-}
-.z-9, [z-9=""] {
-    z-index: 9;
-}
-.absolute, [absolute=""] {
-    position: absolute;
-}
-.relative, [relative=""] {
-    position: relative;
-}
-.w-44, [w-44=""] {
-    width: 44px;
-}
-.search-sel {
-    height: 100%;
-    color: var(--dark-color);
-    align-items: center;
-    cursor: pointer;
-    transition: opacity .1s ease;
-}
-.absolute, [absolute=""] {
-    position: absolute;
-}
+                    display: flex;
+                    height: 44px;
+                    --un-bg-opacity: 1;
+                    background-color: rgba(229, 231, 235, var(--un-bg-opacity));
+                    align-content: center;
+                    text-align: center;
+                    align-items: center;
+                    max-width: 100%;
+                    margin: 0 20px;
+                }
 
-.bg-fff, [bg-fff=""] {
-    background-color: #fff;
-}
-.border-2, [border-2=""] {
-    border-width: 2px;
-}
-.t-100p, [t-100p=""] {
-    top: 100%;
-}
-.l-0, [l-0=""] {
-    left: 0;
-}
-.w-200, [w-200=""] {
-    width: 200px;
-}
-.text-14, [text-14=""], [text~="14"] {
-    font-size: 3.5rem;
-}
-.justify-between, [justify-between=""] {
-    justify-content: space-between;
-}
-.items-center, [items-center=""] {
-    align-items: center;
-}
-.cursor-pointer, [cursor-pointer=""] {
-    cursor: pointer;
-}
-.flex, [flex=""] {
-    display: flex
-;
-}
-.p-5, [p-5=""] {
-    padding: 5px;
-}
-.dark .dark\:op-80, .dark .dark\:op-80\>, .dark [dark\:op-80=""], .op-80, [hover~=op-80]:hover, [op-80=""] {
-    opacity: .8;
-}
-[text~="15"] {
-    font-size: 3.75rem;
-}
-.bg-inherit, [bg-inherit=""] {
-    background-color: inherit;
-}
-.w-full, [w-full=""] {
-    width: 100%;
-}
-.h-full, [h-full=""] {
-    height: 100%;
-}
-input {
-    outline: none;
-}
+                .search_input, .search_go, .search_engine {
+                    align-content: center;
+                    text-align: center;
+                    height: 100%;
+                    cursor: pointer;
+                    align-items: center;
+                    position: relative;
+                }                
+
+                .search_go .icon, .search_engine .icon {
+                    font-family: "iconfont";
+                    font-size: 1.25em;
+                    padding: 0.2em;
+                    width: 42px;
+                }
+
+                .search_go .icon::before {
+                    content: "\e792";
+                }
+                
+                .search_engine .bing.icon::before {
+                    content: "\eb70";
+                }
+
+                .search_engine .baidu.icon::before {
+                    content: "\e68b";
+                }
+
+                .search_engine .google.icon::before {
+                    content: "\e87a";
+                }
+
+                .search_engine .checkmark::before {
+                    content: "\e644";
+                    display: none;
+                }
+
+                .search_engine.item {
+                    display: flex;
+                    flex-direction: row;
+                    padding: 0.3em 0.3em 0.1em 0.1em;
+                }
+                
+                .search_engine.item .name {
+                    padding: 0.1em;
+                }
+
+                .search_engine.item .checkmark.icon {
+                    margin-left: auto;
+                }
+
+                .search_engine_sel {
+                    width: 200px;
+                    position: absolute;
+                    background-color: #fff;
+                    top: 100%;
+                    left: 0;
+                    display: none;
+                    z-index: 9;
+                }
+
+                .search_engine_sel .item:hover {
+                    opacity: 0.6;
+                }
+
+                .search_input {
+                    display: block;
+                    height: 100%;
+                    width: 400px;
+                }
+                .search_input input {
+                    outline: none;
+                    box-sizing: border-box;
+                    border-width: 0;
+                    border-style: solid;
+                    border-color: #e5e7eb;
+                    height: 100%;
+                    width: 100%;
+                    background-color: inherit;
+                }
+
+                .search_engine.current:hover > .search_engine_sel {
+                    display: block;
+                }
+
+
             </style>
-            <div flex="" bg-gray-200="" h-44="" class="search" dark="bg-18181a" style="position: relative;">
-                <div absolute="" z-9="" class="search-sel" style="top: 100%; width: 100%; height: 10rem; display: none;">
-                    <div z-9="" bg-fff="" l-0="" t-100p="" dark="border-grey-8 bg-18181a"></div>
-                </div>
-                <div relative="" flex-center="" w-44="" class="search-sel">
-                    <div class="search-img" style="width: inherit; height: inherit;">
-                        <img decoding="async" loading="lazy" src="/svg/bing.svg" cursor-pointer="" circle="" h-26="" w-26="" style="opacity: 0.8; filter: saturate(64%); margin: auto; position: relative; top: 50%; transform: translateY(-50%);">
-                    </div>
-                    <div absolute="" z-9="" border-2="" bg-fff="" l-0="" t-100p="" w-200="" dark="border-black-20 bg-$dark-main-bg-c" style="display: none;">
-                        <div flex="" cursor-pointer="" items-center="" justify-between="" text-14="" md="text-16" lg="text-16" p-5="" hover="bg-$site-hover-c">
-                            <div flex-center="" gap-x-8="" style="margin: 0.75rem 0.75rem 0.75rem 2rem;">
-                                <img decoding="async" loading="lazy" src="/svg/bing.svg" circle="" h-20="" w-20="" style="opacity: 0.8; filter: saturate(72%);">
-                                <div>必应</div>
-                            </div><div i-carbon:checkmark="" text-18=""></div>
+            <div class="search">
+                <div class="search_engine current">
+                    <div class="bing icon"></div>
+                    <div class="search_engine_sel">
+                        <div class="search_engine item">
+                            <div class="bing icon"></div>
+                            <div class="name">bing</div>
+                            <div class="checkmark icon"></div>
                         </div>
-                        <div flex="" cursor-pointer="" items-center="" justify-between="" text-14="" md="text-16" lg="text-16" p-5="" hover="bg-$site-hover-c">
-                            <div flex-center="" gap-x-8="" style="margin: 0.75rem 0.75rem 0.75rem 2rem;">
-                                <img decoding="async" loading="lazy" src="/svg/baidu.svg" circle="" h-20="" w-20="" style="opacity: 0.8; filter: saturate(72%);">
-                                <div>百度</div>
-                            </div><!---->
+                        <div class="search_engine item">
+                            <div class="baidu icon"></div>
+                            <div class="name">baidu</div>
+                            <div class="checkmark icon"></div>
                         </div>
-                        <div flex="" cursor-pointer="" items-center="" justify-between="" text-14="" md="text-16" lg="text-16" p-5="" hover="bg-$site-hover-c">
-                            <div flex-center="" gap-x-8="" style="margin: 0.75rem 0.75rem 0.75rem 2rem;">
-                                <img decoding="async" loading="lazy" src="/svg/google.svg" circle="" h-20="" w-20="" style="opacity: 0.8; filter: saturate(72%);">
-                                <div>谷歌</div>
-                            </div><!---->
+                        <div class="search_engine item">
+                            <div class="google icon"></div>
+                            <div class="name">google</div>
+                            <div class="checkmark icon"></div>
                         </div>
                     </div>
                 </div>
-                <div flex="" items-center="" w-320="">
-                    <input h-full="" w-full="" bg-inherit="" op-80="" text="15 text-$text-c-1" dark="text-$text-dark-c-1">
-                </div><!---->
-                <div flex-center="" gap-x-4="" w-44="" cursor-pointer="" class="search-img" style="background: transparent;">
-                    <span i-carbon:search="" inline-block="" text-14="" md="text-16" lg="text-16" w-44="" h-20="" style="background-color: var(--primary-c); opacity: 0.8; filter: saturate(84%); margin: auto;"></span>
+                <div class="search_input">
+                    <input type="text">
+                </div>
+                <div class="search_go">
+                    <div class="icon"></div>
                 </div>
             </div>
         </div>
+        <div class="mainline">
+            <style>
+                .flows {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: start;
+                    justify-items: center;
+                    align-items: center;
+                    align-content: center;
+                    border-radius: 1em;
+                    background: #f8f8f8;
+                    margin-bottom: 4em;
+                }
+                .flows .card {
+                    display: block;
+                    /* width: 30%; */
+                    height: 100px;
+                    background-color: #fff;
+                    border-radius: 1em;
+                    margin: 1%;
+                }
+
+                @media (min-width: 800px) {
+                    .card {
+                        width: 31%;
+                    }
+                }
+                @media (max-width: 800px) {
+                    .card {
+                        width: 48%;
+                    }
+                }
+                @media (max-width: 500px) {
+                    .card {
+                        width: 96%;
+                    }
+                }
+            </style>
+            <div class="flows">
+                <div class="card">Monitor</div>
+                <div class="card">Files</div>
+            </div>
+            <div class="flows">
+                <div class="card">cockpit</div>
+                <div class="card">portainer</div>
+                <div class="card">transmission</div>
+                <div class="card">aria2</div>
+                <div class="card">vscode</div>
+                <div class="card">firefox</div>
+                <div class="card">baidunetdisk</div>
+                <div class="card">jellyfin</div>
+            </div>
+        </div>
+        <div class="extendline"></div>
         <div class="content">
+            <div class="flows"></div>
         </div>
     </div>
 </body>

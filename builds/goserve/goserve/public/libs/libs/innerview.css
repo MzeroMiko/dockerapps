@@ -1,0 +1,67 @@
+:host {
+    --basic_size: 12px;
+    --innerbox_width: 90%;
+    --innerbox_height: 90%;
+    --innerbox_zindex: 7;
+}
+.innerBox {
+    position:fixed;
+    overflow:hidden;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    display:none;
+    background:transparent;
+    font-size: var(--basic_size);
+    width:  var(--innerbox_width);
+    height: var(--innerbox_height);
+    z-index: var(--innerbox_zindex);
+    cursor:move;
+    padding:1em;
+}
+.icontain {position:relative;overflow:hidden;width:100%;height:100%;background:#fff;
+        border-radius:0.5em;box-shadow:0 0 0.5em 0 #888;cursor:default;}
+.header {position:absolute;top:0;right:0;left:0;}
+.header .ctrlBar {float:right;display:flex;} 
+/* .header .ctrlBtn img {width:100%;height:100%;} */
+.header .ctrlBtn {
+    padding:0.9em;
+    cursor:pointer;
+    border-radius:0.5em;
+    width:1em;
+    height:1em;
+    flex-shrink:0;
+    font-family: "iconfont";
+    font-size: 1em;
+}
+.header .prevBtn::before {
+    content: "\e794";
+}
+.header .nextBtn::before {
+    content: "\e793";
+}
+.header .minBtn::before {
+    content: "\e612";
+}
+.header .maxBtn::before {
+    content: "\e795";
+}
+.header .downBtn::before {
+    content: "\e6a4";
+}
+.header .exitBtn::before {
+    content: "\e60a";
+}
+.header .prevBtn:hover {background:#ccc;} .header .nextBtn:hover {background:#ccc;}
+.header .minBtn:hover {background:#fe7;} .header .maxBtn:hover {background:#8f7;}
+.header .downBtn:hover {background:#8cf;} .header .exitBtn:hover {background:#f87;}
+.header .title {padding:0.6em;cursor:move;overflow:hidden;white-space:nowrap;font-weight:600;color:#000;}
+.content {position:absolute;top:3em;right:0;bottom:0;left:0;overflow:hidden;}
+.resizeTop {position:absolute;height:0.5em;width:100%;top:0.5em;left:0.5em;cursor:n-resize;}
+.resizeBottom {position:absolute;height:0.5em;width:100%;bottom:0.5em;left:0.5em;cursor:s-resize;}
+.resizeLeft {position:absolute;height:100%;width:0.5em;top:0.5em;left:0.5em;cursor:w-resize;}
+.resizeRight {position:absolute;height:100%;width:0.5em;top:0.5em;right:0.5em;cursor:e-resize;}
+.resizeTopLeft {position:absolute;height:0.5em;width:0.5em;top:0.5em;left:0.5em;cursor:nw-resize;}
+.resizeTopRight {position:absolute;height:0.5em;width:0.5em;top:0.5em;right:0.5em;cursor:ne-resize;}
+.resizeBottomLeft {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;left:0.5em;cursor:sw-resize;}
+.resizeBottomRight {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;right:0.5em;cursor:se-resize;}

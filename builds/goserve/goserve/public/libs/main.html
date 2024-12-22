@@ -469,75 +469,7 @@
             </div>
         </module>
         <module class="innerview">
-            <style>
-                :host {
-                    --basic_size: 12px;
-                    --innerbox_width: 90%;
-                    --innerbox_height: 90%;
-                    --innerbox_zindex: 7;
-                }
-                .innerBox {
-                    position:fixed;
-                    overflow:hidden;
-                    top:50%;
-                    left:50%;
-                    transform:translate(-50%,-50%);
-                    display:none;
-                    background:transparent;
-                    font-size: var(--basic_size);
-                    width:  var(--innerbox_width);
-                    height: var(--innerbox_height);
-                    z-index: var(--innerbox_zindex);
-                    cursor:move;
-                    padding:1em;
-                }
-                .icontain {position:relative;overflow:hidden;width:100%;height:100%;background:#fff;
-                        border-radius:0.5em;box-shadow:0 0 0.5em 0 #888;cursor:default;}
-                .header {position:absolute;top:0;right:0;left:0;}
-                .header .ctrlBar {float:right;display:flex;} 
-                /* .header .ctrlBtn img {width:100%;height:100%;} */
-                .header .ctrlBtn {
-                    padding:0.9em;
-                    cursor:pointer;
-                    border-radius:0.5em;
-                    width:1em;
-                    height:1em;
-                    flex-shrink:0;
-                    font-family: "iconfont";
-                    font-size: 1em;
-                }
-                .header .prevBtn::before {
-                    content: "\e794";
-                }
-                .header .nextBtn::before {
-                    content: "\e793";
-                }
-                .header .minBtn::before {
-                    content: "\e612";
-                }
-                .header .maxBtn::before {
-                    content: "\e795";
-                }
-                .header .downBtn::before {
-                    content: "\e6a4";
-                }
-                .header .exitBtn::before {
-                    content: "\e60a";
-                }
-                .header .prevBtn:hover {background:#ccc;} .header .nextBtn:hover {background:#ccc;}
-                .header .minBtn:hover {background:#fe7;} .header .maxBtn:hover {background:#8f7;}
-                .header .downBtn:hover {background:#8cf;} .header .exitBtn:hover {background:#f87;}
-                .header .title {padding:0.6em;cursor:move;overflow:hidden;white-space:nowrap;font-weight:600;color:#000;}
-                .content {position:absolute;top:3em;right:0;bottom:0;left:0;overflow:hidden;}
-                .resizeTop {position:absolute;height:0.5em;width:100%;top:0.5em;left:0.5em;cursor:n-resize;}
-                .resizeBottom {position:absolute;height:0.5em;width:100%;bottom:0.5em;left:0.5em;cursor:s-resize;}
-                .resizeLeft {position:absolute;height:100%;width:0.5em;top:0.5em;left:0.5em;cursor:w-resize;}
-                .resizeRight {position:absolute;height:100%;width:0.5em;top:0.5em;right:0.5em;cursor:e-resize;}
-                .resizeTopLeft {position:absolute;height:0.5em;width:0.5em;top:0.5em;left:0.5em;cursor:nw-resize;}
-                .resizeTopRight {position:absolute;height:0.5em;width:0.5em;top:0.5em;right:0.5em;cursor:ne-resize;}
-                .resizeBottomLeft {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;left:0.5em;cursor:sw-resize;}
-                .resizeBottomRight {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;right:0.5em;cursor:se-resize;}
-            </style>
+            <link rel="stylesheet" href="./libs/sliderbar.css">
             <div class="innerBox">
                 <div class="icontain">
                     <div class="header">
@@ -573,7 +505,7 @@
         <module class="innerview_manager">
             <style>
                 :host {
-                    --basic_size: "12px"; 
+                    --basic_size: 12px; 
                     --zindex_min: 9; 
                     --zindex_max: 100;
                 }
@@ -656,153 +588,19 @@
             </div>
         </module>
         <module class="videoplayer">
-            <style>
-                :host {
-                    --basicSize: "14px"; 
-                    --backColor: "#bcd"; 
-                    --themeColor: "#fff";
-                    --playBtnColor: "#aeb"; 
-                    --ctrlBackColor: "rgba(0,0,0,0)"; 
-                    --listColor: "#222";
-                    --volSliderColor: "#ddd"; 
-                    --timeSliderColor: "#ddd"; 
-                    --sliderBufferColor: "#aaa";
-                    --listItemColor: "rgba(255,255,255,0.2)"; 
-                    --listItemHover: "rgba(196,196,196,0.75)";
-                }
-                .videobox {
-                    position:absolute;width:100%;height:100%;
-                    background:var(--backColor);font-size:var(--basicSize);
-                }
-                .videobox video {position:absolute;outline:none;;width:100%;height:100%}
-                .launchBottom {position:absolute;width:100%;height:5em;bottom:0;}
-                .musebar {position:absolute;width:100%;bottom:0;box-sizing:border-box;
-                    outline:none;padding:0.8em;background:var(--ctrlBackColor);}
-                .progline {display:flex;align-items:center;padding:0 0.6em;}
-                .progline .timeSlider {flex:auto;}
-                .progline .mediaTime {padding-left:1em;font-weight:600;color:var(--themeColor);}
-                .ctrlline {display:flex;align-items:center;padding:0 0.8em;}
-                .ctrlline .volSlider {flex-shrink:0;width:4em;}
-                .ctrlline .mediaName {font-weight:600;flex:auto;text-align:center;
-                    white-space:nowrap;overflow-y:hidden;overflow-x:auto;color:var(--themeColor);}
-                .ctrlline .seperator {margin-left:auto;height:1em;}
-                .ctrlline .speedPop {position:absolute;width:3.6em;border-radius:0.3em;
-                    background:var(--backColor);
-                    transform: translate(-3em, -13.6em);display:none;}
-                .ctrlline .stext {font-weight:600;text-align:center;
-                    color: var(--themeColor);padding:0.2em;}
-                .ctrlline .icon {font-size:2em;cursor:pointer;}
-            </style>
-            <style>
-                divicon.orderBtn_icon, divicon.playBtn_icon, divicon.pauseBtn_icon, divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
-                    display:flex;align-items:center;justify-content:center;height:1em;width:1em;
-                }
-                divicon.orderBtn_icon .orderStat {
-                    font-size:0.6em;font-weight:800;overflow:hidden;color:var(--themeColor);
-                }
-                divicon.playBtn_icon {
-                    background:var(--playBtnColor);
-                    border-radius:50%;
-                }
-                divicon.playBtn_icon .part1 {
-                    width:0.1em;height:0.5em;
-                }
-                divicon.playBtn_icon .part2 {
-                    width:0;height:0;border-left:0.5em solid var(--themeColor); 
-                    border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.pauseBtn_icon {
-                    background:var(--playBtnColor);border-radius:50%;
-                }
-                divicon.pauseBtn_icon .part1, divicon.pauseBtn_icon .part3 {
-                    width:0.17em;height:0.5em;background:var(--themeColor);
-                }
-                divicon.pauseBtn_icon .part2 {
-                    width:0.16em;height:0.5em;background:transparent;
-                }
-                divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
-                    background:transparent;border-radius:50%;
-                }
-                divicon.prevBtn_icon .part1, divicon.nextBtn_icon .part2 {
-                    width:0.1em;height:0.5em;background:var(--themeColor);
-                }
-                divicon.prevBtn_icon .part2 {
-                    width:0;height:0;border-right:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.nextBtn_icon .part1 {
-                    width:0;height:0;border-left:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.volBtn_icon .part1 {
-                    width:0.16em;height:0.24em;background:var(--themeColor);
-                }
-                divicon.volBtn_icon .part2 {
-                    width:0;height:0.24em;border-right:0.24em solid var(--themeColor);box-sizing:content-box;border-top:0.13em solid transparent;border-bottom:0.13em solid transparent;
-                }
-                divicon.volBtn_icon .part3 {
-                    width:0.1em;height:0.5em;
-                }
-            </style>
-            <style>
-                divicon.fullBtn_icon, divicon.noFullBtn_icon, divicon.forwardBtn_icon, divicon.backwardBtn_icon, divicon.subtitleBtn_icon, divicon.speedBtn_icon {
-                    background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;height:1em;width:1em;
-                }
-                divicon.subtitleBtn_icon {
-                    flex-direction: column;
-                }
-                divicon.fullBtn_icon .part1, divicon.noFullBtn_icon .part1 {
-                    border:0.05em solid transparent;padding:0.15em;
-                }
-                divicon.fullBtn_icon .part2 {
-                    height:0.2em;width:0.5em;display:flex;justify-content:flex-start;align-items:flex-start;
-                }
-                divicon.fullBtn_icon .part3, divicon.fullBtn_icon .part8, divicon.noFullBtn_icon .part4, divicon.noFullBtn_icon .part7 {
-                    height:0.2em;width:0.05em;background:var(--themeColor);
-                }
-                divicon.fullBtn_icon .part4, divicon.fullBtn_icon .part7, divicon.noFullBtn_icon .part3, divicon.noFullBtn_icon .part8 {
-                    height:0.05em;width:0.15em;background:var(--themeColor);
-                }
-                divicon.fullBtn_icon .part5, divicon.noFullBtn_icon .part5 {
-                    height:0.1em;width:0.5em;
-                }
-                divicon.fullBtn_icon .part6 {
-                    height:0.2em;width:0.5em;display:flex;justify-content:flex-end;align-items:flex-end;
-                }
-                divicon.noFullBtn_icon .part2 {
-                    height:0.2em;width:0.5em;display:flex;justify-content:flex-start;align-items:flex-end;
-                }
-                divicon.noFullBtn_icon .part6 {
-                    height:0.2em;width:0.5em;display:flex;justify-content:flex-end;align-items:flex-start;
-                }
-                divicon.bacwardBtn_icon .part1 {
-                    width:0;height:0;border-right:0.25em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.forwardBtn_icon .part1 {
-                    width:0;height:0;border-left:0.25em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.speedBtn_icon .part1 {
-                    color:var(--themeColor);font-size:0.5em;
-                }
-                divicon.subtitleBtn_icon .part1, divicon.subtitleBtn_icon .part3, divicon.subtitleBtn_icon .part5 {
-                    width:0.5em;height:0.1em;background:var(--themeColor);
-                }
-                divicon.subtitleBtn_icon .part2, divicon.subtitleBtn_icon .part4 {
-                    width:0.5em;height:0.1em;background:transparent;
-                }
-            </style>
-
             <!-- <divicon class="bacwardBtn_icon"><div class="part1"></div></divicon>
                 <divicon class="forwardBtn_icon"><div class="part1"></div></divicon> -->
 
             <div class="videobox">
-                    <video><track src default/></video>
-                    <div class="launchBottom"></div> 
-                    <div class="musebar">
-                        <div class="progline">
-                            <div class="timeSlider"></div>
-                            <div class="mediaTime">00:00/00:00</div>
-                        </div>
-                        <div class="ctrlline">
-                            <div class="icon playBtn">
+                <video><track src default/></video>
+                <div class="launchBottom"></div> 
+                <div class="musebar">
+                    <div class="progline">
+                        <div class="timeSlider"></div>
+                        <div class="mediaTime">00:00/00:00</div>
+                    </div>
+                    <div class="ctrlline">
+                        <div class="icon playBtn">
                                 <divicon class="playBtn_icon">
                                     <div class="part1"></div>
                                     <div class="part2"></div>
@@ -812,18 +610,18 @@
                                     <div class="part2"></div>
                                     <div class="part3"></div>
                                 </divicon>
-                            </div>
-                            <div class="icon volBtn">
+                        </div>
+                        <div class="icon volBtn">
                                 <divicon class="volBtn_icon">
                                     <div class="part1"></div>
                                     <div class="part2"></div>
                                     <div class="part3"></div>
                                 </divicon>
-                            </div>
-                            <div class="volSlider"></div>
-                            <div class="mediaName"></div>
-                            <div class="icon seperator"></div>
-                            <div class="icon subtitleBtn">
+                        </div>
+                        <div class="volSlider"></div>
+                        <div class="mediaName"></div>
+                        <div class="icon seperator"></div>
+                        <div class="icon subtitleBtn">
                                 <divicon class="subtitleBtn_icon">
                                     <div class="part1"></div>
                                     <div class="part2"></div>
@@ -831,13 +629,13 @@
                                     <div class="part4"></div>
                                     <div class="part5"></div>
                                 </divicon>
-                            </div>
-                            <div class="icon speedBtn">
+                        </div>
+                        <div class="icon speedBtn">
                                 <divicon class="speedBtn_icon">
                                     <div class="part1">SS</div>
                                 </divicon>
-                            </div>
-                            <div style="position: relative;">
+                        </div>
+                        <div style="position: relative;">
                                 <div class="speedPop">
                                     <div class="stext">2.0x</div>
                                     <div class="stext">1.5x</div>
@@ -846,37 +644,37 @@
                                     <div class="stext">0.75x</div>
                                     <div class="stext">0.5x</div>
                                 </div>
-                            </div>
-                            <div class="icon fullBtn">
-                                <divicon class="fullBtn_icon">
-                                    <div class="part1">
-                                        <div class="part2">
+                        </div>
+                        <div class="icon fullBtn">
+                            <divicon class="fullBtn_icon">
+                                <div class="part1">
+                                    <div class="part2">
                                             <div class="part3"></div>
                                             <div class="part4"></div>
-                                        </div>
-                                        <div class="part5"></div>
-                                        <div class="part6">
+                                    </div>
+                                    <div class="part5"></div>
+                                    <div class="part6">
                                             <div class="part7"></div>
                                             <div class="part8"></div>
-                                        </div>
                                     </div>
-                                </divicon>
-                                <divicon class="noFullBtn_icon">
-                                    <div class="part1">
-                                        <div class="part2">
+                                </div>
+                            </divicon>
+                            <divicon class="noFullBtn_icon">
+                                <div class="part1">
+                                    <div class="part2">
                                             <div class="part3"></div>
                                             <div class="part4"></div>
-                                        </div>
-                                        <div class="part5"></div>
-                                        <div class="part6">
+                                    </div>
+                                    <div class="part5"></div>
+                                    <div class="part6">
                                             <div class="part7"></div>
                                             <div class="part8"></div>
-                                        </div>
                                     </div>
-                                </divicon>
-                            </div>
+                                </div>
+                            </divicon>
                         </div>
                     </div>
+                </div>
             </div>
         </module>
         <script type="text/javascript" src="./main.js"></script>

@@ -1,15 +1,15 @@
 :host {
-    --basicSize: "14px"; 
-    --backColor: "#bcd"; 
-    --themeColor: "#fff";
-    --playBtnColor: "#aeb"; 
-    --ctrlBackColor: "rgba(0,0,0,0)"; 
-    --listColor: "#222";
-    --volSliderColor: "#ddd"; 
-    --timeSliderColor: "#ddd"; 
-    --sliderBufferColor: "#aaa";
-    --listItemColor: "rgba(255,255,255,0.2)"; 
-    --listItemHover: "rgba(196,196,196,0.75)";
+    --basicSize: 14px; 
+    --backColor: #bcd; 
+    --themeColor: #fff;
+    --playBtnColor: #aeb; 
+    --ctrlBackColor: rgba(0,0,0,0); 
+    --listColor: #222;
+    --volSliderColor: #ddd; 
+    --timeSliderColor: #ddd; 
+    --sliderBufferColor: #aaa;
+    --listItemColor: rgba(255,255,255,0.2); 
+    --listItemHover: rgba(196,196,196,0.75);
 }
 
 .audiobox {position:absolute;display:flex;flex-direction:column;width:100%;height:100%;
@@ -49,7 +49,9 @@ divicon.playBtn_icon .part2 {
     border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
 }
 divicon.pauseBtn_icon {
-    background:var(--playBtnColor);border-radius:50%;
+    background:var(--playBtnColor);
+    border-radius:50%;
+    display: none;
 }
 divicon.pauseBtn_icon .part1, divicon.pauseBtn_icon .part3 {
     width:0.17em;height:0.5em;background:var(--themeColor);

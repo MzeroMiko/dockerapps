@@ -1,9 +1,9 @@
 :host {
     --basicSize: 2px;
     --pointSize: 5em;
-    --sliderColor: "#ddd"; 
-    --bufferColor: "#aaa"; 
-    --progressColor: "#2d3",
+    --sliderColor: #ddd; 
+    --bufferColor: #aaa; 
+    --progressColor: #2d3;
 }
 .sliderBar {
     overflow:hidden;
@@ -39,7 +39,7 @@
     height: var(--pointSize);
     width: var(--pointSize);
     transform:
-        translate(calc(0 - var(--pointSize) / 2), calc(0 - (var(--pointSize) + 3) / 2)); 
+        translate(calc(0em - var(--pointSize) / 2), calc(0em - (var(--pointSize) + 3em) / 2)); 
     border-radius:50%;
     background:var(--progressColor);
 }

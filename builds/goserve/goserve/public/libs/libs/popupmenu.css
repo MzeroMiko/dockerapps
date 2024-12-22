@@ -1,0 +1,35 @@
+:host {
+    --basicSize: 14px; 
+    --zindex: 100;
+    --fontColor: #fff;
+    --passColor: #6d8; 
+    --infoColor: #6cd; 
+    --warnColor: #fc5;
+    --failColor: #e66;
+    --confirmColor: #a9e; 
+    --inputColor: #abb; 
+    --authColor: #8b9;
+}
+
+.popBox {position:fixed;top:5%;left:50%;transform:translate(-50%,0);max-height:90%;width:unset;
+    overflow-y:auto;font-size:var(--basicSize);z-index:var(--zindex);}
+.card {display:flex;align-items:center;justify-content:space-between;
+    width:24em;overflow:hidden;padding:0.3em;border-radius:0.3em;margin:1em;}
+.info {position:relative;height:3em;width:3em;cursor:pointer;
+    flex-shrink:0;border-radius:50%;border:0.2em solid var(--fontColor);}
+.infoText{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:2em;font-weight:900;color:var(--fontColor);}
+.close {width:2em;height:100%;padding:0.5em;cursor:pointer;
+    flex-shrink:0;border-left:0.2em solid var(--fontColor);}
+.closeText {font-size:2em;font-weight:900;color:var(--fontColor);}
+.content{overflow:hidden;padding:0.2em;font-size:1.1em;font-weight:600;}
+.message {max-height:16em;padding:0.2em;overflow:auto;color:var(--fontColor);}
+.item {padding:0.2em;color:var(--fontColor);}
+.input{outline:none;background:transparent;width:80%;
+    font-size:1em;font-weight:600;padding:0.2em;border-width:0 0 0.2em 0;
+    color:var(--fontColor);border-bottom:inset var(--fontColor);}
+
+.padding {
+    display: none;
+}
+

@@ -708,11 +708,45 @@
                 </div>
             </div>
         </module>
+        <module class="popmenu">
+            <link rel="stylesheet" href="./libs/libs/popupmenu.css">
+            <div class="popBox">
+                <div class="padding">
+                    <div class="message_wrapper">
+                        <div class="message"></div><input class="input" type="text"/>
+                    </div>
+                    <div class="auth_wrapper">
+                        <form>
+                            <div style="display:flex;">
+                                <div class="item">N</div>
+                                <input class="name input" type="text" autocomplete="off"/>
+                            </div>
+                            <div style="display:flex;">
+                                <div class="item">P</div>
+                                <input class="pass input" type="password" autocomplete="off"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card_wrapper">
+                        <div class="card">
+                            <div class="info">
+                                <div class="infoText"></div>
+                            </div>
+                            <div class="content"></div>
+                            <div class="close">
+                                <div class="closeText">Q</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </module>
         <script type="text/javascript" src="./libs/main.js"></script>
         <script type="text/javascript" src="./libs/libs/monitor.js"></script>
         <script type="text/javascript" src="./libs/libs/innerview.js"></script>
         <script type="text/javascript" src="./libs/libs/player.js"></script>
         <script type="text/javascript" src="./libs/libs/fileview.js"></script>
+        <script type="text/javascript" src="./libs/libs/popupmenu.js"></script>
         <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
         <script type="text/javascript" src="./outLibs/showdown.min.js"></script>
         <script type="text/javascript" src="./outLibs/highlight.min.js"></script>
@@ -741,6 +775,7 @@
             let musicplayer_html = get_html_and_del("htmlstore module.musicplayer")
             let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
             let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
+            let popmenu_html = get_html_and_del("htmlstore module.popmenu")
 
             // ========================================================
             let imanager = InnerManager({ 
@@ -883,6 +918,18 @@
             file_box = file_obj.iobj
             file_box.iview.hide("show");
         
+
+            // ========================================================
+            let popMenu = PopupMenu({ 
+                box: document.body.appendChild(document.createElement('div')), 
+                html: popmenu_html,
+                zindex: 100, 
+            });
+            popMenu.appendMessage("fail", "Authorization Fail");
+            popMenu.appendMessage("fail", " test")
+            popMenu.appendMessage("warn", " test")
+            popMenu.appendMessage("info", " test")
+            popMenu.appendMessage("pass", " test")
         </script>
     </htmlstore>
 

@@ -355,7 +355,7 @@
                 }
             </style>
             <div class="flows">
-                <div class="card">Monitor</div>
+                <div class="card monitor">Monitor</div>
                 <div class="card">Files</div>
             </div>
             <div class="flows">
@@ -374,6 +374,337 @@
             <div class="flows"></div>
         </div>
     </div>
+    <!-- htmlstore is a storage for html components. in js script, you may refer to the component and insert to the right place. -->
+    <htmlstore style="display: none;">
+        <module class="pie_progress">
+            <style>
+                :host {
+                    --basic_size: 120px;
+                    --progressColor: #fff;
+                    --noProgressColor: #fff;
+                    --center_color: #fff;
+                }
+                .pieBox {
+                    margin:auto;
+                    overflow:hidden;
+                    height:1em;
+                    width:1em;
+                    position:relative;
+                    font-size: var(--basic_size);
+                }
+                .backCircle, .leftCircle, .rightCircle{
+                    position:absolute;
+                    border-radius:50%;
+                    height:1em;
+                    width:1em;
+                }
+                .centerCircle, .centerInfo{
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                }
+                .backCircle{
+                    background: var(--progressColor);
+                }
+                .leftCircle, .rightCircle{
+                    background: var(--noProgressColor);
+                }               
+                .leftCircle{
+                    clip:rect(0,0.5em,1em,0);
+                }
+                .rightCircle{
+                    clip:rect(0,1em,1em,0.5em);
+                }
+                .centerCircle{
+                    height:0.86em;
+                    width:0.86em;
+                    border-radius:50%;
+                    background: var(--center_color);
+                }
+                .centerInfo{
+                    font-size:0.23em;
+                    font-weight:600;
+                    white-space:nowrap;
+                }
+            </style>
+            <div class="pieBox">
+                <div class="backCircle"></div>
+                <div class="leftCircle"></div>
+                <div class="rightCircle"></div>
+                <div class="centerCircle"></div>
+                <div class="centerInfo">-%</div>
+            </div>
+        </module>
+        <module class="monitor">
+            <style>
+                .backdrop {
+                    --basic_size: 14px;
+                    position:absolute;
+                    overflow:auto;
+                    height:100%;
+                    width:100%;
+                    font-size:var(--basic_size);
+                }
+                .cardmain {
+                    box-sizing:border-box;
+                    overflow:hidden;
+                }
+                .leftcol {
+                    width:21%;
+                    float:left;
+                } 
+                .rightcol {
+                    overflow:hidden;
+                }
+                .card {
+                    box-sizing:border-box;
+                    display:block;
+                    padding:0.8em;
+                    margin:0.6em 0.6em;
+                    border-radius:0.4em;
+                    overflow:hidden;
+                    background-color:#fff;
+                }
+                .card .title {
+                    font-size:1.2em;
+                    font-weight:600;
+                }
+                .card .item {
+                    font-weight:600;
+                    text-align:center;
+                    color:#666;
+                }
+                .card .info {
+                    font-size:1.1em;
+                    font-weight:600;
+                    text-align:center;
+                }
+                .card .preinfo {
+                    font-weight:550;
+                    text-align:left;
+                    color:#333;
+                    overflow:auto;
+                    white-space:pre;
+                    font-family:"consolas","monospace","serif",
+                    "sans-serif","Segoe UI","Sans","Arial","Microsoft Yahei","Helvetica";
+                }
+                .column2, .column3 {
+                    box-sizing:border-box;
+                    display:block;
+                    float:left;
+                    overflow:hidden;
+                }
+                .column2 {
+                    width:50%;
+                } 
+                .column3 {
+                    width:33.33333%;
+                }
+                @media (max-width:42em) {
+                    .leftcol, .rightcol, .column2, .column3 {
+                        float:none;
+                        width:100%;
+                        padding:0;
+                    }
+                }
+                
+            </style>
+
+            <div class="backdrop">
+                <div class="leftcol">
+                    <div class="card">
+                        <div class="title">General</div>
+                        <div class="card uptime" style="background-color: #fed;">
+                            <div class="item">Uptime</div>
+                            <div class="info">-</div>
+                        </div>
+                        <div class="card distro" style="background-color: #ffd;">
+                            <div class="item">Distribution</div>
+                            <div class="info">-</div>
+                        </div>
+                        <div class="card host" style="background-color: #efd;">
+                            <div class="item">Hostname</div>
+                            <div class="info">-</div>
+                        </div>
+                        <div class="card net" style="background-color: #dfd;">
+                            <div class="preinfo" style="height: 8em;"></div>
+                        </div>
+                        <div class="card version" style="background-color: #def;">
+                            <div class="item">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rightcol">
+                    <div class="cardmain">
+                        <div class="column3 cpu">
+                            <div class="card">
+                                <div class="title">Cpu</div>
+                                <div class="pie" style="padding-bottom: 1.5em;"></div>
+                                <div class="info">-</div>
+                                <div class="card" style="background-color: #ffe;">
+                                    <div class="preinfo" style="height: 12em;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column3 mem">
+                            <div class="card">
+                                <div class="title">Memory</div>
+                                <div class="pie" style="padding-bottom: 1.5em;"></div>
+                                <div class="info">-</div>
+                                <div class="card" style="background-color: #efe;">
+                                    <div class="preinfo" style="height: 12em;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column3 disk">
+                            <div class="card">
+                                <div class="title">Disk</div>
+                                <div class="pie" style="padding-bottom: 1.5em;"></div>
+                                <div class="info">-</div>
+                                <div class="card" style="background-color: #eef;">
+                                    <div class="preinfo" style="height: 12em;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:0;">
+                        <div class="title">Transmission</div>
+                        <div class="column3 rxSpeed">
+                            <div class="card" style="background-color: #eff; color: #333;">
+                                <div class="info">Rx Speed: 0 KB/s</div>
+                            </div>
+                        </div> 
+                        <div class="column3 txSpeed">
+                            <div class="card" style="background-color: #eef; color: #333;">
+                                <div class="info">Tx Speed: 0 KB/s</div>
+                            </div>
+                        </div>
+                        <div class="column3 totalSpeed">
+                            <div class="card" style="background-color: #fef; color: #333;">
+                                <div class="info">Total Speed: 0 KB/s</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </module>
+        <module class="innerview">
+            <style>
+                :host {
+                    --basic_size: 14px;
+                    --innerbox_width: 1px;
+                    --innerbox_height: 1px;
+                    --innerbox_zindex: 9;
+                }
+                .innerBox {
+                    position:fixed;
+                    overflow:hidden;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%,-50%);
+                    display:none;
+                    background:transparent;
+                    font-size: var(--basic_size);
+                    width:  var(--innerbox_width);
+                    height: var(--innerbox_height);
+                    z-index: var(--innerbox_zindex);
+                    cursor:move;
+                    padding:1em;
+                }
+                .icontain {position:relative;overflow:hidden;width:100%;height:100%;background:#fff;
+                        border-radius:0.5em;box-shadow:0 0 0.5em 0 #888;cursor:default;}
+                .header {position:absolute;top:0;right:0;left:0;}
+                .header .ctrlBar {float:right;display:flex;} 
+                .header .ctrlBtn img {width:100%;height:100%;}
+                .header .ctrlBtn {padding:0.9em;cursor:pointer;border-radius:0.5em;width:1em;height:1em;flex-shrink:0;}
+                .header .prevBtn:hover {background:#ccc;} .header .nextBtn:hover {background:#ccc;}
+                .header .minBtn:hover {background:#fe7;} .header .maxBtn:hover {background:#8f7;}
+                .header .downBtn:hover {background:#8cf;} .header .exitBtn:hover {background:#f87;}
+                .header .title {padding:0.6em;cursor:move;overflow:hidden;white-space:nowrap;font-weight:600;color:#000;}
+                .content {position:absolute;top:3em;right:0;bottom:0;left:0;overflow:hidden;}
+                .resizeTop {position:absolute;height:0.5em;width:100%;top:0.5em;left:0.5em;cursor:n-resize;}
+                .resizeBottom {position:absolute;height:0.5em;width:100%;bottom:0.5em;left:0.5em;cursor:s-resize;}
+                .resizeLeft {position:absolute;height:100%;width:0.5em;top:0.5em;left:0.5em;cursor:w-resize;}
+                .resizeRight {position:absolute;height:100%;width:0.5em;top:0.5em;right:0.5em;cursor:e-resize;}
+                .resizeTopLeft {position:absolute;height:0.5em;width:0.5em;top:0.5em;left:0.5em;cursor:nw-resize;}
+                .resizeTopRight {position:absolute;height:0.5em;width:0.5em;top:0.5em;right:0.5em;cursor:ne-resize;}
+                .resizeBottomLeft {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;left:0.5em;cursor:sw-resize;}
+                .resizeBottomRight {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;right:0.5em;cursor:se-resize;}
+            </style>
+            <div class="innerBox">
+                <div class="icontain">
+                    <div class="header">
+                        <div class="ctrlBar">
+                            <div class="ctrlBtn prevBtn">
+                                <img src="' + args.htmlParts.prevIcon + '"/>
+                            </div>
+                            <div class="ctrlBtn nextBtn">
+                                <img src="' + args.htmlParts.nextIcon + '"/>
+                            </div>
+                            <div class="ctrlBtn downBtn">
+                                <img src="' + args.htmlParts.downIcon + '"/>
+                            </div>
+                            <div class="ctrlBtn minBtn">
+                                <img src="' + args.htmlParts.minIcon + '"/>
+                            </div>
+                            <div class="ctrlBtn maxBtn">
+                                <img src="' + args.htmlParts.maxIcon + '"/>
+                            </div>
+                            <div class="ctrlBtn exitBtn">
+                                <img src="' + args.htmlParts.exitIcon + '"/>
+                            </div>
+                        </div>
+                        <div class="title"></div>
+                    </div>
+                    <div class="content"></div>
+                </div>
+                <div class="resizeTop"></div>
+                <div class="resizeBottom"></div>
+                <div class="resizeLeft"></div>
+                <div class="resizeRight"></div>
+                <div class="resizeTopLeft"></div>
+                <div class="resizeTopRight"></div>
+                <div class="resizeBottomLeft"></div>
+                <div class="resizeBottomRight"></div>
+                
+            </div>
+        </module>
+        <script type="text/javascript" src="./main.js"></script>
+        <script type="text/javascript" src="./libs/monitor.js"></script>
+        <script type="text/javascript" src="./libs/innerview.js"></script>
+        <script>
+            function html_to_shadow(module_html) {
+                let shadow_module = document.createElement('div')
+                shadow_module.attachShadow({mode: "open"})
+                shadow_module.shadowRoot.innerHTML = module_html
+                return shadow_module
+            }
+
+            function get_html_and_del(selector) {
+                let module = document.querySelector(selector)
+                html = module.innerHTML
+                module.remove()
+                return html
+            }
+
+            let pie_progress_html = get_html_and_del("htmlstore module.pie_progress")
+            let monitor_html = get_html_and_del("htmlstore module.monitor")
+
+            let monitor_card = document.querySelector(".mainline .flows .card.monitor")
+            monitor_card.onclick = function () { 
+                new MonitorView({
+                    box: document.body.appendChild(document.createElement('div')),
+                    html: monitor_html,
+                    pie_html: pie_progress_html,
+                    basic_size: "14px",
+                    waitTime: 3000,
+                    getMonitor: (callback) => { },
+                })
+            };
+        </script>
+    </htmlstore>
 </body>
+
 
 </html>

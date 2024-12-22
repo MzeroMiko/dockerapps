@@ -25,7 +25,7 @@ function SliderBar(opts = {}) {
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let container = shadow_module.shadowRoot.querySelector('.contain');
     let slider = container.querySelector('.slider');
@@ -78,7 +78,7 @@ function MusicPlayer(opts = {}) {
     let args = {
         box: opts.box,
         html: opts.html,
-        slider_html: opts.slider_html,
+        sliderbar_html: opts.sliderbar_html,
         params: {
             forwardStep: 5, stopCallBack: () => { }, pathToUrl: (path) => { },
             validSuffix: [".mp3", ".ogg", ".wav", ".acc", ".webm"]
@@ -95,7 +95,7 @@ function MusicPlayer(opts = {}) {
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let oriPlayList = [], playList = []; // playList [/x/x/x, /x/x/x, ...]
     let playPos = 0, playOrder = "Ascend", currentPath = "", currentName = "", currentVolume = 1;
@@ -113,7 +113,7 @@ function MusicPlayer(opts = {}) {
     let mediaList = shadow_module.shadowRoot.querySelector('.mediaList');
     let timeSlider = SliderBar({
         box: mediaBar.querySelector(".timeSlider"),
-        html: args.slider_html,
+        html: args.sliderbar_html,
         sliderColor: args.style.timeSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -124,7 +124,7 @@ function MusicPlayer(opts = {}) {
     });
     let volSlider = SliderBar({
         box: mediaBar.querySelector(".volSlider"),
-        html: args.slider_html,
+        html: args.sliderbar_html,
         sliderColor: args.style.volSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -349,7 +349,7 @@ function VideoPlayer(opts = {}) {
     let args = {
         box: opts.box,
         html: opts.html,
-        slider_html: opts.slider_html,
+        sliderbar_html: opts.sliderbar_html,
         params: {
             enMediaName: false,
             forwardStep: 5, infoTime: 5000, autoRotate: true,
@@ -386,7 +386,7 @@ function VideoPlayer(opts = {}) {
     let mediaTime = mediaBar.querySelector(".mediaTime");
     let timeSlider = SliderBar({
         box: mediaBar.querySelector(".timeSlider"),
-        html: args.slider_html,
+        html: args.sliderbar_html,
         sliderColor: args.style.timeSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -397,7 +397,7 @@ function VideoPlayer(opts = {}) {
     });
     let volSlider = SliderBar({
         box: mediaBar.querySelector(".volSlider"),
-        html: args.slider_html,
+        html: args.sliderbar_html,
         sliderColor: args.style.volSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,

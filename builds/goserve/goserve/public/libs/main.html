@@ -379,57 +379,7 @@
     <!-- htmlstore is a storage for html components. in js script, you may refer to the component and insert to the right place. -->
     <htmlstore style="display: none;">
         <module class="pie_progress">
-            <style>
-                :host {
-                    --basic_size: 120px;
-                    --progressColor: #fff;
-                    --noProgressColor: #fff;
-                    --center_color: #fff;
-                }
-                .pieBox {
-                    margin:auto;
-                    overflow:hidden;
-                    height:1em;
-                    width:1em;
-                    position:relative;
-                    font-size: var(--basic_size);
-                }
-                .backCircle, .leftCircle, .rightCircle{
-                    position:absolute;
-                    border-radius:50%;
-                    height:1em;
-                    width:1em;
-                }
-                .centerCircle, .centerInfo{
-                    position:absolute;
-                    top:50%;
-                    left:50%;
-                    transform:translate(-50%,-50%);
-                }
-                .backCircle{
-                    background: var(--progressColor);
-                }
-                .leftCircle, .rightCircle{
-                    background: var(--noProgressColor);
-                }               
-                .leftCircle{
-                    clip:rect(0,0.5em,1em,0);
-                }
-                .rightCircle{
-                    clip:rect(0,1em,1em,0.5em);
-                }
-                .centerCircle{
-                    height:0.86em;
-                    width:0.86em;
-                    border-radius:50%;
-                    background: var(--center_color);
-                }
-                .centerInfo{
-                    font-size:0.23em;
-                    font-weight:600;
-                    white-space:nowrap;
-                }
-            </style>
+            <link rel="stylesheet" href="./libs/pie_progress.css">
             <div class="pieBox">
                 <div class="backCircle"></div>
                 <div class="leftCircle"></div>
@@ -439,80 +389,7 @@
             </div>
         </module>
         <module class="monitor">
-            <style>
-                .backdrop {
-                    --basic_size: 14px;
-                    position:absolute;
-                    overflow:auto;
-                    height:100%;
-                    width:100%;
-                    font-size:var(--basic_size);
-                }
-                .cardmain {
-                    box-sizing:border-box;
-                    overflow:hidden;
-                }
-                .leftcol {
-                    width:21%;
-                    float:left;
-                } 
-                .rightcol {
-                    overflow:hidden;
-                }
-                .card {
-                    box-sizing:border-box;
-                    display:block;
-                    padding:0.8em;
-                    margin:0.6em 0.6em;
-                    border-radius:0.4em;
-                    overflow:hidden;
-                    background-color:#fff;
-                }
-                .card .title {
-                    font-size:1.2em;
-                    font-weight:600;
-                }
-                .card .item {
-                    font-weight:600;
-                    text-align:center;
-                    color:#666;
-                }
-                .card .info {
-                    font-size:1.1em;
-                    font-weight:600;
-                    text-align:center;
-                }
-                .card .preinfo {
-                    font-weight:550;
-                    text-align:left;
-                    color:#333;
-                    overflow:auto;
-                    white-space:pre;
-                    font-family:"consolas","monospace","serif",
-                    "sans-serif","Segoe UI","Sans","Arial","Microsoft Yahei","Helvetica";
-                }
-                .column2, .column3 {
-                    box-sizing:border-box;
-                    display:block;
-                    float:left;
-                    overflow:hidden;
-                }
-                .column2 {
-                    width:50%;
-                } 
-                .column3 {
-                    width:33.33333%;
-                }
-                @media (max-width:42em) {
-                    .leftcol, .rightcol, .column2, .column3 {
-                        float:none;
-                        width:100%;
-                        padding:0;
-                    }
-                }
-                
-            </style>
-
+            <link rel="stylesheet" href="./libs/monitor.css">
             <div class="backdrop">
                 <div class="leftcol">
                     <div class="card">
@@ -710,55 +587,8 @@
             </style>
             <div class="viewlist"><div class="minitem"></div></div>
         </module>
-        <module class="slidebar">
-            <style>
-                :host {
-                    --basicSize: 2px;
-                    --pointSize: 5em;
-                    --sliderColor: "#ddd"; 
-                    --bufferColor: "#aaa"; 
-                    --progressColor: "#2d3",
-                }
-                .sliderBar {
-                    overflow:hidden;
-                    width:100%;
-                }
-                .contain {
-                    padding:2em 0;
-                    margin:0 2em;
-                    cursor:pointer;
-                    font-size: var(--basicSize);
-                }
-                .slider {
-                    position:relative;
-                    height:1em;
-                    border-radius:0.5em;
-                    background: var(--sliderColor);
-                }
-                .buffer {
-                    height:1em;
-                    width:0%;
-                    border-radius:0.5em;
-                    background:var(--bufferColor);
-                }
-                .prog {
-                    height:1em;
-                    width:0%;
-                    transform:translate(0,-1em);
-                    border-radius:0.5em;
-                    background:var(--progressColor);
-                }
-                .point {
-                    position:absolute;
-                    height: var(--pointSize);
-                    width: var(--pointSize);
-                    transform:
-                        translate(calc(0 - var(--pointSize) / 2), calc(0 - (var(--pointSize) + 3) / 2)); 
-                    border-radius:50%;
-                    background:var(--progressColor);
-                }
-            </style>
-            
+        <module class="sliderbar">
+            <link rel="stylesheet" href="./libs/sliderbar.css">
             <div class="sliderBar">
                 <div class="contain">
                     <div class="slider">
@@ -770,88 +600,7 @@
             </div>
         </module>
         <module class="musicplayer">
-            <style>
-                :host {
-                    --basicSize: "14px"; 
-                    --backColor: "#bcd"; 
-                    --themeColor: "#fff";
-                    --playBtnColor: "#aeb"; 
-                    --ctrlBackColor: "rgba(0,0,0,0)"; 
-                    --listColor: "#222";
-                    --volSliderColor: "#ddd"; 
-                    --timeSliderColor: "#ddd"; 
-                    --sliderBufferColor: "#aaa";
-                    --listItemColor: "rgba(255,255,255,0.2)"; 
-                    --listItemHover: "rgba(196,196,196,0.75)";
-                }
-                .audiobox {position:absolute;display:flex;flex-direction:column;width:100%;height:100%;
-                    background:var(--backColor);font-size:var(--basicSize);}
-                .musebar {position:relative;width:100%;top:0;box-sizing:border-box;
-                    outline:none;padding:0.8em;background:var(--ctrlBackColor);}
-                .progline {padding:0.6em;} .timeSlider {flex:auto;}
-                .ctrlline {display:flex;align-items:center;padding:0 0.8em;}
-                .ctrlline .icon {font-size:2em;cursor:pointer;}
-                .volBtn {margin-left:auto;}
-                .volSlider {flex-shrink:0;width:4em;}
-                .mediaTime {margin-left:auto;padding-left:1em;font-weight:600;color:var(--themeColor);}
-                .mediaName {font-weight:600;padding:0.4em 0.8em 0.8em 0.8em;white-space:nowrap;
-                    overflow:hidden;color:var(--themeColor);}
-                .listTable {position:relative;box-sizing:border-box;width:100%;flex:1;overflow:auto;}
-                .mediaList {padding-bottom:3em;font-size:0.8em;font-weight:500;}
-                .mediaList .item {width:100%;padding:0.6em 1em;box-sizing:border-box;
-                    cursor:pointer;overflow:hidden;color:var(--listColor);
-                    border-top:1px solid rgba(0, 0, 0, 0.125);background:var(--listItemColor);}
-                .mediaList .item:hover { background:var(--listItemHover); }
-            </style>
-            <style>
-                divicon.orderBtn_icon, divicon.playBtn_icon, divicon.pauseBtn_icon, divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
-                    display:flex;align-items:center;justify-content:center;height:1em;width:1em;
-                }
-                divicon.orderBtn_icon .orderStat {
-                    font-size:0.6em;font-weight:800;overflow:hidden;color:var(--themeColor);
-                }
-                divicon.playBtn_icon {
-                    background:var(--playBtnColor);
-                    border-radius:50%;
-                }
-                divicon.playBtn_icon .part1 {
-                    width:0.1em;height:0.5em;
-                }
-                divicon.playBtn_icon .part2 {
-                    width:0;height:0;border-left:0.5em solid var(--themeColor); 
-                    border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.pauseBtn_icon {
-                    background:var(--playBtnColor);border-radius:50%;
-                }
-                divicon.pauseBtn_icon .part1, divicon.pauseBtn_icon .part3 {
-                    width:0.17em;height:0.5em;background:var(--themeColor);
-                }
-                divicon.pauseBtn_icon .part2 {
-                    width:0.16em;height:0.5em;background:transparent;
-                }
-                divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
-                    background:transparent;border-radius:50%;
-                }
-                divicon.prevBtn_icon .part1, divicon.nextBtn_icon .part2 {
-                    width:0.1em;height:0.5em;background:var(--themeColor);
-                }
-                divicon.prevBtn_icon .part2 {
-                    width:0;height:0;border-right:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.nextBtn_icon .part1 {
-                    width:0;height:0;border-left:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
-                }
-                divicon.volBtn_icon .part1 {
-                    width:0.16em;height:0.24em;background:var(--themeColor);
-                }
-                divicon.volBtn_icon .part2 {
-                    width:0;height:0.24em;border-right:0.24em solid var(--themeColor);box-sizing:content-box;border-top:0.13em solid transparent;border-bottom:0.13em solid transparent;
-                }
-                divicon.volBtn_icon .part3 {
-                    width:0.1em;height:0.5em;
-                }
-            </style>
+            <link rel="stylesheet" href="./libs/musicplayer.css">
             <div class="audiobox">
                 <audio></audio>                   
                 <div class="musebar">
@@ -1040,8 +789,10 @@
                     width:0.5em;height:0.1em;background:transparent;
                 }
             </style>
-                <!-- <divicon class="bacwardBtn_icon"><div class="part1"></div></divicon>
+
+            <!-- <divicon class="bacwardBtn_icon"><div class="part1"></div></divicon>
                 <divicon class="forwardBtn_icon"><div class="part1"></div></divicon> -->
+
             <div class="videobox">
                     <video><track src default/></video>
                     <div class="launchBottom"></div> 
@@ -1131,6 +882,7 @@
         <script type="text/javascript" src="./main.js"></script>
         <script type="text/javascript" src="./libs/monitor.js"></script>
         <script type="text/javascript" src="./libs/innerview.js"></script>
+        <script type="text/javascript" src="./libs/player.js"></script>
         <script>
             function html_to_shadow(module_html) {
                 let shadow_module = document.createElement('div')
@@ -1151,7 +903,9 @@
             let monitor_html = get_html_and_del("htmlstore module.monitor")
             let innerview_html = get_html_and_del("htmlstore module.innerview")
             let innerview_manager_html = get_html_and_del("htmlstore module.innerview_manager")
-            let slidebar_html = get_html_and_del("htmlstore module.slidebar")
+            let sliderbar_html = get_html_and_del("htmlstore module.sliderbar")
+            let musicplayer_html = get_html_and_del("htmlstore module.musicplayer")
+            let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
 
             // ========================================================
             let imanager = InnerManager({ 
@@ -1163,6 +917,30 @@
                 basic_size: "12px",
             });
 
+            function genViewer(width = "90%", height = "90%", iBox = null, types = [], btnShow = [], startAction = null, stopAction = null) {
+                let iobj = imanager.buildView({
+                    box: iBox, width: width, height: height, title: types[0], btnShow: btnShow,
+                    prev: () => { startView(iobj.itools._path, "", "", "prev", types); },
+                    next: () => { startView(iobj.itools._path, "", "", "next", types); },
+                    down: () => { adminCore.download(iobj.itools._path); },
+                    exit: () => { stopAction(iobj.itools._path); iobj.iview.hide("hide"); },
+                });
+                let startView = (path = "", type = "", tag = "", next = "", types = []) => {
+                    if (next == "prev" || next == "next") {
+                        let tmp = nextPath(types, next, path);
+                        path = tmp.path;
+                        type = tmp.type;
+                        tag = tmp.tag;
+                    }
+                    try {
+                        startAction(path, type, tag);
+                        iobj.itools._path = path;
+                        iobj.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
+                        iobj.iview.hide("show");
+                    } catch (error) { }
+                }
+                return startView;
+            }
 
             // // ========================================================
             // let innerview = new InnerViewer({
@@ -1185,13 +963,52 @@
                 waitTime: 3000,
                 getMonitor: (callback) => { },
             })
-
-
             let monitor_card = document.querySelector(".mainline .flows .card.monitor")
-            // monitor_card.onclick = function () { 
+            monitor_card.onclick = function () { 
                 {monitor.open(); monitor_box.iview.hide("show"); isMonitorOpen = true;}
                 // {monitor.close(); monitor_box.iview.hide("hide"); isMonitorOpen = false;}
-            // };
+            };
+
+            // ========================================================
+            let music_box = imanager.buildView({
+                width: "22em", height: "44em", title: "Muse", btnShow: ["down", "min", "exit"],
+                down: () => { adminCore.download(musicPlayer.getPlayPath()); },
+                exit: () => { musicPlayer.playStop(); music_box.iview.hide("hide"); },
+            });
+            let musicPlayer = MusicPlayer({ 
+                box: music_box.ibox,
+                html: musicplayer_html,
+                sliderbar_html: sliderbar_html, 
+                pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
+            });
+            let __audiocheck = (path) => {
+                if (musicPlayer.thisPos(path) == -1) {
+                    musicPlayer.setPlayList(filePreviewList, true);
+                    if (musicPlayer.thisPos(path) == -1)
+                        musicPlayer.setPlayList([path], true);
+                }
+            }
+            let __audiostart = (path, type, tag) => {
+                musicPlayer.playThis(path);
+                music_box.iview.hide("show");
+            };
+            music_box.iview.hide("show");
+
+            // ========================================================
+            let video_box = document.createElement('div');
+            let videoPlayer = VideoPlayer({
+                box: video_box, 
+                html: videoplayer_html,
+                sliderbar_html: sliderbar_html, 
+                pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
+            });
+            let __videostart = genViewer("90%", "90%", video_box,
+                ["video"], ["prev", "next", "down", "min", "max", "exit"],
+                function (path, type, tag) { videoPlayer.playThis(path); },
+                function () { videoPlayer.playStop(); }
+            );
+            // music_box.iview.hide("show");
+
         </script>
     </htmlstore>
 
@@ -1201,3 +1018,4 @@
 
 
 </html>
+<!-- goserve -addr [::]:7001 -session 10 -user admin -pass admin -prefix /home -scope /mnt/c/Users/mzero/ -->

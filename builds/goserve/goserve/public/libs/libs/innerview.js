@@ -21,7 +21,7 @@ function InnerViewer(opts = {}) {
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let container = shadow_module.shadowRoot.querySelector(".innerBox");
     let icontain = shadow_module.shadowRoot.querySelector(".icontain");
@@ -276,7 +276,7 @@ function InnerManager(opts = {}) {
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let itemsample = shadow_module.shadowRoot.querySelector(".minitem");
     itemsample.remove()

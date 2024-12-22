@@ -1,0 +1,49 @@
+:host {
+    --basic_size: 120px;
+    --progressColor: #fff;
+    --noProgressColor: #fff;
+    --center_color: #fff;
+}
+.pieBox {
+    margin:auto;
+    overflow:hidden;
+    height:1em;
+    width:1em;
+    position:relative;
+    font-size: var(--basic_size);
+}
+.backCircle, .leftCircle, .rightCircle{
+    position:absolute;
+    border-radius:50%;
+    height:1em;
+    width:1em;
+}
+.centerCircle, .centerInfo{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+.backCircle{
+    background: var(--progressColor);
+}
+.leftCircle, .rightCircle{
+    background: var(--noProgressColor);
+}               
+.leftCircle{
+    clip:rect(0,0.5em,1em,0);
+}
+.rightCircle{
+    clip:rect(0,1em,1em,0.5em);
+}
+.centerCircle{
+    height:0.86em;
+    width:0.86em;
+    border-radius:50%;
+    background: var(--center_color);
+}
+.centerInfo{
+    font-size:0.23em;
+    font-weight:600;
+    white-space:nowrap;
+}

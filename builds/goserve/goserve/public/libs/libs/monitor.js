@@ -25,7 +25,7 @@ function PieProgress(opts={}) {
     
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let lastPercent = 0;
     let centerInfo = args.box.querySelector(".centerInfo");
@@ -84,7 +84,7 @@ function MonitorView(opts={}) {
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let cpuPie = PieProgress({ 
         box: shadow_module.shadowRoot.querySelector(".cpu .pie"), 

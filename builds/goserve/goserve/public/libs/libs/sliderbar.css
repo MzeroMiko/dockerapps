@@ -1,0 +1,45 @@
+:host {
+    --basicSize: 2px;
+    --pointSize: 5em;
+    --sliderColor: "#ddd"; 
+    --bufferColor: "#aaa"; 
+    --progressColor: "#2d3",
+}
+.sliderBar {
+    overflow:hidden;
+    width:100%;
+}
+.contain {
+    padding:2em 0;
+    margin:0 2em;
+    cursor:pointer;
+    font-size: var(--basicSize);
+}
+.slider {
+    position:relative;
+    height:1em;
+    border-radius:0.5em;
+    background: var(--sliderColor);
+}
+.buffer {
+    height:1em;
+    width:0%;
+    border-radius:0.5em;
+    background:var(--bufferColor);
+}
+.prog {
+    height:1em;
+    width:0%;
+    transform:translate(0,-1em);
+    border-radius:0.5em;
+    background:var(--progressColor);
+}
+.point {
+    position:absolute;
+    height: var(--pointSize);
+    width: var(--pointSize);
+    transform:
+        translate(calc(0 - var(--pointSize) / 2), calc(0 - (var(--pointSize) + 3) / 2)); 
+    border-radius:50%;
+    background:var(--progressColor);
+}

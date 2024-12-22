@@ -10,13 +10,7 @@
         href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+">
     <title>MikoSite</title>
     <!-- load in the head to prevent flash, but will slow the loading -->
-    <!-- <script type="text/javascript" src="/libs/icons.js"></script>
-    <script type="text/javascript" src="/libs/main.js"></script>
-    <script type="text/javascript" src="/libs/viewers.js"></script>
-    <script type="text/javascript" src="/libs/players.js"></script>
-    <script type="text/javascript" src="/outLibs/spark-md5.min.js"></script>
-    <script type="text/javascript" src="/outLibs/showdown.min.js"></script>
-    <script type="text/javascript" src="/outLibs/highlight.min.js"></script> -->
+    <script type="text/javascript" src="./libs/libs/icons.js"></script>
     <style>
         * {
             font-family: sans-serif, 'Segoe UI', 'Sans', Arial, 'Microsoft Yahei', Helvetica;
@@ -48,9 +42,9 @@
         <style>
             @font-face {
                 font-family: "iconfont";
-                src: url('./fonts/iconfont.woff2') format('woff2'),
-                url('./fonts/iconfont.woff') format('woff'),
-                url('./fonts/iconfont.ttf') format('truetype');
+                src: url('./libs/fonts/iconfont.woff2') format('woff2'),
+                url('./libs/fonts/iconfont.woff') format('woff'),
+                url('./libs/fonts/iconfont.ttf') format('truetype');
             }
 
             /* .iconfont {
@@ -379,7 +373,7 @@
     <!-- htmlstore is a storage for html components. in js script, you may refer to the component and insert to the right place. -->
     <htmlstore style="display: none;">
         <module class="pie_progress">
-            <link rel="stylesheet" href="./libs/pie_progress.css">
+            <link rel="stylesheet" href="./libs/libs/pie_progress.css">
             <div class="pieBox">
                 <div class="backCircle"></div>
                 <div class="leftCircle"></div>
@@ -389,7 +383,7 @@
             </div>
         </module>
         <module class="monitor">
-            <link rel="stylesheet" href="./libs/monitor.css">
+            <link rel="stylesheet" href="./libs/libs/monitor.css">
             <div class="backdrop">
                 <div class="leftcol">
                     <div class="card">
@@ -469,7 +463,7 @@
             </div>
         </module>
         <module class="innerview">
-            <link rel="stylesheet" href="./libs/sliderbar.css">
+            <link rel="stylesheet" href="./libs/libs/innerview.css">
             <div class="innerBox">
                 <div class="icontain">
                     <div class="header">
@@ -503,24 +497,11 @@
             </div>
         </module>
         <module class="innerview_manager">
-            <style>
-                :host {
-                    --basic_size: 12px; 
-                    --zindex_min: 9; 
-                    --zindex_max: 100;
-                }
-                .viewlist {z-index: var(--zindex_min);position:fixed;bottom:1%;left:1%;
-                max-width:98%;overflow:auto;background:transparent;white-space:nowrap;
-                font-size: var(--basic_size);}
-                .minitem {display:inline-block;width:6em;height:100%;border-radius:0.3em;margin:0 0.1em;
-                    padding:0.4em;box-sizing:border-box;text-align:center;font-weight:500;
-                    cursor:pointer;overflow:hidden;text-overflow:ellipsis;background:#fff;
-                    border:solid 2px #ccc;}
-            </style>
+            <link rel="stylesheet" href="./libs/libs/imanager.css">
             <div class="viewlist"><div class="minitem"></div></div>
         </module>
         <module class="sliderbar">
-            <link rel="stylesheet" href="./libs/sliderbar.css">
+            <link rel="stylesheet" href="./libs/libs/sliderbar.css">
             <div class="sliderBar">
                 <div class="contain">
                     <div class="slider">
@@ -532,7 +513,7 @@
             </div>
         </module>
         <module class="musicplayer">
-            <link rel="stylesheet" href="./libs/musicplayer.css">
+            <link rel="stylesheet" href="./libs/libs/musicplayer.css">
             <div class="audiobox">
                 <audio></audio>                   
                 <div class="musebar">
@@ -588,6 +569,7 @@
             </div>
         </module>
         <module class="videoplayer">
+            <link rel="stylesheet" href="./libs/libs/videoplayer.css">
             <!-- <divicon class="bacwardBtn_icon"><div class="part1"></div></divicon>
                 <divicon class="forwardBtn_icon"><div class="part1"></div></divicon> -->
 
@@ -677,10 +659,14 @@
                 </div>
             </div>
         </module>
-        <script type="text/javascript" src="./main.js"></script>
-        <script type="text/javascript" src="./libs/monitor.js"></script>
-        <script type="text/javascript" src="./libs/innerview.js"></script>
-        <script type="text/javascript" src="./libs/player.js"></script>
+        <script type="text/javascript" src="./libs/main.js"></script>
+        <script type="text/javascript" src="./libs/libs/monitor.js"></script>
+        <script type="text/javascript" src="./libs/libs/innerview.js"></script>
+        <script type="text/javascript" src="./libs/libs/player.js"></script>
+        <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
+        <script type="text/javascript" src="./outLibs/showdown.min.js"></script>
+        <script type="text/javascript" src="./outLibs/highlight.min.js"></script>
+
         <script>
             function html_to_shadow(module_html) {
                 let shadow_module = document.createElement('div')
@@ -737,7 +723,7 @@
                         iobj.iview.hide("show");
                     } catch (error) { }
                 }
-                return startView;
+                return {iobj: iobj, start: startView};
             }
 
             // // ========================================================
@@ -800,13 +786,17 @@
                 sliderbar_html: sliderbar_html, 
                 pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
             });
-            let __videostart = genViewer("90%", "90%", video_box,
+            let __videoobj = genViewer("90%", "90%", video_box,
                 ["video"], ["prev", "next", "down", "min", "max", "exit"],
                 function (path, type, tag) { videoPlayer.playThis(path); },
                 function () { videoPlayer.playStop(); }
             );
-            // music_box.iview.hide("show");
+            let __videostart = __videoobj.start
+            video_box = __videoobj.iobj
+            video_box.iview.hide("show");
 
+            // ========================================================
+            
         </script>
     </htmlstore>
 

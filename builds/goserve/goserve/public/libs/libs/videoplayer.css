@@ -53,6 +53,7 @@ divicon.playBtn_icon .part2 {
 }
 divicon.pauseBtn_icon {
     background:var(--playBtnColor);border-radius:50%;
+    display: none;
 }
 divicon.pauseBtn_icon .part1, divicon.pauseBtn_icon .part3 {
     width:0.17em;height:0.5em;background:var(--themeColor);
@@ -105,6 +106,9 @@ divicon.fullBtn_icon .part5, divicon.noFullBtn_icon .part5 {
 }
 divicon.fullBtn_icon .part6 {
     height:0.2em;width:0.5em;display:flex;justify-content:flex-end;align-items:flex-end;
+}
+divicon.noFullBtn_icon {
+    display: none;
 }
 divicon.noFullBtn_icon .part2 {
     height:0.2em;width:0.5em;display:flex;justify-content:flex-start;align-items:flex-end;

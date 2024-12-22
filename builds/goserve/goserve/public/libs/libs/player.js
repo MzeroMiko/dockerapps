@@ -165,11 +165,11 @@ function MusicPlayer(opts = {}) {
 
     function set_play_button(play=true){
         if (play) {
-            playBtn.querySelector(".playBtn_icon").style.display = "block";
+            playBtn.querySelector(".playBtn_icon").style.display = "flex";
             playBtn.querySelector(".pauseBtn_icon").style.display = "none";
         } else {
             playBtn.querySelector(".playBtn_icon").style.display = "none";
-            playBtn.querySelector(".pauseBtn_icon").style.display = "block";
+            playBtn.querySelector(".pauseBtn_icon").style.display = "flex";
         }
     }
 
@@ -465,11 +465,11 @@ function VideoPlayer(opts = {}) {
 
     function set_play_button(play=true){
         if (play) {
-            playBtn.querySelector(".playBtn_icon").style.display = "block";
+            playBtn.querySelector(".playBtn_icon").style.display = "flex";
             playBtn.querySelector(".pauseBtn_icon").style.display = "none";
         } else {
             playBtn.querySelector(".playBtn_icon").style.display = "none";
-            playBtn.querySelector(".pauseBtn_icon").style.display = "block";
+            playBtn.querySelector(".pauseBtn_icon").style.display = "flex";
         }
     }
     

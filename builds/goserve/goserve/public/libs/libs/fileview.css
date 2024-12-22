@@ -1,0 +1,61 @@
+:host {
+    --basicSize: 14px; 
+    --backColor: #bcd; 
+    --themeColor: #fff;
+    --playBtnColor: #aeb; 
+    --ctrlBackColor: rgba(0,0,0,0); 
+    --listColor: #222;
+    --volSliderColor: #ddd; 
+    --timeSliderColor: #ddd; 
+    --sliderBufferColor: #aaa;
+    --listItemColor: rgba(255,255,255,0.2); 
+    --listItemHover: rgba(196,196,196,0.75);
+    --colname_width: 55%;
+    --coltime_width: 25%;
+    --colsize_width: 20%;
+    --colmenu_display: block;
+    --ctrlHeadColor: rgba(255,255,255,0.2);
+    --pathHeadColor: rgba(120,120,180,0.25);
+    --listItemColor: rgba(255,255,255,0.5);
+    --listItemHover: rgba(196,196,196,0.75);
+}
+.listTable {position:absolute;width:100%;height:100%;font-size:var(--basicSize);
+padding:1em;border-radius:0.3em;box-sizing:border-box;display:flex;flex-direction:column;}
+
+.listPage {overflow:auto; width: 100%;}
+
+.ctrlHead, .pathHead, .item {display:flex;overflow:hidden;}
+
+.ctrlHead, .pathHead {border-bottom:1px solid rgba(0, 0, 0, 0.25);}
+
+.ctrlHead {background:var(--ctrlHeadColor); }
+
+.pathHead {background:var(--pathHeadColor);}
+.pathChain {flex:auto;padding:0.7em;overflow:auto;white-space:nowrap;font-weight:600;outline:none;}
+.pathChain .path {cursor:pointer;}
+.item {border-top:1px solid rgba(0, 0, 0, 0.125);background:var(--listItemColor);}
+.item:hover { background:var(--listItemHover); }
+.colicon {flex-shrink:0;font-size:2em;height:1em;width:1em;margin:0.2em;cursor:pointer;}
+.colmenu {flex-shrink:0;font-size:1.3em;height:1em;width:1em;cursor:pointer;font-weight:900;padding:0.6em;color:#8ac;}
+.colmenu.log {width:2em;font-size:1.1em;text-align:center;color:#000;}
+.pathHead .colicon img {width:90%;height:90%;}
+.colmenu img {width:90%;height:90%;}
+.coltext {flex:auto;overflow:hidden;text-align:left;color:#233;font-weight:600;}
+.colname {width:var(--colname_width);}
+.coltime {width:var(--coltime_width);} .colsize {width:var(--colsize_width);}
+.colname, .coltime, .colsize {overflow:auto;float:left;cursor:pointer;
+padding:0.7em;box-sizing:border-box;}
+/* .coltime {display:' + ((args.style.colWidth[1] == '0%') ? 'none' : 'block') + ';}
+.colsize {display:' + ((args.style.colWidth[2] == '0%') ? 'none' : 'block') + ';}
+.colmenu {display:' + ((args.style.colmenu) ? 'block' : 'none') + ';} */
+
+.item .colname, .item .coltime, .item .colsize {word-break:break-all;}
+.ctrlHead .colname, .ctrlHead .coltime, .ctrlHead .colsize {white-space:nowrap;overflow:hidden;}
+
+.padding .item {
+    display: none;
+}
+
+.padding {
+    height: 2em;
+}

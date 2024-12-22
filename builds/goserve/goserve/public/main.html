@@ -659,10 +659,60 @@
                 </div>
             </div>
         </module>
+        <module class="fileviewer">
+            <link rel="stylesheet" href="./libs/libs/fileview.css">
+            <div class="listTable">
+                <div>
+                    <div class="pathHead">
+                        <div class="colicon">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+"/>
+                        </div>
+                        <div class="pathChain"></div>
+                        <div class="colmenu log"></div>
+                    </div>
+                    <div class="ctrlHead">
+                        <div class="colicon"></div>
+                        <div class="coltext">
+                            <div class="colname">Name</div>
+                            <div class="coltime">Date</div>
+                            <div class="colsize">Size</div>
+                        </div>
+                        <div class="colmenu">#</div>
+                    </div>
+                </div>
+                <div class="listPage">
+                    <div class="item parent">
+                        <div class="colicon"></div>
+                        <div class="coltext">
+                            <div class="colname">Parent Directory</div>
+                            <div class="coltime">-</div>
+                            <div class="colsize">-</div>
+                        </div>
+                        <div class="colmenu"></div>
+                    </div>
+                    <div class="folder"></div>
+                    <div class="file"></div>
+                    <div class="padding">
+                        <div class="item" raw="__DATA_RAW__" >
+                            <div class="colicon">
+                                <svg style="height:1em;width:1em;">__DATA_ICON__</svg>
+                            </div>
+                            <div class="coltext">
+                                <div class="colname">__DATA_NAME__</div>
+                                <div class="coltime">__DATA_TIME__</div>
+                                <div class="colsize">__DATA_SIZE__</div>
+                            </div>
+                            <div class="colmenu">#</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </module>
         <script type="text/javascript" src="./libs/main.js"></script>
         <script type="text/javascript" src="./libs/libs/monitor.js"></script>
         <script type="text/javascript" src="./libs/libs/innerview.js"></script>
         <script type="text/javascript" src="./libs/libs/player.js"></script>
+        <script type="text/javascript" src="./libs/libs/fileview.js"></script>
         <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
         <script type="text/javascript" src="./outLibs/showdown.min.js"></script>
         <script type="text/javascript" src="./outLibs/highlight.min.js"></script>
@@ -690,6 +740,7 @@
             let sliderbar_html = get_html_and_del("htmlstore module.sliderbar")
             let musicplayer_html = get_html_and_del("htmlstore module.musicplayer")
             let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
+            let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
 
             // ========================================================
             let imanager = InnerManager({ 
@@ -796,7 +847,42 @@
             video_box.iview.hide("show");
 
             // ========================================================
-            
+            let chooseIcon = SVGIcons().chooseIcon;
+            let file_box = document.createElement('div');
+            let file_view = FileViewer({
+                    box: file_box,
+                    html: fileviewer_html,
+                    chooseIcon: chooseIcon,
+                    openPath: (path, isFolder) => {
+                        if (isFolder)
+                            openFolder(path);
+                        else
+                            __openMedia(path);
+                    },
+                    sortCallBack: (currentInfo) => {
+                        filePreviewList = currentInfo.FileNodes.map((info) => { return info.path; });
+                    },
+                    menuAction: (info, node, thisFolder) => { infopart.genInfo(info, node, thisFolder); },
+                    logAction: (button) => {
+                        button.innerText = "IN";
+                        button.onclick = function () {
+                            let button = this;
+                            adminView.login((button.innerText == "IN"), function () {
+                                button.innerText = "OUT";
+                            }, function () {
+                                button.innerText = "IN";
+                            });
+                        };
+                    }
+                });
+            let file_obj = genViewer("90%", "90%", file_box,
+                ["files"], ["min", "max", "exit"],
+                function (path, type, tag) { },
+                function () { }
+            );
+            file_box = file_obj.iobj
+            file_box.iview.hide("show");
+        
         </script>
     </htmlstore>
 

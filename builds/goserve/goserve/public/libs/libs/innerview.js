@@ -1,3 +1,5 @@
+"use strict"
+
 function html_to_shadow(module_html) {
     let shadow_module = document.createElement('div')
     shadow_module.attachShadow({mode: "open"})
@@ -258,7 +260,6 @@ function InnerViewer(opts = {}) {
         isFree: isFree,
     }
 }
-
 
 function InnerManager(opts = {}) {
     let args = {

@@ -1,8 +1,15 @@
 "use strict"
+function html_to_shadow(module_html) {
+    let shadow_module = document.createElement('div')
+    shadow_module.attachShadow({mode: "open"})
+    shadow_module.shadowRoot.innerHTML = module_html
+    return shadow_module
+}
 
 function SliderBar(opts = {}) {
     let args = {
-        box: ("box" in opts) ? opts.box : document.createElement('div'),
+        box: opts.box,
+        html: opts.html,
         params: {
             changeCallBack: (progress) => { },
         },
@@ -15,26 +22,12 @@ function SliderBar(opts = {}) {
     }
     for (let key in opts) if (key in args.style) args.style[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
-    {
-        args.htmlParts.style = '\
-        .sliderBar {overflow:hidden;width:100%;}\
-        .contain {padding:2em 0;margin:0 2em;cursor:pointer;font-size:' + args.style.basicSize + ';}\
-        .slider {position:relative;height:1em;border-radius:0.5em;background:' + args.style.sliderColor + ';}\
-        .buffer {height:1em;width:0%;border-radius:0.5em;background:' + args.style.bufferColor + ';}\
-        .prog {height:1em;width:0%;transform:translate(0,-1em);border-radius:0.5em;background:' + args.style.progressColor + ';}\
-        .point {position:absolute;height:' + args.style.pointSize + 'em;width:' + args.style.pointSize + 'em;\
-        transform:translate(-' + args.style.pointSize / 2 + 'em,-' + (args.style.pointSize + 3) / 2 + 'em);\
-            border-radius:50%;background:' + args.style.progressColor + ';}\
-        ';
-        args.htmlParts.main = '\
-        <div class="sliderBar"><div class="contain"><div class="slider">\
-        <div class="buffer"></div><div class="prog"></div><div class="point"></div>\
-        </div></div></div>\
-        ';
-    }
-    args.htmlParts.fix = insertStyleHtml(args.box, args.htmlParts.style, args.htmlParts.main);
 
-    let container = args.box.querySelector('.contain');
+    let shadow_module = html_to_shadow(args.html)
+    args.box.appendChild(shadow_module)
+    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+
+    let container = shadow_module.shadowRoot.querySelector('.contain');
     let slider = container.querySelector('.slider');
     let prog = slider.querySelector('.prog');
     let buffer = slider.querySelector('.buffer');
@@ -83,7 +76,9 @@ function SliderBar(opts = {}) {
 
 function MusicPlayer(opts = {}) {
     let args = {
-        box: ("box" in opts) ? opts.box : document.createElement('div'),
+        box: opts.box,
+        html: opts.html,
+        slider_html: opts.slider_html,
         params: {
             forwardStep: 5, stopCallBack: () => { }, pathToUrl: (path) => { },
             validSuffix: [".mp3", ".ogg", ".wav", ".acc", ".webm"]
@@ -94,94 +89,18 @@ function MusicPlayer(opts = {}) {
             volSliderColor: "#ddd", timeSliderColor: "#ddd", sliderBufferColor: "#aaa",
             listItemColor: "rgba(255,255,255,0.2)", listItemHover: "rgba(196,196,196,0.75)",
         },
-        htmlParts: {
-            style: "", main: "", fix: (str) => "",
-        },
     }
     for (let key in opts) if (key in args.style) args.style[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
-    {
-        args.htmlParts.style = '\
-        .audiobox {position:absolute;display:flex;flex-direction:column;width:100%;height:100%;\
-            background:' + args.style.backColor + ';font-size:' + args.style.basicSize + ';}\
-        .musebar {position:relative;width:100%;top:0;box-sizing:border-box;\
-            outline:none;padding:0.8em;background:' + args.style.ctrlBackColor + ';}\
-        .progline {padding:0.6em;} .timeSlider {flex:auto;}\
-        .ctrlline {display:flex;align-items:center;padding:0 0.8em;}\
-        .ctrlline .icon {font-size:2em;cursor:pointer;}\
-        .volBtn {margin-left:auto;}\
-        .volSlider {flex-shrink:0;width:4em;}\
-        .mediaTime {margin-left:auto;padding-left:1em;font-weight:600;color:' + args.style.themeColor + ';}\
-        .mediaName {font-weight:600;padding:0.4em 0.8em 0.8em 0.8em;white-space:nowrap;\
-            overflow:hidden;color:' + args.style.themeColor + ';}\
-        .listTable {position:relative;box-sizing:border-box;width:100%;flex:1;overflow:auto;}\
-        .mediaList {padding-bottom:3em;font-size:0.8em;font-weight:500;}\
-        .mediaList .item {width:100%;padding:0.6em 1em;box-sizing:border-box;\
-            cursor:pointer;overflow:hidden;color:' + args.style.listColor + ';\
-            border-top:1px solid rgba(0, 0, 0, 0.125);background:' + args.style.listItemColor + ';}\
-        .mediaList .item:hover { background:' + args.style.listItemHover + '; }\
-        ';
-        args.htmlParts.orderBtnHtml = '<divicon style="height:1em;width:1em;'
-            + 'display:flex;align-items:center;justify-content:center;">'
-            + '<div class="orderStat" style="font-size:0.6em;font-weight:800;overflow:hidden;'
-            + 'color:' + args.style.themeColor + '; ">A</div></divicon>';
-        args.htmlParts.playBtnHtml = '<divicon style="background:' + args.style.playBtnColor + ';'
-            + 'border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.1em;height:0.5em;"></div>'
-            + '<div style="width:0;height:0;border-left:0.5em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '</divicon>';
-        args.htmlParts.pauseBtnHtml = '<divicon style="background:' + args.style.playBtnColor + ';'
-            + 'border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.17em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="width:0.16em;height:0.5em;background:transparent;"></div>'
-            + '<div style="width:0.17em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '</divicon>';
-        args.htmlParts.prevBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.1em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="width:0;height:0;border-right:0.4em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '</divicon>';
-        args.htmlParts.nextBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0;height:0;border-left:0.4em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '<div style="width:0.1em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '</divicon>';
-        args.htmlParts.volBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.16em;height:0.24em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="width:0;height:0.24em;border-right:0.24em solid ' + args.style.themeColor + ';'
-            + 'box-sizing:content-box;'
-            + 'border-top:0.13em solid transparent;border-bottom:0.13em solid transparent;"></div>'
-            + '<div style="width:0.1em;height:0.5em;"></div>'
-            + '</divicon>';
-        args.htmlParts.listItem = '<div class="item"></div>';
-        args.htmlParts.main = '\
-        <div class="audiobox"><audio></audio>                   \
-        <div class="musebar"><div class="mediaName"></div>      \
-        <div class="ctrlline">                                  \
-        <div class="icon prevBtn">' + args.htmlParts.prevBtnHtml + '</div>   \
-        <div class="icon playBtn">' + args.htmlParts.playBtnHtml + '</div>   \
-        <div class="icon nextBtn">' + args.htmlParts.nextBtnHtml + '</div>   \
-        <div class="icon volBtn">' + args.htmlParts.volBtnHtml + '</div>     \
-        <div class="volSlider"></div></div>                         \
-        <div class="progline"><div class="timeSlider"></div></div>  \
-        <div class="ctrlline"><div class="icon orderBtn">' + args.htmlParts.orderBtnHtml + '</div>\
-        <div class="mediaTime">00:00/00:00</div></div></div>        \
-        <div class="listTable"><div class="mediaList"></div></div>  \
-        </div>\
-        ';
-    }
-    args.htmlParts.fix = insertStyleHtml(args.box, args.htmlParts.style, args.htmlParts.main);
+
+    let shadow_module = html_to_shadow(args.html)
+    args.box.appendChild(shadow_module)
+    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
 
     let oriPlayList = [], playList = []; // playList [/x/x/x, /x/x/x, ...]
     let playPos = 0, playOrder = "Ascend", currentPath = "", currentName = "", currentVolume = 1;
     let cTime = 0;
-    let backdrop = args.box.querySelector(".audiobox");
+    let backdrop = shadow_module.shadowRoot.querySelector(".audiobox");
     let media = backdrop.querySelector('audio');
     let mediaBar = backdrop.querySelector(".musebar");
     let orderBtn = mediaBar.querySelector(".orderBtn");
@@ -191,9 +110,10 @@ function MusicPlayer(opts = {}) {
     let volBtn = mediaBar.querySelector(".volBtn");
     let mediaName = mediaBar.querySelector(".mediaName");
     let mediaTime = mediaBar.querySelector(".mediaTime");
-    let mediaList = args.box.querySelector('.mediaList');
+    let mediaList = shadow_module.shadowRoot.querySelector('.mediaList');
     let timeSlider = SliderBar({
         box: mediaBar.querySelector(".timeSlider"),
+        html: args.slider_html,
         sliderColor: args.style.timeSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -204,6 +124,7 @@ function MusicPlayer(opts = {}) {
     });
     let volSlider = SliderBar({
         box: mediaBar.querySelector(".volSlider"),
+        html: args.slider_html,
         sliderColor: args.style.volSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -242,6 +163,16 @@ function MusicPlayer(opts = {}) {
         volSlider.updateCurrent(media.volume);
     };
 
+    function set_play_button(play=true){
+        if (play) {
+            playBtn.querySelector(".playBtn_icon").style.display = "block";
+            playBtn.querySelector(".pauseBtn_icon").style.display = "none";
+        } else {
+            playBtn.querySelector(".playBtn_icon").style.display = "none";
+            playBtn.querySelector(".pauseBtn_icon").style.display = "block";
+        }
+    }
+
     function playThis(path = "") {
         let tmpPos = playList.indexOf(path);
         if (tmpPos != -1)
@@ -251,7 +182,7 @@ function MusicPlayer(opts = {}) {
         console.log('play: ', currentName);
         media.src = args.params.pathToUrl(path);
         media.play();
-        playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.pauseBtnHtml);
+        set_play_button(false);
         volSlider.updateCurrent(media.volume);
     }
     function playPause() {
@@ -260,11 +191,11 @@ function MusicPlayer(opts = {}) {
             playThis(playList[playPos]);
         } else if (media.paused) {
             media.play();
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.pauseBtnHtml);
+            set_play_button(false);
             volSlider.updateCurrent(media.volume);
         } else {
             media.pause();
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.playBtnHtml);
+            set_play_button(true);
             volSlider.updateCurrent(media.volume);
         }
     }
@@ -298,7 +229,7 @@ function MusicPlayer(opts = {}) {
             media.currentTime = 0;
             timeSlider.updateBuffer(0);
             timeSlider.updateCurrent(0);
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.playBtnHtml);
+            set_play_button(true);
             args.params.stopCallBack();
         } catch (err) { console.log(err); }
     }
@@ -308,7 +239,7 @@ function MusicPlayer(opts = {}) {
         else {
             media.currentTime = time;
             media.play();
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.pauseBtnHtml);
+            set_play_button(false);
             timeSlider.updateCurrent(media.currentTime / media.duration);
             mediaTime.innerText = formatTime(media.currentTime) + ' / ' + formatTime(media.duration);
         }
@@ -416,8 +347,11 @@ function MusicPlayer(opts = {}) {
 
 function VideoPlayer(opts = {}) {
     let args = {
-        box: ("box" in opts) ? opts.box : document.createElement('div'),
+        box: opts.box,
+        html: opts.html,
+        slider_html: opts.slider_html,
         params: {
+            enMediaName: false,
             forwardStep: 5, infoTime: 5000, autoRotate: true,
             stopCallBack: () => { }, pathToUrl: (path) => "",
         },
@@ -425,154 +359,20 @@ function VideoPlayer(opts = {}) {
             basicSize: "14px", backColor: "#000", themeColor: "#fff",
             playBtnColor: "#aeb", ctrlBackColor: "rgba(0,0,0,0)",
             volSliderColor: "#ddd", timeSliderColor: "#ddd", sliderBufferColor: "#aaa",
-            enMediaName: false,
-        },
-        htmlParts: {
-            style: "", main: "", fix: (str) => "",
         },
     }
     for (let key in opts) if (key in args.style) args.style[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
-    {
-        args.htmlParts.style = '\
-            .videobox {position:absolute;width:100%;height:100%;\
-                background:' + args.style.backColor + ';font-size:' + args.style.basicSize + ';}\
-            .videobox video {position:absolute;outline:none;;width:100%;height:100%}\
-            .launchBottom {position:absolute;width:100%;height:5em;bottom:0;}\
-            .musebar {position:absolute;width:100%;bottom:0;box-sizing:border-box;\
-                outline:none;padding:0.8em;background:' + args.style.ctrlBackColor + ';}\
-            .progline {display:flex;align-items:center;padding:0 0.6em;}\
-            .progline .timeSlider {flex:auto;}\
-            .progline .mediaTime {padding-left:1em;font-weight:600;color:' + args.style.themeColor + ';}\
-            .ctrlline {display:flex;align-items:center;padding:0 0.8em;}\
-            .ctrlline .volSlider {flex-shrink:0;width:4em;}\
-            .ctrlline .mediaName {font-weight:600;flex:auto;text-align:center;\
-                white-space:nowrap;overflow-y:hidden;overflow-x:auto;color:' + args.style.themeColor + ';}\
-            .ctrlline .seperator {margin-left:auto;height:1em;}\
-            .ctrlline .speedPop {position:absolute;width:3.6em;border-radius:0.3em;\
-                background:' + args.style.backColor + ';\
-                transform: translate(-3em, -13.6em);display:none;}\
-            .ctrlline .stext {font-weight:600;text-align:center;\
-                color: ' + args.style.themeColor + ';padding:0.2em;}\
-            .ctrlline .icon {font-size:2em;cursor:pointer;}\
-            ';
-        args.htmlParts.orderBtnHtml = '<divicon style="height:1em;width:1em;'
-            + 'display:flex;align-items:center;justify-content:center;">'
-            + '<div class="orderStat" style="font-size:0.6em;font-weight:800;overflow:hidden;'
-            + 'color:' + args.style.themeColor + '; ">A</div></divicon>';
-        args.htmlParts.playBtnHtml = '<divicon style="background:' + args.style.playBtnColor + ';'
-            + 'border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.1em;height:0.5em;"></div>'
-            + '<div style="width:0;height:0;border-left:0.5em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '</divicon>';
-        args.htmlParts.pauseBtnHtml = '<divicon style="background:' + args.style.playBtnColor + ';'
-            + 'border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.17em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="width:0.16em;height:0.5em;background:transparent;"></div>'
-            + '<div style="width:0.17em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '</divicon>';
-        args.htmlParts.prevBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.1em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="width:0;height:0;border-right:0.4em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '</divicon>';
-        args.htmlParts.nextBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0;height:0;border-left:0.4em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '<div style="width:0.1em;height:0.5em;background:' + args.style.themeColor + ';"></div>'
-            + '</divicon>';
-        args.htmlParts.volBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0.16em;height:0.24em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="width:0;height:0.24em;border-right:0.24em solid ' + args.style.themeColor + ';'
-            + 'box-sizing:content-box;'
-            + 'border-top:0.13em solid transparent;border-bottom:0.13em solid transparent;"></div>'
-            + '<div style="width:0.1em;height:0.5em;"></div>'
-            + '</divicon>';
-        args.htmlParts.fullBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="border:0.05em solid transparent;padding:0.15em;">'
-            + '<div style="height:0.2em;width:0.5em;display:flex;'
-            + 'justify-content:flex-start;align-items:flex-start;">'
-            + '<div style="height:0.2em;width:0.05em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="height:0.05em;width:0.15em;background:' + args.style.themeColor + ';"></div></div>'
-            + '<div style="height:0.1em;width:0.5em;"></div>'
-            + '<div style="height:0.2em;width:0.5em;display:flex;'
-            + 'justify-content:flex-end;align-items:flex-end;">'
-            + '<div style="height:0.05em;width:0.15em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="height:0.2em;width:0.05em;background:' + args.style.themeColor + ';"></div></div>'
-            + '</div></divicon>';
-        args.htmlParts.noFullBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="border:0.05em solid transparent;padding:0.15em;">'
-            + '<div style="height:0.2em;width:0.5em;display:flex;'
-            + 'justify-content:flex-start;align-items:flex-end;">'
-            + '<div style="height:0.05em;width:0.15em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="height:0.2em;width:0.05em;background:' + args.style.themeColor + ';"></div></div>'
-            + '<div style="height:0.1em;width:0.5em;"></div>'
-            + '<div style="height:0.2em;width:0.5em;display:flex;'
-            + 'justify-content:flex-end;align-items:flex-start;">'
-            + '<div style="height:0.2em;width:0.05em;background:' + args.style.themeColor + ';"></div>'
-            + '<div style="height:0.05em;width:0.15em;background:' + args.style.themeColor + ';"></div></div>'
-            + '</div></divicon>';
-        args.htmlParts.backwardBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0;height:0;border-right:0.25em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '</divicon>';
-        args.htmlParts.forwardBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="width:0;height:0;border-left:0.25em solid ' + args.style.themeColor + ';'
-            + 'border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;"></div>'
-            + '</divicon>';
-        args.htmlParts.subtitleBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;'
-            + 'flex-direction: column;">'
-            + '<div style="width:0.5em;height:0.1em;background:' + args.style.themeColor + '";></div>'
-            + '<div style="width:0.5em;height:0.1em;background:transparent";></div>'
-            + '<div style="width:0.5em;height:0.1em;background:' + args.style.themeColor + '";></div>'
-            + '<div style="width:0.5em;height:0.1em;background:transparent";></div>'
-            + '<div style="width:0.5em;height:0.1em;background:' + args.style.themeColor + '";></div>'
-            + '</divicon>';
-        args.htmlParts.speedBtnHtml = '<divicon style="background:transparent;border-radius:50%;'
-            + 'display:flex;align-items:center;justify-content:center;height:1em;width:1em;">'
-            + '<div style="color:' + args.style.themeColor + ';font-size:0.5em;">SS</div>'
-            + '</divicon>';
-        args.htmlParts.main = '\
-            <div class="videobox"><video><track src default/></video> \
-            <div class="launchBottom"></div>                \
-            <div class="musebar"><div class="progline">     \
-            <div class="timeSlider"></div>                  \
-            <div class="mediaTime">00:00/00:00</div></div>  \
-            <div class="ctrlline">                          \
-            <div class="icon playBtn">' + args.htmlParts.playBtnHtml + '</div>   \
-            <div class="icon volBtn">' + args.htmlParts.volBtnHtml + '</div>     \
-            <div class="volSlider"></div>                   \
-            <div class="mediaName"></div>                   \
-            <div class="icon seperator"></div>              \
-            <div class="icon subtitleBtn">' + args.htmlParts.subtitleBtnHtml + '</div>   \
-            <div class="icon speedBtn">' + args.htmlParts.speedBtnHtml + '</div>   \
-            <div style="position: relative;"><div class="speedPop">\
-            <div class="stext">2.0x</div><div class="stext">1.5x</div>\
-            <div class="stext">1.25x</div><div class="stext">1.0x</div>\
-            <div class="stext">0.75x</div><div class="stext">0.5x</div>\
-            </div></div>\
-            <div class="icon fullBtn">' + args.htmlParts.fullBtnHtml + '</div>   \
-            </div></div></div>\
-            ';
-    }
-    args.htmlParts.fix = insertStyleHtml(args.box, args.htmlParts.style, args.htmlParts.main);
+
+    let shadow_module = html_to_shadow(args.html)
+    args.box.appendChild(shadow_module)
+    for (let key in args.styles) args.box.setProperty('--' + key, args.styles[key]);
 
     let timeoutHandler;
     let isFullScreen = false;
     let currentName = "", currentVolume = 1;
     let cTime = 0;
-    let backdrop = args.box.querySelector(".videobox");
+    let backdrop = shadow_module.shadowRoot.querySelector(".videobox");
     let media = backdrop.querySelector('video');
     let mediaBar = backdrop.querySelector(".musebar");
     let launchBottom = backdrop.querySelector(".launchBottom");
@@ -586,6 +386,7 @@ function VideoPlayer(opts = {}) {
     let mediaTime = mediaBar.querySelector(".mediaTime");
     let timeSlider = SliderBar({
         box: mediaBar.querySelector(".timeSlider"),
+        html: args.slider_html,
         sliderColor: args.style.timeSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -596,6 +397,7 @@ function VideoPlayer(opts = {}) {
     });
     let volSlider = SliderBar({
         box: mediaBar.querySelector(".volSlider"),
+        html: args.slider_html,
         sliderColor: args.style.volSliderColor,
         bufferColor: args.style.sliderBufferColor,
         progressColor: args.style.themeColor,
@@ -660,17 +462,40 @@ function VideoPlayer(opts = {}) {
             speedPop.style.display = "none";
         };
     }
+
+    function set_play_button(play=true){
+        if (play) {
+            playBtn.querySelector(".playBtn_icon").style.display = "block";
+            playBtn.querySelector(".pauseBtn_icon").style.display = "none";
+        } else {
+            playBtn.querySelector(".playBtn_icon").style.display = "none";
+            playBtn.querySelector(".pauseBtn_icon").style.display = "block";
+        }
+    }
+    
+    function set_full_button(full=true){
+        if (full) {
+            fullBtn.querySelector(".fullBtn_icon").style.display = "block";
+            fullBtn.querySelector(".noFullBtn_icon").style.display = "none";
+        } else {
+            fullBtn.querySelector(".fullBtn_icon").style.display = "none";
+            fullBtn.querySelector(".noFullBtn_icon").style.display = "block";
+        }
+    }
+
     fullBtn.onclick = function () {
         if (isFullScreen) {
             isFullScreen = false;
-            fullBtn.innerHTML = args.htmlParts.fix(args.htmlParts.fullBtnHtml);
+            set_full_button(true);
             exitFullScreen();
         } else {
             isFullScreen = true;
-            fullBtn.innerHTML = args.htmlParts.fix(args.htmlParts.noFullBtnHtml);
+            set_full_button(false);
             enterFullScreen();
         }
     };
+
+
 
     function playThis(path = "") {
         currentName = path.slice(path.lastIndexOf("/") + 1);
@@ -678,17 +503,17 @@ function VideoPlayer(opts = {}) {
         media.src = args.params.pathToUrl(path);
         media.querySelector("track").src = args.params.pathToUrl(path + ".vtt");
         media.play();
-        playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.pauseBtnHtml);
+        set_play_button(false);
         volSlider.updateCurrent(media.volume);
     }
     function playPause() {
         if (media.paused) {
             media.play();
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.pauseBtnHtml);
+            set_play_button(false);;
             volSlider.updateCurrent(media.volume);
         } else {
             media.pause();
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.playBtnHtml);
+            set_play_button(true);
             volSlider.updateCurrent(media.volume);
         }
     }
@@ -701,8 +526,8 @@ function VideoPlayer(opts = {}) {
             media.currentTime = 0;
             timeSlider.updateBuffer(0);
             timeSlider.updateCurrent(0);
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.playBtnHtml);
-            fullBtn.innerHTML = args.htmlParts.fix(args.htmlParts.fullBtnHtml);
+            set_play_button(true);
+            set_full_button(true);
             args.params.stopCallBack();
         } catch (err) { console.log(err); }
     }
@@ -712,7 +537,7 @@ function VideoPlayer(opts = {}) {
         else {
             media.currentTime = time;
             media.play();
-            playBtn.innerHTML = args.htmlParts.fix(args.htmlParts.pauseBtnHtml);
+            set_play_button(false);
             timeSlider.updateCurrent(media.currentTime / media.duration);
             mediaTime.innerText = formatTime(media.currentTime) + ' / ' + formatTime(media.duration);
         }
@@ -726,7 +551,7 @@ function VideoPlayer(opts = {}) {
         media.playbackRate = speed;
     }
     function enterFullScreen() {
-        let de = args.box;
+        let de = shadow_module;
         let fn = function () { };
         // promise functions as requestFullscreen
         if (de.requestFullscreen)

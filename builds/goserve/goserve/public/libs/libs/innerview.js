@@ -1,70 +1,30 @@
+function html_to_shadow(module_html) {
+    let shadow_module = document.createElement('div')
+    shadow_module.attachShadow({mode: "open"})
+    shadow_module.shadowRoot.innerHTML = module_html
+    return shadow_module
+}
+
 function InnerViewer(opts = {}) {
     let args = {
-        box: ("box" in opts) ? opts.box : document.createElement('div'),
+        box: opts.box,
+        html: opts.html,
         params: {
 
         },
         style: {
-            basicSize: "12px", zIndex: 7, innerBoxWidth: "90%", innerBoxHeight: "90%",
-        },
-        htmlParts: {
-            style: "", main: "", fix: (str) => "",
+            basic_size: "12px", innerbox_zindex: 7, innerbox_width: "90%", innerbox_height: "90%",
         },
     }
     for (let key in opts) if (key in args.style) args.style[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
-    {
-        args.htmlParts.minIcon = "data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJ3aW5kb3ctbWluaW1pemUiIGNsYXNzPSJzdmctaW5saW5lLS1mYSBmYS13aW5kb3ctbWluaW1pemUgZmEtdy0xNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNDY0IDM1Mkg0OGMtMjYuNSAwLTQ4IDIxLjUtNDggNDh2MzJjMCAyNi41IDIxLjUgNDggNDggNDhoNDE2YzI2LjUgMCA0OC0yMS41IDQ4LTQ4di0zMmMwLTI2LjUtMjEuNS00OC00OC00OHoiLz48L3N2Zz4=";
-        args.htmlParts.maxIcon = "data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJleHBhbmQiIGNsYXNzPSJzdmctaW5saW5lLS1mYSBmYS1leHBhbmQgZmEtdy0xNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNDQ4IDUxMiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMCAxODBWNTZjMC0xMy4zIDEwLjctMjQgMjQtMjRoMTI0YzYuNiAwIDEyIDUuNCAxMiAxMnY0MGMwIDYuNi01LjQgMTItMTIgMTJINjR2ODRjMCA2LjYtNS40IDEyLTEyIDEySDEyYy02LjYgMC0xMi01LjQtMTItMTJ6TTI4OCA0NHY0MGMwIDYuNiA1LjQgMTIgMTIgMTJoODR2ODRjMCA2LjYgNS40IDEyIDEyIDEyaDQwYzYuNiAwIDEyLTUuNCAxMi0xMlY1NmMwLTEzLjMtMTAuNy0yNC0yNC0yNEgzMDBjLTYuNiAwLTEyIDUuNC0xMiAxMnptMTQ4IDI3NmgtNDBjLTYuNiAwLTEyIDUuNC0xMiAxMnY4NGgtODRjLTYuNiAwLTEyIDUuNC0xMiAxMnY0MGMwIDYuNiA1LjQgMTIgMTIgMTJoMTI0YzEzLjMgMCAyNC0xMC43IDI0LTI0VjMzMmMwLTYuNi01LjQtMTItMTItMTJ6TTE2MCA0Njh2LTQwYzAtNi42LTUuNC0xMi0xMi0xMkg2NHYtODRjMC02LjYtNS40LTEyLTEyLTEySDEyYy02LjYgMC0xMiA1LjQtMTIgMTJ2MTI0YzAgMTMuMyAxMC43IDI0IDI0IDI0aDEyNGM2LjYgMCAxMi01LjQgMTItMTJ6Ii8+PC9zdmc+";
-        args.htmlParts.exitIcon = "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTcgMTciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgY2xhc3M9InNpLWdseXBoIHNpLWdseXBoLWRlbGV0ZSI+PHBhdGggZD0iTTEyLjU2NiA4bDMuMDQ1LTMuMDQ0Yy40Mi0uNDIxLjQyLTEuMTAzIDAtMS41MjJMMTIuNTY2LjM4OWExLjA3OCAxLjA3OCAwIDAgMC0xLjUyMyAwTDcuOTk5IDMuNDMzIDQuOTU1LjM4OWExLjA3OCAxLjA3OCAwIDAgMC0xLjUyMyAwTC4zODggMy40MzRhMS4wNzQgMS4wNzQgMCAwIDAtLjAwMSAxLjUyMkwzLjQzMSA4IC4zODcgMTEuMDQ0YTEuMDc1IDEuMDc1IDAgMCAwIC4wMDEgMS41MjNsMy4wNDQgMy4wNDRjLjQyLjQyMSAxLjEwMi40MjEgMS41MjMgMGwzLjA0NC0zLjA0NCAzLjA0NCAzLjA0NGExLjA3NiAxLjA3NiAwIDAgMCAxLjUyMyAwbDMuMDQ1LTMuMDQ0Yy40Mi0uNDIxLjQyLTEuMTAzIDAtMS41MjNMMTIuNTY2IDh6IiBmaWxsPSIjNDM0MzQzIiBjbGFzcz0ic2ktZ2x5cGgtZmlsbCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+";
-        args.htmlParts.downIcon = "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgY2xhc3M9InNpLWdseXBoIHNpLWdseXBoLWVuZC1wYWdlIj48ZyBmaWxsPSIjNDM0MzQzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik04LjMyNyAxMS44ODZsNC40NDctNC45NGEuNjUuNjUgMCAwIDAtLjAwMi0uODQ5bC0yLjg0MS0uMDA1VjEuMDY4YzAtLjU1My0uNDM3LTEtLjk3Ni0xSDcuMDA0YS45ODcuOTg3IDAgMCAwLS45NzYgMXY1LjAybC0yLjk1LS4wMDVhLjY1Mi42NTIgMCAwIDAgLjAwNC44NDhsNC40ODUgNC45NTRhLjUwMS41MDEgMCAwIDAgLjc2LjAwMXpNMTMuOTE4IDE0LjgzNGMwIC41NTItLjQzNyAxLS45NzMgMUgzLjA1NmMtLjUzNyAwLS45NzMtLjQ0OC0uOTczLTFWMTRjMC0uNTUyLjQzNi0xIC45NzMtMWg5Ljg4OWMuNTM2IDAgLjk3My40NDguOTczIDF2LjgzNHoiIGNsYXNzPSJzaS1nbHlwaC1maWxsIi8+PC9nPjwvc3ZnPg==";
-        args.htmlParts.prevIcon = "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTcgMTciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgY2xhc3M9InNpLWdseXBoIHNpLWdseXBoLXRyaWFuZ2xlLWxlZnQiPjxwYXRoIGQ9Ik0zLjQ0NiAxMC4wNTJhMS40OSAxLjQ5IDAgMCAxIDAtMi4xMDRMOS44OSAxLjUwNmMuNTgxLS41ODIgMi4xMDMtLjgzOSAyLjEwMyAxdjEyLjk4OGMwIDEuOTAxLTEuNTIxIDEuNTgyLTIuMTAzIDEuMDAxbC02LjQ0NC02LjQ0M3oiIGZpbGw9IiM0MzQzNDMiIGNsYXNzPSJzaS1nbHlwaC1maWxsIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=";
-        args.htmlParts.nextIcon = "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTcgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgY2xhc3M9InNpLWdseXBoIHNpLWdseXBoLXRyaWFuZ2xlLXJpZ2h0Ij48cGF0aCBkPSJNNi4xMTMgMTUuNDk1Yy0uNTgyLjU4MS0yLjEwMy45LTIuMTAzLTEuMDAxVjEuNTA2YzAtMS44MzkgMS41MjEtMS41ODIgMi4xMDMtMWw2LjQ0NCA2LjQ0MmExLjQ5IDEuNDkgMCAwIDEgMCAyLjEwNGwtNi40NDQgNi40NDN6IiBmaWxsPSIjNDM0MzQzIiBjbGFzcz0ic2ktZ2x5cGgtZmlsbCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+";
-        args.htmlParts.style = '\
-        .innerBox {position:fixed;overflow:hidden;top:50%;left:50%;transform:translate(-50%,-50%);\
-            display:none;background:transparent;font-size:' + args.style.basicSize + ';\
-            width:' + args.style.innerBoxWidth + ';height:' + args.style.innerBoxHeight + ';\
-            z-index:' + args.style.zIndex + ';cursor:move;padding:1em;}\
-        .icontain {position:relative;overflow:hidden;width:100%;height:100%;background:#fff;\
-                border-radius:0.5em;box-shadow:0 0 0.5em 0 #888;cursor:default;}\
-        .header {position:absolute;top:0;right:0;left:0;}    \
-        .header .ctrlBar {float:right;display:flex;}    \
-        .header .ctrlBtn img {width:100%;height:100%;}\
-        .header .ctrlBtn {padding:0.9em;cursor:pointer;border-radius:0.5em;width:1em;height:1em;flex-shrink:0;}    \
-        .header .prevBtn:hover {background:#ccc;} .header .nextBtn:hover {background:#ccc;}    \
-        .header .minBtn:hover {background:#fe7;} .header .maxBtn:hover {background:#8f7;}    \
-        .header .downBtn:hover {background:#8cf;} .header .exitBtn:hover {background:#f87;}    \
-        .header .title {padding:0.6em;cursor:move;overflow:hidden;white-space:nowrap;font-weight:600;color:#000;}\
-        .content {position:absolute;top:3em;right:0;bottom:0;left:0;overflow:hidden;}\
-        .resizeTop {position:absolute;height:0.5em;width:100%;top:0.5em;left:0.5em;cursor:n-resize;}\
-        .resizeBottom {position:absolute;height:0.5em;width:100%;bottom:0.5em;left:0.5em;cursor:s-resize;}\
-        .resizeLeft {position:absolute;height:100%;width:0.5em;top:0.5em;left:0.5em;cursor:w-resize;}\
-        .resizeRight {position:absolute;height:100%;width:0.5em;top:0.5em;right:0.5em;cursor:e-resize;}\
-        .resizeTopLeft {position:absolute;height:0.5em;width:0.5em;top:0.5em;left:0.5em;cursor:nw-resize;}\
-        .resizeTopRight {position:absolute;height:0.5em;width:0.5em;top:0.5em;right:0.5em;cursor:ne-resize;}\
-        .resizeBottomLeft {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;left:0.5em;cursor:sw-resize;}\
-        .resizeBottomRight {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;right:0.5em;cursor:se-resize;}\
-        ';
-        args.htmlParts.main = '\
-        <div class="innerBox"><div class="icontain">\
-        <div class="header"><div class="ctrlBar">\
-        <div class="ctrlBtn prevBtn"><img src="' + args.htmlParts.prevIcon + '"/></div>\
-        <div class="ctrlBtn nextBtn"><img src="' + args.htmlParts.nextIcon + '"/></div>\
-        <div class="ctrlBtn downBtn"><img src="' + args.htmlParts.downIcon + '"/></div>\
-        <div class="ctrlBtn minBtn"><img src="' + args.htmlParts.minIcon + '"/></div>\
-        <div class="ctrlBtn maxBtn"><img src="' + args.htmlParts.maxIcon + '"/></div>\
-        <div class="ctrlBtn exitBtn"><img src="' + args.htmlParts.exitIcon + '"/></div>\
-        </div><div class="title"></div></div><div class="content"></div></div>\
-        <div class="resizeTop"></div><div class="resizeBottom"></div>\
-        <div class="resizeLeft"></div><div class="resizeRight"></div>\
-        <div class="resizeTopLeft"></div><div class="resizeTopRight"></div>\
-        <div class="resizeBottomLeft"></div><div class="resizeBottomRight"></div>\
-        </div>';
-    }
-    args.htmlParts.fix = insertStyleHtml(args.box, args.htmlParts.style, args.htmlParts.main);
 
-    let container = args.box.querySelector(".innerBox");
-    let icontain = args.box.querySelector(".icontain");
+    let shadow_module = html_to_shadow(args.html)
+    args.box.appendChild(shadow_module)
+    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+
+    let container = shadow_module.shadowRoot.querySelector(".innerBox");
+    let icontain = shadow_module.shadowRoot.querySelector(".icontain");
     let content = container.querySelector(".content");
     let header = container.querySelector(".header");
     let titleBar = header.querySelector(".title");
@@ -287,6 +247,7 @@ function InnerViewer(opts = {}) {
     }
 
     return {
+        module: shadow_module,
         getArgs: () => { return args; },
         setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         setView: setView,
@@ -297,3 +258,143 @@ function InnerViewer(opts = {}) {
         isFree: isFree,
     }
 }
+
+
+function InnerManager(opts = {}) {
+    let args = {
+        box: opts.box,
+        html: opts.html,
+        innerview_html: opts.innerview_html,
+        params: {
+        },
+        style: {
+            basic_size: "12px", zindex_min: 9, zindex_max: 100,
+        },
+    }
+    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.params) args.params[key] = opts[key];
+
+    let shadow_module = html_to_shadow(args.html)
+    args.box.appendChild(shadow_module)
+    for (let key in args.styles) args.box.style.setProperty('--' + key, args.styles[key]);
+
+    let itemsample = shadow_module.shadowRoot.querySelector(".minitem");
+    itemsample.remove()
+
+    let innerViewList = []; // {innerView, zIndex}
+    let maxZIndex = args.style.zindex_min;
+    let icontain = shadow_module.shadowRoot.querySelector(".viewlist");
+
+    function newView(width = "90%", height = "90%") {
+        function upperZIndex(iView) {
+            function cleanZIndex() {
+                let zIndexs = innerViewList.map(function (item) { return item.zIndex; });
+                zIndexs.sort(function (a, b) { return a - b; }); // min to max
+                innerViewList.forEach(function (item) {
+                    item.zIndex = zIndexs.indexOf(item.zIndex) + args.style.zindex_min + 1;
+                    item.innerView.setZIndex(item.zIndex);
+                });
+                maxZIndex = zIndexs.length + args.style.zindex_min;
+            }
+
+            if (maxZIndex > (args.style.zindex_max - 5)) {
+                cleanZIndex();
+            }
+            innerViewList.forEach(function (item) {
+                if (item.innerView == iView) {
+                    if (item.zIndex != maxZIndex) {
+                        maxZIndex += 1;
+                        item.zIndex = maxZIndex;
+                        item.innerView.setZIndex(item.zIndex);
+                    }
+                }
+            });
+        }
+        // choose the free innerView, use maxInd to avoid code error causing while(true)
+        let ind = 0, len = innerViewList.length;
+        let maxInd = args.style.zindex_max - args.style.zindex_min - 5;
+        while (ind < maxInd && (len == ind || innerViewList[ind].innerView.isFree() == false)) {
+            if (len <= ind) {
+                innerViewList.push({
+                    innerView: InnerViewer({ 
+                        box: document.body.appendChild(document.createElement('div')),
+                        html: args.innerview_html,
+                        basic_size: args.style.basic_size,
+                    }),
+                    zIndex: 0,
+                });
+                len = innerViewList.length;
+            } else {
+                ind += 1;
+            }
+        }
+        maxZIndex += 1;
+        let ivobj = innerViewList[ind];
+        Array.prototype.slice.call(icontain.children).forEach((it) => {
+            if (it.iview == ivobj.innerView)
+                it.remove();
+        });
+        ivobj.zIndex = maxZIndex;
+        // use draw blank to keep iview occupied
+        let btns = ivobj.innerView.draw(document.createElement("div"), "blank", []);
+        ivobj.innerView.hide("hide");
+        ivobj.innerView.setView(width, height);
+        ivobj.innerView.setZIndex(ivobj.zIndex);
+        btns.minBtn.iview = ivobj.innerView;
+        btns.container.iview = ivobj.innerView;
+        btns.minBtn.onclick = function (evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
+            let item = itemsample.cloneNode(true);
+            item.innerText = btns.titleBar.innerText;
+            item.iview = this.iview;
+            item.iview.hide("hide");
+            item.onclick = function (evt) {
+                evt.cancelBubble = true;
+                evt.returnValue = false;
+                let item = this;
+                item.iview.hide("show");
+                Array.prototype.slice.call(item.parentNode.children).forEach((it) => {
+                    if (it.iview == item.iview)
+                        it.remove();
+                });
+                upperZIndex(item.iview);
+                item.remove();
+            };
+            icontain.appendChild(item);
+        }
+        btns.container.onclick = function (evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
+            upperZIndex(this.iview);
+        }
+        return ivobj.innerView;
+    }
+
+    function buildView(opts = {}) {
+        let defopts = {
+            width: "90%", height: "90%", title: "", btnShow: ["min", "max", "exit"],
+            prev: () => { }, next: () => { }, down: () => { }, exit: () => { },
+        }
+        for (let key in opts) if (key in defopts) defopts[key] = opts[key];
+        let ibox = ("box" in opts && opts.box) ? opts.box : document.createElement('div');
+        let iview = newView(defopts.width, defopts.height);
+        let itools = iview.draw(ibox, defopts.title, defopts.btnShow);
+        iview.hide("hide");
+        itools.prevBtn.onclick = () => { defopts.prev(); };
+        itools.nextBtn.onclick = () => { defopts.next(); };
+        itools.downBtn.onclick = () => { defopts.down(); };
+        itools.exitBtn.onclick = () => { defopts.exit(); };
+        return {
+            ibox: ibox, iview: iview, itools: itools,
+        }
+    }
+
+    return {
+        getArgs: () => { return args; },
+        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
+        newView: newView,
+        buildView: buildView,
+    }
+}
+

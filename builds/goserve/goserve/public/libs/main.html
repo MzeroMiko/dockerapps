@@ -63,7 +63,7 @@
 
             div.headline {
                 position:fixed;
-                z-index: 100;
+                z-index: 2;
                 top:5px;
                 right:5px;
                 left:5px;
@@ -99,8 +99,8 @@
         </style>
         <div class="headline">
             <style>
-                /* .mainBox.ID1424340480253{overflow:hidden;position:absolute;top:0;right:0;bottom:0;left:0;            font-size:14px;}  */
-                /* .viewBox.ID1424340480253{overflow:hidden;position:absolute;top:3em;right:0;bottom:0;left:0;}  */
+                /* .mainBox {overflow:hidden;position:absolute;top:0;right:0;bottom:0;left:0;            font-size:14px;}  */
+                /* .viewBox {overflow:hidden;position:absolute;top:3em;right:0;bottom:0;left:0;}  */
                 .head_title{
                     float:left;
                     padding:0 0.5em;
@@ -374,6 +374,8 @@
             <div class="flows"></div>
         </div>
     </div>
+
+
     <!-- htmlstore is a storage for html components. in js script, you may refer to the component and insert to the right place. -->
     <htmlstore style="display: none;">
         <module class="pie_progress">
@@ -592,10 +594,10 @@
         <module class="innerview">
             <style>
                 :host {
-                    --basic_size: 14px;
-                    --innerbox_width: 1px;
-                    --innerbox_height: 1px;
-                    --innerbox_zindex: 9;
+                    --basic_size: 12px;
+                    --innerbox_width: 90%;
+                    --innerbox_height: 90%;
+                    --innerbox_zindex: 7;
                 }
                 .innerBox {
                     position:fixed;
@@ -616,8 +618,35 @@
                         border-radius:0.5em;box-shadow:0 0 0.5em 0 #888;cursor:default;}
                 .header {position:absolute;top:0;right:0;left:0;}
                 .header .ctrlBar {float:right;display:flex;} 
-                .header .ctrlBtn img {width:100%;height:100%;}
-                .header .ctrlBtn {padding:0.9em;cursor:pointer;border-radius:0.5em;width:1em;height:1em;flex-shrink:0;}
+                /* .header .ctrlBtn img {width:100%;height:100%;} */
+                .header .ctrlBtn {
+                    padding:0.9em;
+                    cursor:pointer;
+                    border-radius:0.5em;
+                    width:1em;
+                    height:1em;
+                    flex-shrink:0;
+                    font-family: "iconfont";
+                    font-size: 1em;
+                }
+                .header .prevBtn::before {
+                    content: "\e794";
+                }
+                .header .nextBtn::before {
+                    content: "\e793";
+                }
+                .header .minBtn::before {
+                    content: "\e612";
+                }
+                .header .maxBtn::before {
+                    content: "\e795";
+                }
+                .header .downBtn::before {
+                    content: "\e6a4";
+                }
+                .header .exitBtn::before {
+                    content: "\e60a";
+                }
                 .header .prevBtn:hover {background:#ccc;} .header .nextBtn:hover {background:#ccc;}
                 .header .minBtn:hover {background:#fe7;} .header .maxBtn:hover {background:#8f7;}
                 .header .downBtn:hover {background:#8cf;} .header .exitBtn:hover {background:#f87;}
@@ -637,22 +666,16 @@
                     <div class="header">
                         <div class="ctrlBar">
                             <div class="ctrlBtn prevBtn">
-                                <img src="' + args.htmlParts.prevIcon + '"/>
                             </div>
                             <div class="ctrlBtn nextBtn">
-                                <img src="' + args.htmlParts.nextIcon + '"/>
                             </div>
                             <div class="ctrlBtn downBtn">
-                                <img src="' + args.htmlParts.downIcon + '"/>
                             </div>
                             <div class="ctrlBtn minBtn">
-                                <img src="' + args.htmlParts.minIcon + '"/>
                             </div>
                             <div class="ctrlBtn maxBtn">
-                                <img src="' + args.htmlParts.maxIcon + '"/>
                             </div>
                             <div class="ctrlBtn exitBtn">
-                                <img src="' + args.htmlParts.exitIcon + '"/>
                             </div>
                         </div>
                         <div class="title"></div>
@@ -668,6 +691,441 @@
                 <div class="resizeBottomLeft"></div>
                 <div class="resizeBottomRight"></div>
                 
+            </div>
+        </module>
+        <module class="innerview_manager">
+            <style>
+                :host {
+                    --basic_size: "12px"; 
+                    --zindex_min: 9; 
+                    --zindex_max: 100;
+                }
+                .viewlist {z-index: var(--zindex_min);position:fixed;bottom:1%;left:1%;
+                max-width:98%;overflow:auto;background:transparent;white-space:nowrap;
+                font-size: var(--basic_size);}
+                .minitem {display:inline-block;width:6em;height:100%;border-radius:0.3em;margin:0 0.1em;
+                    padding:0.4em;box-sizing:border-box;text-align:center;font-weight:500;
+                    cursor:pointer;overflow:hidden;text-overflow:ellipsis;background:#fff;
+                    border:solid 2px #ccc;}
+            </style>
+            <div class="viewlist"><div class="minitem"></div></div>
+        </module>
+        <module class="slidebar">
+            <style>
+                :host {
+                    --basicSize: 2px;
+                    --pointSize: 5em;
+                    --sliderColor: "#ddd"; 
+                    --bufferColor: "#aaa"; 
+                    --progressColor: "#2d3",
+                }
+                .sliderBar {
+                    overflow:hidden;
+                    width:100%;
+                }
+                .contain {
+                    padding:2em 0;
+                    margin:0 2em;
+                    cursor:pointer;
+                    font-size: var(--basicSize);
+                }
+                .slider {
+                    position:relative;
+                    height:1em;
+                    border-radius:0.5em;
+                    background: var(--sliderColor);
+                }
+                .buffer {
+                    height:1em;
+                    width:0%;
+                    border-radius:0.5em;
+                    background:var(--bufferColor);
+                }
+                .prog {
+                    height:1em;
+                    width:0%;
+                    transform:translate(0,-1em);
+                    border-radius:0.5em;
+                    background:var(--progressColor);
+                }
+                .point {
+                    position:absolute;
+                    height: var(--pointSize);
+                    width: var(--pointSize);
+                    transform:
+                        translate(calc(0 - var(--pointSize) / 2), calc(0 - (var(--pointSize) + 3) / 2)); 
+                    border-radius:50%;
+                    background:var(--progressColor);
+                }
+            </style>
+            
+            <div class="sliderBar">
+                <div class="contain">
+                    <div class="slider">
+                        <div class="buffer"></div>
+                        <div class="prog"></div>
+                        <div class="point"></div>
+                    </div>
+                </div>
+            </div>
+        </module>
+        <module class="musicplayer">
+            <style>
+                :host {
+                    --basicSize: "14px"; 
+                    --backColor: "#bcd"; 
+                    --themeColor: "#fff";
+                    --playBtnColor: "#aeb"; 
+                    --ctrlBackColor: "rgba(0,0,0,0)"; 
+                    --listColor: "#222";
+                    --volSliderColor: "#ddd"; 
+                    --timeSliderColor: "#ddd"; 
+                    --sliderBufferColor: "#aaa";
+                    --listItemColor: "rgba(255,255,255,0.2)"; 
+                    --listItemHover: "rgba(196,196,196,0.75)";
+                }
+                .audiobox {position:absolute;display:flex;flex-direction:column;width:100%;height:100%;
+                    background:var(--backColor);font-size:var(--basicSize);}
+                .musebar {position:relative;width:100%;top:0;box-sizing:border-box;
+                    outline:none;padding:0.8em;background:var(--ctrlBackColor);}
+                .progline {padding:0.6em;} .timeSlider {flex:auto;}
+                .ctrlline {display:flex;align-items:center;padding:0 0.8em;}
+                .ctrlline .icon {font-size:2em;cursor:pointer;}
+                .volBtn {margin-left:auto;}
+                .volSlider {flex-shrink:0;width:4em;}
+                .mediaTime {margin-left:auto;padding-left:1em;font-weight:600;color:var(--themeColor);}
+                .mediaName {font-weight:600;padding:0.4em 0.8em 0.8em 0.8em;white-space:nowrap;
+                    overflow:hidden;color:var(--themeColor);}
+                .listTable {position:relative;box-sizing:border-box;width:100%;flex:1;overflow:auto;}
+                .mediaList {padding-bottom:3em;font-size:0.8em;font-weight:500;}
+                .mediaList .item {width:100%;padding:0.6em 1em;box-sizing:border-box;
+                    cursor:pointer;overflow:hidden;color:var(--listColor);
+                    border-top:1px solid rgba(0, 0, 0, 0.125);background:var(--listItemColor);}
+                .mediaList .item:hover { background:var(--listItemHover); }
+            </style>
+            <style>
+                divicon.orderBtn_icon, divicon.playBtn_icon, divicon.pauseBtn_icon, divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
+                    display:flex;align-items:center;justify-content:center;height:1em;width:1em;
+                }
+                divicon.orderBtn_icon .orderStat {
+                    font-size:0.6em;font-weight:800;overflow:hidden;color:var(--themeColor);
+                }
+                divicon.playBtn_icon {
+                    background:var(--playBtnColor);
+                    border-radius:50%;
+                }
+                divicon.playBtn_icon .part1 {
+                    width:0.1em;height:0.5em;
+                }
+                divicon.playBtn_icon .part2 {
+                    width:0;height:0;border-left:0.5em solid var(--themeColor); 
+                    border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.pauseBtn_icon {
+                    background:var(--playBtnColor);border-radius:50%;
+                }
+                divicon.pauseBtn_icon .part1, divicon.pauseBtn_icon .part3 {
+                    width:0.17em;height:0.5em;background:var(--themeColor);
+                }
+                divicon.pauseBtn_icon .part2 {
+                    width:0.16em;height:0.5em;background:transparent;
+                }
+                divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
+                    background:transparent;border-radius:50%;
+                }
+                divicon.prevBtn_icon .part1, divicon.nextBtn_icon .part2 {
+                    width:0.1em;height:0.5em;background:var(--themeColor);
+                }
+                divicon.prevBtn_icon .part2 {
+                    width:0;height:0;border-right:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.nextBtn_icon .part1 {
+                    width:0;height:0;border-left:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.volBtn_icon .part1 {
+                    width:0.16em;height:0.24em;background:var(--themeColor);
+                }
+                divicon.volBtn_icon .part2 {
+                    width:0;height:0.24em;border-right:0.24em solid var(--themeColor);box-sizing:content-box;border-top:0.13em solid transparent;border-bottom:0.13em solid transparent;
+                }
+                divicon.volBtn_icon .part3 {
+                    width:0.1em;height:0.5em;
+                }
+            </style>
+            <div class="audiobox">
+                <audio></audio>                   
+                <div class="musebar">
+                    <div class="mediaName"></div>      
+                    <div class="ctrlline">                                  
+                        <div class="icon prevBtn">
+                            <divicon class="prevBtn_icon">
+                                <div class="part1"></div>
+                                <div class="part2"></div>
+                            </divicon>
+                        </div>   
+                        <div class="icon playBtn">
+                            <divicon class="playBtn_icon">
+                                <div class="part1"></div>
+                                <div class="part2"></div>
+                            </divicon>
+                            <divicon class="pauseBtn_icon">
+                                <div class="part1"></div>
+                                <div class="part2"></div>
+                                <div class="part3"></div>
+                            </divicon>
+                        </div>   
+                        <div class="icon nextBtn">
+                            <divicon class="nextBtn_icon">
+                                <div class="part1"></div>
+                                <div class="part2"></div>
+                            </divicon>
+                        </div>   
+                        <div class="icon volBtn">
+                            <divicon class="volBtn_icon">
+                                <div class="part1"></div>
+                                <div class="part2"></div>
+                                <div class="part3"></div>
+                            </divicon>
+                        </div>     
+                        <div class="volSlider"></div>
+                    </div>                         
+                    <div class="progline">
+                        <div class="timeSlider"></div>
+                    </div>  
+                    <div class="ctrlline">
+                        <div class="icon orderBtn">
+                            <divicon class="orderBtn_icon">
+                                <div class="orderStat">A</div>
+                            </divicon>
+                        </div>
+                        <div class="mediaTime">00:00/00:00</div>
+                    </div>
+                </div>        
+                <div class="listTable">
+                    <div class="mediaList"></div>
+                </div>  
+            </div>
+        </module>
+        <module class="videoplayer">
+            <style>
+                :host {
+                    --basicSize: "14px"; 
+                    --backColor: "#bcd"; 
+                    --themeColor: "#fff";
+                    --playBtnColor: "#aeb"; 
+                    --ctrlBackColor: "rgba(0,0,0,0)"; 
+                    --listColor: "#222";
+                    --volSliderColor: "#ddd"; 
+                    --timeSliderColor: "#ddd"; 
+                    --sliderBufferColor: "#aaa";
+                    --listItemColor: "rgba(255,255,255,0.2)"; 
+                    --listItemHover: "rgba(196,196,196,0.75)";
+                }
+                .videobox {
+                    position:absolute;width:100%;height:100%;
+                    background:var(--backColor);font-size:var(--basicSize);
+                }
+                .videobox video {position:absolute;outline:none;;width:100%;height:100%}
+                .launchBottom {position:absolute;width:100%;height:5em;bottom:0;}
+                .musebar {position:absolute;width:100%;bottom:0;box-sizing:border-box;
+                    outline:none;padding:0.8em;background:var(--ctrlBackColor);}
+                .progline {display:flex;align-items:center;padding:0 0.6em;}
+                .progline .timeSlider {flex:auto;}
+                .progline .mediaTime {padding-left:1em;font-weight:600;color:var(--themeColor);}
+                .ctrlline {display:flex;align-items:center;padding:0 0.8em;}
+                .ctrlline .volSlider {flex-shrink:0;width:4em;}
+                .ctrlline .mediaName {font-weight:600;flex:auto;text-align:center;
+                    white-space:nowrap;overflow-y:hidden;overflow-x:auto;color:var(--themeColor);}
+                .ctrlline .seperator {margin-left:auto;height:1em;}
+                .ctrlline .speedPop {position:absolute;width:3.6em;border-radius:0.3em;
+                    background:var(--backColor);
+                    transform: translate(-3em, -13.6em);display:none;}
+                .ctrlline .stext {font-weight:600;text-align:center;
+                    color: var(--themeColor);padding:0.2em;}
+                .ctrlline .icon {font-size:2em;cursor:pointer;}
+            </style>
+            <style>
+                divicon.orderBtn_icon, divicon.playBtn_icon, divicon.pauseBtn_icon, divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
+                    display:flex;align-items:center;justify-content:center;height:1em;width:1em;
+                }
+                divicon.orderBtn_icon .orderStat {
+                    font-size:0.6em;font-weight:800;overflow:hidden;color:var(--themeColor);
+                }
+                divicon.playBtn_icon {
+                    background:var(--playBtnColor);
+                    border-radius:50%;
+                }
+                divicon.playBtn_icon .part1 {
+                    width:0.1em;height:0.5em;
+                }
+                divicon.playBtn_icon .part2 {
+                    width:0;height:0;border-left:0.5em solid var(--themeColor); 
+                    border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.pauseBtn_icon {
+                    background:var(--playBtnColor);border-radius:50%;
+                }
+                divicon.pauseBtn_icon .part1, divicon.pauseBtn_icon .part3 {
+                    width:0.17em;height:0.5em;background:var(--themeColor);
+                }
+                divicon.pauseBtn_icon .part2 {
+                    width:0.16em;height:0.5em;background:transparent;
+                }
+                divicon.prevBtn_icon, divicon.nextBtn_icon, divicon.volBtn_icon {
+                    background:transparent;border-radius:50%;
+                }
+                divicon.prevBtn_icon .part1, divicon.nextBtn_icon .part2 {
+                    width:0.1em;height:0.5em;background:var(--themeColor);
+                }
+                divicon.prevBtn_icon .part2 {
+                    width:0;height:0;border-right:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.nextBtn_icon .part1 {
+                    width:0;height:0;border-left:0.4em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.volBtn_icon .part1 {
+                    width:0.16em;height:0.24em;background:var(--themeColor);
+                }
+                divicon.volBtn_icon .part2 {
+                    width:0;height:0.24em;border-right:0.24em solid var(--themeColor);box-sizing:content-box;border-top:0.13em solid transparent;border-bottom:0.13em solid transparent;
+                }
+                divicon.volBtn_icon .part3 {
+                    width:0.1em;height:0.5em;
+                }
+            </style>
+            <style>
+                divicon.fullBtn_icon, divicon.noFullBtn_icon, divicon.forwardBtn_icon, divicon.backwardBtn_icon, divicon.subtitleBtn_icon, divicon.speedBtn_icon {
+                    background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;height:1em;width:1em;
+                }
+                divicon.subtitleBtn_icon {
+                    flex-direction: column;
+                }
+                divicon.fullBtn_icon .part1, divicon.noFullBtn_icon .part1 {
+                    border:0.05em solid transparent;padding:0.15em;
+                }
+                divicon.fullBtn_icon .part2 {
+                    height:0.2em;width:0.5em;display:flex;justify-content:flex-start;align-items:flex-start;
+                }
+                divicon.fullBtn_icon .part3, divicon.fullBtn_icon .part8, divicon.noFullBtn_icon .part4, divicon.noFullBtn_icon .part7 {
+                    height:0.2em;width:0.05em;background:var(--themeColor);
+                }
+                divicon.fullBtn_icon .part4, divicon.fullBtn_icon .part7, divicon.noFullBtn_icon .part3, divicon.noFullBtn_icon .part8 {
+                    height:0.05em;width:0.15em;background:var(--themeColor);
+                }
+                divicon.fullBtn_icon .part5, divicon.noFullBtn_icon .part5 {
+                    height:0.1em;width:0.5em;
+                }
+                divicon.fullBtn_icon .part6 {
+                    height:0.2em;width:0.5em;display:flex;justify-content:flex-end;align-items:flex-end;
+                }
+                divicon.noFullBtn_icon .part2 {
+                    height:0.2em;width:0.5em;display:flex;justify-content:flex-start;align-items:flex-end;
+                }
+                divicon.noFullBtn_icon .part6 {
+                    height:0.2em;width:0.5em;display:flex;justify-content:flex-end;align-items:flex-start;
+                }
+                divicon.bacwardBtn_icon .part1 {
+                    width:0;height:0;border-right:0.25em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.forwardBtn_icon .part1 {
+                    width:0;height:0;border-left:0.25em solid var(--themeColor);border-top:0.25em solid transparent;border-bottom:0.25em solid transparent;
+                }
+                divicon.speedBtn_icon .part1 {
+                    color:var(--themeColor);font-size:0.5em;
+                }
+                divicon.subtitleBtn_icon .part1, divicon.subtitleBtn_icon .part3, divicon.subtitleBtn_icon .part5 {
+                    width:0.5em;height:0.1em;background:var(--themeColor);
+                }
+                divicon.subtitleBtn_icon .part2, divicon.subtitleBtn_icon .part4 {
+                    width:0.5em;height:0.1em;background:transparent;
+                }
+            </style>
+                <!-- <divicon class="bacwardBtn_icon"><div class="part1"></div></divicon>
+                <divicon class="forwardBtn_icon"><div class="part1"></div></divicon> -->
+            <div class="videobox">
+                    <video><track src default/></video>
+                    <div class="launchBottom"></div> 
+                    <div class="musebar">
+                        <div class="progline">
+                            <div class="timeSlider"></div>
+                            <div class="mediaTime">00:00/00:00</div>
+                        </div>
+                        <div class="ctrlline">
+                            <div class="icon playBtn">
+                                <divicon class="playBtn_icon">
+                                    <div class="part1"></div>
+                                    <div class="part2"></div>
+                                </divicon>
+                                <divicon class="pauseBtn_icon">
+                                    <div class="part1"></div>
+                                    <div class="part2"></div>
+                                    <div class="part3"></div>
+                                </divicon>
+                            </div>
+                            <div class="icon volBtn">
+                                <divicon class="volBtn_icon">
+                                    <div class="part1"></div>
+                                    <div class="part2"></div>
+                                    <div class="part3"></div>
+                                </divicon>
+                            </div>
+                            <div class="volSlider"></div>
+                            <div class="mediaName"></div>
+                            <div class="icon seperator"></div>
+                            <div class="icon subtitleBtn">
+                                <divicon class="subtitleBtn_icon">
+                                    <div class="part1"></div>
+                                    <div class="part2"></div>
+                                    <div class="part3"></div>
+                                    <div class="part4"></div>
+                                    <div class="part5"></div>
+                                </divicon>
+                            </div>
+                            <div class="icon speedBtn">
+                                <divicon class="speedBtn_icon">
+                                    <div class="part1">SS</div>
+                                </divicon>
+                            </div>
+                            <div style="position: relative;">
+                                <div class="speedPop">
+                                    <div class="stext">2.0x</div>
+                                    <div class="stext">1.5x</div>
+                                    <div class="stext">1.25x</div>
+                                    <div class="stext">1.0x</div>
+                                    <div class="stext">0.75x</div>
+                                    <div class="stext">0.5x</div>
+                                </div>
+                            </div>
+                            <div class="icon fullBtn">
+                                <divicon class="fullBtn_icon">
+                                    <div class="part1">
+                                        <div class="part2">
+                                            <div class="part3"></div>
+                                            <div class="part4"></div>
+                                        </div>
+                                        <div class="part5"></div>
+                                        <div class="part6">
+                                            <div class="part7"></div>
+                                            <div class="part8"></div>
+                                        </div>
+                                    </div>
+                                </divicon>
+                                <divicon class="noFullBtn_icon">
+                                    <div class="part1">
+                                        <div class="part2">
+                                            <div class="part3"></div>
+                                            <div class="part4"></div>
+                                        </div>
+                                        <div class="part5"></div>
+                                        <div class="part6">
+                                            <div class="part7"></div>
+                                            <div class="part8"></div>
+                                        </div>
+                                    </div>
+                                </divicon>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </module>
         <script type="text/javascript" src="./main.js"></script>
@@ -688,22 +1146,57 @@
                 return html
             }
 
+            // ========================================================
             let pie_progress_html = get_html_and_del("htmlstore module.pie_progress")
             let monitor_html = get_html_and_del("htmlstore module.monitor")
+            let innerview_html = get_html_and_del("htmlstore module.innerview")
+            let innerview_manager_html = get_html_and_del("htmlstore module.innerview_manager")
+            let slidebar_html = get_html_and_del("htmlstore module.slidebar")
+
+            // ========================================================
+            let imanager = InnerManager({ 
+                box: document.body.appendChild(document.createElement('div')), 
+                html: innerview_manager_html,
+                innerview_html: innerview_html,
+                zindex_min: 10, 
+                zindex_max: 100, 
+                basic_size: "12px",
+            });
+
+
+            // // ========================================================
+            // let innerview = new InnerViewer({
+            //     box: document.body.appendChild(document.createElement('div')),
+            //     html: innerview_html,
+            //     basic_size: "12px",
+            // })
+
+            // ========================================================
+            let isMonitorOpen = false
+            let monitor_box = imanager.buildView({
+                width: "90%", height: "90%", title: "monitor", btnShow: ["min", "max", "exit"],
+                exit: () => { monitor.close(); monitor_box.iview.hide("hide"); isMonitorOpen = false; },
+            });
+            let monitor = new MonitorView({
+                box: monitor_box.ibox,
+                html: monitor_html,
+                pie_html: pie_progress_html,
+                basic_size: "14px",
+                waitTime: 3000,
+                getMonitor: (callback) => { },
+            })
+
 
             let monitor_card = document.querySelector(".mainline .flows .card.monitor")
-            monitor_card.onclick = function () { 
-                new MonitorView({
-                    box: document.body.appendChild(document.createElement('div')),
-                    html: monitor_html,
-                    pie_html: pie_progress_html,
-                    basic_size: "14px",
-                    waitTime: 3000,
-                    getMonitor: (callback) => { },
-                })
-            };
+            // monitor_card.onclick = function () { 
+                {monitor.open(); monitor_box.iview.hide("show"); isMonitorOpen = true;}
+                // {monitor.close(); monitor_box.iview.hide("hide"); isMonitorOpen = false;}
+            // };
         </script>
     </htmlstore>
+
+
+
 </body>
 
 

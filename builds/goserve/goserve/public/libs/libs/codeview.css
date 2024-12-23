@@ -1,0 +1,28 @@
+:host {
+    --basicSize: 12px;
+    --backColor: #fff;
+}
+
+.codeBox {position:absolute;overflow:auto;box-sizing:border-box;height:100%;width:100%;padding:3%;
+    background:var(--backColor);font-size:var(--basicSize);}
+.codeBox .ctrlBtn {padding:0.5em;cursor:pointer;color:#79b;font-weight:600;font-size:1.2em;outline:none;}
+.hljs{display:block;overflow-x:auto;padding:.5em;background:white;color:black}
+.hljs-comment,.hljs-quote,.hljs-variable{color:#008000}
+.hljs-keyword,.hljs-selector-tag,.hljs-built_in,.hljs-name,.hljs-tag{color:#00f}
+.hljs-string,.hljs-title,.hljs-section,.hljs-attribute,.hljs-literal,
+.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-addition{color:#a31515}
+.hljs-deletion,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-meta{color:#2b91af}
+.hljs-doctag{color:#808080} 
+.hljs-attr{color:#f00}
+.hljs-symbol,.hljs-bullet,.hljs-link{color:#00b0e8}
+.hljs-emphasis{font-style:italic} 
+.hljs-strong{font-weight:bold}
+a{text-decoration:none;color:#5ce;}
+a:hover{text-decoration:underline;}
+p{line-height:1.5;} 
+blockquote{padding:0 0.5em;margin:0;color:#6a737d;border-left:0.5em solid #dfe2e5;}
+pre{padding:1em;overflow:auto;line-height:1.5;} table {border-collapse:collapse;}
+td, th {border:1px solid #ddd;padding:10px 13px;}
+
+
+

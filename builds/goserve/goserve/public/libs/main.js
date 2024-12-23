@@ -4,6 +4,7 @@ function get_html_and_del(selector) {
     module.remove()
     return html
 }
+
 let pie_progress_html = get_html_and_del("htmlstore module.pie_progress")
 let monitor_html = get_html_and_del("htmlstore module.monitor")
 let innerview_html = get_html_and_del("htmlstore module.innerview")
@@ -560,7 +561,7 @@ let html_viewer_app = function () {
 // html_viewer_app.view_show()
 // html_viewer_app.view_start("https://localhost:9090/")
 // html_viewer_app.view_start("https://www.bilibili.com/")
-html_viewer_app.view_start("https://nav.yhz610.com/")
+// html_viewer_app.view_start("https://nav.yhz610.com/")
 // html_viewer_app.view_start("https://www.bing.com/")
 
 // pdf app ============================================

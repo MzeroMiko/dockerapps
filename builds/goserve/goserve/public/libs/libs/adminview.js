@@ -9,7 +9,7 @@ function html_to_shadow(module_html) {
 
 function AdminViewer(opts = {}) {
     let args = {
-        box: null,
+        box: document.createElement('div'),
         html: opts.html,
         params: {
             adminCore: {}, popMenu: {}, iView: {}, PView: (opts)=>{ return {}},
@@ -31,7 +31,11 @@ function AdminViewer(opts = {}) {
     _upItemHtml.remove()
     let upItemHtml = _upItemHtml.innerHTML;
     let moveBox = document.createElement("div");
-    let movePage = args.params.PView({ box: moveBox, colWidth: ["100%", "0%", "0%"], colmenu: false, });
+    let movePage = args.params.PView({ 
+        box: moveBox, 
+        colWidth: ["100%", "0%", "0%"], 
+        colmenu: false, 
+    });
 
     function popTemplates(sign, finishCallBack) {
         return {

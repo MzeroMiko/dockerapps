@@ -5,19 +5,19 @@ function MainView(opts = {}) {
             windowPush: true, historyMode: false, 
             exIframes: {}, exLinks: {}, // {name: src,...}
         },
-        style: {
+        styles: {
             basicSize: "14px", topTitle: "MikoSite", tableItemChose: "rgba(255,255,200,0.75)",
         },
         htmlParts: {
             style: "", main: "", fix: (str) => "",
         },
     }
-    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
     {
         args.htmlParts.style = '\
         .mainBox {overflow:hidden;position:absolute;top:0;right:0;bottom:0;left:0;\
-            font-size:' + args.style.basicSize + ';}\
+            font-size:' + args.styles.basicSize + ';}\
         .viewBox {overflow:hidden;position:absolute;top:3em;right:0;bottom:0;left:0;}\
         .headLine {position:absolute;top:0;right:0;left:0;padding:0.5em;\
             background:#fefefe;box-shadow:6px 0px 6px #ddd;}\
@@ -29,7 +29,7 @@ function MainView(opts = {}) {
         ';
         args.htmlParts.main = '\
         <div class="mainBox">\
-        <div class="headLine"><div class="headTitle">' + args.style.topTitle + '</div>\
+        <div class="headLine"><div class="headTitle">' + args.styles.topTitle + '</div>\
         <div class="_headMenu"><div class="headMenu">\
         </div></div></div><div class="viewBox"</div></div>';
     }
@@ -92,7 +92,7 @@ function MainView(opts = {}) {
         getAuthStat: () => { return adminCore.getAuthStat(); },
         refresh: () => { openFolder(); infoObj.itools.exitBtn.click(); },
         tagChosen: (signEle, tag = true) => {
-            let bg = (tag) ? args.style.tableItemChose : "";
+            let bg = (tag) ? args.styles.tableItemChose : "";
             signEle.style.background = bg;
         },
         changeCallBack: () => {

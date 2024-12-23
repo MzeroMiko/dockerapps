@@ -43,8 +43,8 @@ function PopupMenu(opts = {}) {
         // append new Body
         let newMessage = null;
         let colors = {
-            pass: args.style.passColor, fail: args.style.failColor, warn: args.style.warnColor,
-            info: args.style.infoColor, confirm: args.style.confirmColor, input: args.style.inputColor,
+            pass: args.styles.passColor, fail: args.styles.failColor, warn: args.styles.warnColor,
+            info: args.styles.infoColor, confirm: args.styles.confirmColor, input: args.styles.inputColor,
         }
         if (typeof timeOut == "undefined") {
             timeOut = (sign == "input" || sign == "confirm") ? 0 : args.params.defTimeOut;
@@ -78,7 +78,7 @@ function PopupMenu(opts = {}) {
     }
     function appendAuth(confirmCallBack = (name, password) => { }) {
         // append Body
-        let newAuth = appendBody("A", args.style.authColor, 0);
+        let newAuth = appendBody("A", args.styles.authColor, 0);
         let content = newAuth.querySelector(".content");
         content.innerHTML = container.querySelector(".padding .auth_wrapper").innerHTML;
         let nameInput = content.querySelector("input.name");

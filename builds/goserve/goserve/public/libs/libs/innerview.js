@@ -283,8 +283,10 @@ function InnerManager(opts = {}) {
     itemsample.remove()
 
     let innerViewList = []; // {innerView, zIndex}
-    let maxZIndex = args.style.zindex_min;
     let icontain = shadow_module.shadowRoot.querySelector(".viewlist");
+    let config_zindex_min = args.styles.zindex_min
+    let config_zindex_max = args.styles.zindex_max
+    let maxZIndex = config_zindex_min;
 
     function newView(width = "90%", height = "90%") {
         function upperZIndex(iView) {
@@ -292,13 +294,13 @@ function InnerManager(opts = {}) {
                 let zIndexs = innerViewList.map(function (item) { return item.zIndex; });
                 zIndexs.sort(function (a, b) { return a - b; }); // min to max
                 innerViewList.forEach(function (item) {
-                    item.zIndex = zIndexs.indexOf(item.zIndex) + args.style.zindex_min + 1;
+                    item.zIndex = zIndexs.indexOf(item.zIndex) + config_zindex_min + 1;
                     item.innerView.setZIndex(item.zIndex);
                 });
-                maxZIndex = zIndexs.length + args.style.zindex_min;
+                maxZIndex = zIndexs.length + config_zindex_min;
             }
 
-            if (maxZIndex > (args.style.zindex_max - 5)) {
+            if (maxZIndex > (config_zindex_max - 5)) {
                 cleanZIndex();
             }
             innerViewList.forEach(function (item) {
@@ -313,14 +315,14 @@ function InnerManager(opts = {}) {
         }
         // choose the free innerView, use maxInd to avoid code error causing while(true)
         let ind = 0, len = innerViewList.length;
-        let maxInd = args.style.zindex_max - args.style.zindex_min - 5;
+        let maxInd = config_zindex_max - config_zindex_min - 5;
         while (ind < maxInd && (len == ind || innerViewList[ind].innerView.isFree() == false)) {
             if (len <= ind) {
                 innerViewList.push({
                     innerView: InnerViewer({ 
                         box: document.body.appendChild(document.createElement('div')),
                         html: args.innerview_html,
-                        basic_size: args.style.basic_size,
+                        basic_size: args.styles.basic_size,
                     }),
                     zIndex: 0,
                 });

@@ -52,7 +52,7 @@ function PieProgress(opts={}) {
             else
                 degree = 180;
             rightCircle.style.transform = 'rotate(' + degree + 'deg' + ')';
-            rightCircle.style.backgroundColor = (current < 50) ? args.style.noProgressColor : args.style.progressColor;
+            rightCircle.style.backgroundColor = (current < 50) ? args.styles.noProgressColor : args.styles.progressColor;
             setTimeout(function () { updatePie(current, percent); }, args.params.speedTime);
         }
         updatePie(lastPercent, percent);

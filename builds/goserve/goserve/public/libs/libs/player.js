@@ -114,9 +114,9 @@ function MusicPlayer(opts = {}) {
     let timeSlider = SliderBar({
         box: mediaBar.querySelector(".timeSlider"),
         html: args.sliderbar_html,
-        sliderColor: args.style.timeSliderColor,
-        bufferColor: args.style.sliderBufferColor,
-        progressColor: args.style.themeColor,
+        sliderColor: args.styles.timeSliderColor,
+        bufferColor: args.styles.sliderBufferColor,
+        progressColor: args.styles.themeColor,
         changeCallBack: function (rate) {
             if (!isNaN(media.duration))
                 playTime(media.duration * rate);
@@ -125,9 +125,9 @@ function MusicPlayer(opts = {}) {
     let volSlider = SliderBar({
         box: mediaBar.querySelector(".volSlider"),
         html: args.sliderbar_html,
-        sliderColor: args.style.volSliderColor,
-        bufferColor: args.style.sliderBufferColor,
-        progressColor: args.style.themeColor,
+        sliderColor: args.styles.volSliderColor,
+        bufferColor: args.styles.sliderBufferColor,
+        progressColor: args.styles.themeColor,
         changeCallBack: function (rate) {
             media.volume = rate;
             volSlider.updateCurrent(media.volume);
@@ -366,7 +366,7 @@ function VideoPlayer(opts = {}) {
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
-    for (let key in args.styles) args.box.setProperty('--' + key, args.styles[key]);
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let timeoutHandler;
     let isFullScreen = false;
@@ -387,9 +387,9 @@ function VideoPlayer(opts = {}) {
     let timeSlider = SliderBar({
         box: mediaBar.querySelector(".timeSlider"),
         html: args.sliderbar_html,
-        sliderColor: args.style.timeSliderColor,
-        bufferColor: args.style.sliderBufferColor,
-        progressColor: args.style.themeColor,
+        sliderColor: args.styles.timeSliderColor,
+        bufferColor: args.styles.sliderBufferColor,
+        progressColor: args.styles.themeColor,
         changeCallBack: function (rate) {
             if (!isNaN(media.duration))
                 playTime(media.duration * rate);
@@ -398,9 +398,9 @@ function VideoPlayer(opts = {}) {
     let volSlider = SliderBar({
         box: mediaBar.querySelector(".volSlider"),
         html: args.sliderbar_html,
-        sliderColor: args.style.volSliderColor,
-        bufferColor: args.style.sliderBufferColor,
-        progressColor: args.style.themeColor,
+        sliderColor: args.styles.volSliderColor,
+        bufferColor: args.styles.sliderBufferColor,
+        progressColor: args.styles.themeColor,
         changeCallBack: function (rate) {
             media.volume = rate;
             volSlider.updateCurrent(media.volume);
@@ -408,7 +408,7 @@ function VideoPlayer(opts = {}) {
     });
 
     // ======================= //
-    mediaName.style.display = (args.style.enMediaName) ? "block" : "none";
+    mediaName.style.display = (args.styles.enMediaName) ? "block" : "none";
     launchBottom.onmouseenter = function () { clearCtrlTimeout(); showCtrl(); };
     mediaBar.setAttribute("tabIndex", "1");
     mediaBar.onmouseover = function () { clearCtrlTimeout(); };

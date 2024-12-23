@@ -566,32 +566,14 @@
                 <div class="blank"></div>
             </div>
         </module>
-        <script type="text/javascript" src="./libs/main.js"></script>
-        <script type="text/javascript" src="./libs/libs/monitor.js"></script>
-        <script type="text/javascript" src="./libs/libs/innerview.js"></script>
-        <script type="text/javascript" src="./libs/libs/player.js"></script>
-        <script type="text/javascript" src="./libs/libs/fileview.js"></script>
-        <script type="text/javascript" src="./libs/libs/popupmenu.js"></script>
-        <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
-        <script type="text/javascript" src="./outLibs/showdown.min.js"></script>
-        <script type="text/javascript" src="./outLibs/highlight.min.js"></script>
 
         <script>
-            function html_to_shadow(module_html) {
-                let shadow_module = document.createElement('div')
-                shadow_module.attachShadow({mode: "open"})
-                shadow_module.shadowRoot.innerHTML = module_html
-                return shadow_module
-            }
-
             function get_html_and_del(selector) {
                 let module = document.querySelector(selector)
                 html = module.innerHTML
                 module.remove()
                 return html
             }
-
-            // ========================================================
             let pie_progress_html = get_html_and_del("htmlstore module.pie_progress")
             let monitor_html = get_html_and_del("htmlstore module.monitor")
             let innerview_html = get_html_and_del("htmlstore module.innerview")
@@ -601,7 +583,25 @@
             let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
             let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
             let popmenu_html = get_html_and_del("htmlstore module.popmenu")
+            let infoview_html = get_html_and_del("htmlstore module.infoview")
+            let codeview_html = get_html_and_del("htmlstore module.codeview")
+            let adminview_html = get_html_and_del("htmlstore module.adminview")
+        </script>
 
+
+        <script type="text/javascript" src="./libs/main.js"></script>
+        <script type="text/javascript" src="./libs/libs/monitor.js"></script>
+        <script type="text/javascript" src="./libs/libs/innerview.js"></script>
+        <script type="text/javascript" src="./libs/libs/player.js"></script>
+        <script type="text/javascript" src="./libs/libs/fileview.js"></script>
+        <script type="text/javascript" src="./libs/libs/popupmenu.js"></script>
+        <script type="text/javascript" src="./libs/libs/infoview.js"></script>
+        <script type="text/javascript" src="./libs/libs/codeview.js"></script>
+        <script type="text/javascript" src="./libs/libs/adminview.js"></script>
+        <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
+        <script type="text/javascript" src="./outLibs/showdown.min.js"></script>
+        <script type="text/javascript" src="./outLibs/highlight.min.js"></script>
+        <script>
             // ========================================================
             let imanager = InnerManager({ 
                 box: document.body.appendChild(document.createElement('div')), 
@@ -644,25 +644,36 @@
             //     basic_size: "12px",
             // })
 
-            // ========================================================
-            let isMonitorOpen = false
-            let monitor_box = imanager.buildView({
-                width: "90%", height: "90%", title: "monitor", btnShow: ["min", "max", "exit"],
-                exit: () => { monitor.close(); monitor_box.iview.hide("hide"); isMonitorOpen = false; },
-            });
-            let monitor = new MonitorView({
-                box: monitor_box.ibox,
-                html: monitor_html,
-                pie_html: pie_progress_html,
-                basic_size: "14px",
-                waitTime: 3000,
-                getMonitor: (callback) => { },
-            })
-            let monitor_card = document.querySelector(".mainline .flows .card.monitor")
-            monitor_card.onclick = function () { 
-                {monitor.open(); monitor_box.iview.hide("show"); isMonitorOpen = true;}
-                // {monitor.close(); monitor_box.iview.hide("hide"); isMonitorOpen = false;}
-            };
+            // monitor ================================================
+            {
+                let isMonitorOpen = false
+                let monitor_box = document.createElement("div")
+                let monitor = new MonitorView({
+                    box: monitor_box,
+                    html: monitor_html,
+                    pie_html: pie_progress_html,
+                    basic_size: "14px",
+                    waitTime: 3000,
+                    getMonitor: (callback) => { },
+                })
+                let monitor_handler = imanager.buildView({
+                    box: monitor_box,
+                    width: "90%", height: "90%", title: "monitor", btnShow: ["min", "max", "exit"],
+                    exit: () => {
+                        monitor.close();
+                        monitor_handler.iview.hide("hide"); 
+                        isMonitorOpen = false;
+                    },
+                });
+                let monitor_card = document.querySelector(".mainline .flows .card.monitor")
+                monitor_card.onclick = function () { 
+                    if (isMonitorOpen == false) {
+                        monitor.open(); 
+                        monitor_handler.iview.hide("show"); 
+                        isMonitorOpen = true;
+                    }
+                };
+            }
 
             // ========================================================
             let music_box = imanager.buildView({

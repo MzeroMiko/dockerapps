@@ -29,7 +29,7 @@ function FileViewer(opts = {}) {
             listItemColor: "rgba(255,255,255,0.5)", listItemHover: "rgba(196,196,196,0.75)",
         },
     }
-    for (let key in opts) if (key in args.styles) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)

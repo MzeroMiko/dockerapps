@@ -1,0 +1,270 @@
+* {
+    font-family: sans-serif, 'Segoe UI', 'Sans', Arial, 'Microsoft Yahei', Helvetica;
+    font-size: 14px;
+}
+
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: #f4f4f4;
+}
+
+*::-webkit-scrollbar-track {
+    border-radius: 6px;
+    background-color: #f4f4f4;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background-color: #888;
+}
+
+
+.mainPage {
+    background-color: #f4f4f4; padding:0; margin:0;
+}
+/* ======================================= */
+
+@font-face {
+    font-family: "iconfont";
+    src: url('./libs/fonts/iconfont.woff2') format('woff2'),
+    url('./libs/fonts/iconfont.woff') format('woff'),
+    url('./libs/fonts/iconfont.ttf') format('truetype');
+}
+
+/* .iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+} */
+
+div.headline {
+    position:fixed;
+    z-index: 2;
+    top:5px;
+    right:5px;
+    left:5px;
+    padding:0.5em;
+    background:#fefefe;
+    box-shadow:6px 0px 6px #ddd;
+}
+div.padding_headline {
+    position: relative;
+    height: 6em;
+    width: 100%;
+}
+div.clockline {
+    position: relative;
+    width: 100%;
+    color: #666;
+}
+div.searchline {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+div.mainline {
+    position: relative;
+    display: block;
+    top: 2em;
+    /* background: #fff; */
+    /* height: 100px; */
+    margin: 2em;
+}
+
+/* ============================================== */
+
+/* .mainBox {overflow:hidden;position:absolute;top:0;right:0;bottom:0;left:0;            font-size:14px;}  */
+/* .viewBox {overflow:hidden;position:absolute;top:3em;right:0;bottom:0;left:0;}  */
+.head_title{
+    float:left;
+    padding:0 0.5em;
+    cursor:pointer;
+    color:#ead;
+    font-weight:600;
+    font-size:1.4em;
+} 
+.head_menu_wrapper{
+    display:flex; 
+    overflow: auto;
+    flex-direction:row-reverse;
+} 
+.head_menu{
+    display:flex; 
+    overflow: auto;
+} 
+.head_menu .item{
+    cursor:pointer; 
+    font-weight:600;
+    font-size:1em;
+    margin:0 0.2em;
+    padding:0.2em 1em;  
+    align-content: center;          
+}
+.item.link {
+    border-radius:0.5em;
+    border:2px solid #eee;
+    background:#f4f4f4;
+    background: rgb(238, 238, 255);
+}
+.item.login {
+    font-family: 'iconfont' !important;
+    font-style: normal;
+    text-align: center;
+    font-size: 1.2em;
+    /* -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; */
+}
+.item.login::before {
+    content: "\e61e";
+}
+/* ================================================ */
+
+div.time {
+    align-content: center;
+    text-align: center;
+    font-size: 3em;
+    color: #666;
+    width: 100%;
+}
+
+/* ================================================ */
+
+.search {
+    display: flex;
+    height: 44px;
+    --un-bg-opacity: 1;
+    background-color: rgba(229, 231, 235, var(--un-bg-opacity));
+    align-content: center;
+    text-align: center;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 20px;
+}
+
+.search_input, .search_go, .search_engine {
+    align-content: center;
+    text-align: center;
+    height: 100%;
+    cursor: pointer;
+    align-items: center;
+    position: relative;
+}                
+
+.search_go .icon, .search_engine .icon {
+    font-family: "iconfont";
+    font-size: 1.25em;
+    padding: 0.2em;
+    width: 42px;
+}
+
+.search_go .icon::before {
+    content: "\e792";
+}
+
+.search_engine .bing.icon::before {
+    content: "\eb70";
+}
+
+.search_engine .baidu.icon::before {
+    content: "\e68b";
+}
+
+.search_engine .google.icon::before {
+    content: "\e87a";
+}
+
+.search_engine .checkmark::before {
+    content: "\e644";
+    display: none;
+}
+
+.search_engine.item {
+    display: flex;
+    flex-direction: row;
+    padding: 0.3em 0.3em 0.1em 0.1em;
+}
+
+.search_engine.item .name {
+    padding: 0.1em;
+}
+
+.search_engine.item .checkmark.icon {
+    margin-left: auto;
+}
+
+.search_engine_sel {
+    width: 200px;
+    position: absolute;
+    background-color: #fff;
+    top: 100%;
+    left: 0;
+    display: none;
+    z-index: 9;
+}
+
+.search_engine_sel .item:hover {
+    opacity: 0.6;
+}
+
+.search_input {
+    display: block;
+    height: 100%;
+    width: 400px;
+}
+.search_input input {
+    outline: none;
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+    height: 100%;
+    width: 100%;
+    background-color: inherit;
+}
+
+.search_engine.current:hover > .search_engine_sel {
+    display: block;
+}
+
+
+/* ================================================ */
+.flows {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+    border-radius: 1em;
+    background: #f8f8f8;
+    margin-bottom: 4em;
+}
+.flows .card {
+    display: block;
+    /* width: 30%; */
+    height: 100px;
+    background-color: #fff;
+    border-radius: 1em;
+    margin: 1%;
+}
+
+@media (min-width: 800px) {
+    .card {
+        width: 31%;
+    }
+}
+@media (max-width: 800px) {
+    .card {
+        width: 48%;
+    }
+}
+@media (max-width: 500px) {
+    .card {
+        width: 96%;
+    }
+}

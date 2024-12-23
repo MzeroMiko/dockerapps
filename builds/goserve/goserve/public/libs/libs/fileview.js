@@ -12,16 +12,19 @@ function FileViewer(opts = {}) {
         box: opts.box,
         html: opts.html,
         params: {
-            noMaskLink: false, logAction: (button) => { },
+            noMaskLink: false,
             chooseIcon: (name = "", isFolder = false) => {
                 if (isFolder)
                     return '<path d="M10 4H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8c0-1.11-.9-2-2-2h-8l-2-2z" fill="#90a4ae" />';
                 else
                     return '<path d="M13 9h5.5L13 3.5V9M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4c0-1.11.89-2 2-2m5 2H6v16h12v-9h-7V4z" fill="#42a5f5" />';
             },
-            sortCallBack: (cinfo) => { }, openPath: (path, isFolder) => { },
-            menuAction: (info, node, thisFolder) => { }, iconAction: (path, ele, isFolder) => { },
-            sizeAction: (path, ele, isFolder) => { }, timeAction: (path, ele, isFolder) => { },
+            sortCallBack: (cinfo) => { }, 
+            openPath: (path, isFolder) => { },
+            menuAction: (info, node, thisFolder) => { }, 
+            iconAction: (path, ele, isFolder) => { },
+            sizeAction: (path, ele, isFolder) => { }, 
+            timeAction: (path, ele, isFolder) => { },
         },
         styles: {
             basicSize: "14px", colWidth: ['55%', '25%', '20%'], colmenu_display: "block",
@@ -83,8 +86,8 @@ function FileViewer(opts = {}) {
             pathChain.setAttribute("contenteditable", "true");
         }
     };
-    pathChain.onkeypress = function (event) {
-        if (event.keyCode == "13") {
+    pathChain.onkeydown = function (event) {
+        if (event.key == "Enter") {
             pathChain.setAttribute("contenteditable", "false");
             pathChain.setAttribute("path", pathChain.innerText);
             if (pathChain.innerText != currentPath) {
@@ -94,8 +97,6 @@ function FileViewer(opts = {}) {
             }
         }
     };
-    args.params.logAction(pathHead.querySelector('.colmenu'));
-
 
     function updatePathChain() {
         // update pathChain

@@ -1,0 +1,21 @@
+:host {
+    --upProgColor: #fff;
+    --upFontColor: #fff;
+}
+
+.content {overflow:auto;}
+.itemList {overflow:auto;padding:0.5em;}
+.item {position:relative;height:2.5em;overflow:hidden;
+    border-bottom:1px solid var(--upProgColor);}
+.progress {height:100%;width:0%;background:var(--upProgColor);}
+.colline {height:100%;width:100%;transform:translate(0, -100%);color:var(--upProgColor);}
+.colname, .colsize, .colstat {box-sizing:border-box;float:left;overflow:auto;
+    padding:0.7em;white-space:nowrap;font-weight:600;cursor:pointer;}
+.colname {width:50%;text-align:left;} .colsize {width:35%;text-align:right;}
+.colstat {width:15%;text-align:right;}
+.blank {height:4em; border-top:2px #666 dotted;margin:1em;}
+
+.padding {
+    display: none;
+}
+

@@ -23,13 +23,13 @@ function FileViewer(opts = {}) {
             menuAction: (info, node, thisFolder) => { }, iconAction: (path, ele, isFolder) => { },
             sizeAction: (path, ele, isFolder) => { }, timeAction: (path, ele, isFolder) => { },
         },
-        style: {
+        styles: {
             basicSize: "14px", colWidth: ['55%', '25%', '20%'], colmenu_display: "block",
             ctrlHeadColor: "rgba(255,255,255,0.2)", pathHeadColor: "rgba(120,120,180,0.25)",
             listItemColor: "rgba(255,255,255,0.5)", listItemHover: "rgba(196,196,196,0.75)",
         },
     }
-    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.style[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)

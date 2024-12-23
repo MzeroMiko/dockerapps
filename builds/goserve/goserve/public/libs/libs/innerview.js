@@ -14,11 +14,11 @@ function InnerViewer(opts = {}) {
         params: {
 
         },
-        style: {
+        styles: {
             basic_size: "12px", innerbox_zindex: 7, innerbox_width: "90%", innerbox_height: "90%",
         },
     }
-    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)
@@ -268,11 +268,11 @@ function InnerManager(opts = {}) {
         innerview_html: opts.innerview_html,
         params: {
         },
-        style: {
+        styles: {
             basic_size: "12px", zindex_min: 9, zindex_max: 100,
         },
     }
-    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)

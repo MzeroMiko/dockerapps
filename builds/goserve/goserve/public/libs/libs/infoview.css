@@ -1,0 +1,58 @@
+.tableInfo {padding:0.3em;overflow:auto;}
+.tableInfo tr td {white-space:nowrap;color:#555;font-weight:600;padding:0.3em;cursor:pointer;}
+.menuBox0, .menuBox1, .menuBox2 {display:flex;flex-wrap:wrap;padding:0.3em;}
+.menuItem {padding:0.7em 0.3em;width:6em;background:#99d;border-radius:0.5em;margin:0.2em;
+            font-weight:700;color:#fff;text-align:center;cursor:pointer;}
+
+.padding {
+    display: none;
+}
+
+.menuItem.refresh {
+    background:#cdc;
+}
+
+.menuItem.reverse {
+    background:#dcc;
+}
+
+.menuItem.chooseall {
+    background:#ccd;
+}
+
+.menuItem.upload {
+    background:#cab;
+}
+
+.menuItem.mkdir {
+    background:#bca;
+}
+
+.menuItem.mkfile {
+    background:#abc;
+}
+
+.menuItem.download {
+    background:#99d;
+}
+
+.menuItem.archive {
+    background:#9dd;
+}
+
+.menuItem.rename {
+    background:#9d9;
+}
+
+.menuItem.moveto {
+    background:#dd9;
+}
+
+.menuItem.copyto {
+    background:#d99;
+}
+
+.menuItem.delete {
+    background:#d9d;
+}
+

@@ -83,14 +83,14 @@ function MusicPlayer(opts = {}) {
             forwardStep: 5, stopCallBack: () => { }, pathToUrl: (path) => { },
             validSuffix: [".mp3", ".ogg", ".wav", ".acc", ".webm"]
         },
-        style: {
+        styles: {
             basicSize: "14px", backColor: "#bcd", themeColor: "#fff",
             playBtnColor: "#aeb", ctrlBackColor: "rgba(0,0,0,0)", listColor: "#222",
             volSliderColor: "#ddd", timeSliderColor: "#ddd", sliderBufferColor: "#aaa",
             listItemColor: "rgba(255,255,255,0.2)", listItemHover: "rgba(196,196,196,0.75)",
         },
     }
-    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)
@@ -355,13 +355,13 @@ function VideoPlayer(opts = {}) {
             forwardStep: 5, infoTime: 5000, autoRotate: true,
             stopCallBack: () => { }, pathToUrl: (path) => "",
         },
-        style: {
+        styles: {
             basicSize: "14px", backColor: "#000", themeColor: "#fff",
             playBtnColor: "#aeb", ctrlBackColor: "rgba(0,0,0,0)",
             volSliderColor: "#ddd", timeSliderColor: "#ddd", sliderBufferColor: "#aaa",
         },
     }
-    for (let key in opts) if (key in args.style) args.style[key] = opts[key];
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)

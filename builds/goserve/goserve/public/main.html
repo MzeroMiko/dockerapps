@@ -84,7 +84,7 @@
         <div class="mainline">
             <div class="flows">
                 <div class="card monitor">Monitor</div>
-                <div class="card">Files</div>
+                <div class="card explorer">Files</div>
             </div>
             <div class="flows">
                 <div class="card">cockpit</div>
@@ -214,7 +214,7 @@
                             <div class="ctrlBtn exitBtn">
                             </div>
                         </div>
-                        <div class="title"></div>
+                        <div class="title" contenteditable="true"></div>
                     </div>
                     <div class="content"></div>
                 </div>
@@ -566,7 +566,47 @@
                 <div class="blank"></div>
             </div>
         </module>
-
+        <module class="plainview">
+            <style>
+                .plain {
+                    text-align:center;width:100%;height:95%;font-size:1.2em;padding:1em;
+                }
+            </style>
+            <div class="plain"><br><br>binary file<br><br><a></a></div>
+        </module>
+        <module class="htmlview">
+            <style>
+                .html {
+                    width:100%;height:100%;position:absolute;
+                }
+                .html iframe {
+                    height:100%;width:100%;
+                }
+            </style>
+            <div class="html"><iframe src="" frameborder=0></iframe></div>
+        </module>
+        <module class="pdfview">
+            <style>
+                .pdf {
+                    width:100%;height:100%;position:absolute;
+                }
+                .pdf iframe {
+                    height:100%;width:100%;
+                }
+            </style>
+            <div class="pdf"><iframe src="" frameborder=0></iframe></div>
+        </module>
+        <module class="imageview">
+            <style>
+                .image {
+                    text-align:center;width:100%;height:95%;
+                }
+                .image img {
+                    max-width:100%;max-height:100%;
+                }
+            </style>
+            <div class="image"><img src=""></img></div>
+        </module>
         <script>
             function get_html_and_del(selector) {
                 let module = document.querySelector(selector)
@@ -586,10 +626,12 @@
             let infoview_html = get_html_and_del("htmlstore module.infoview")
             let codeview_html = get_html_and_del("htmlstore module.codeview")
             let adminview_html = get_html_and_del("htmlstore module.adminview")
+            let plainview_html = get_html_and_del("htmlstore module.plainview")
+            let htmlview_html = get_html_and_del("htmlstore module.htmlview")
+            let pdfview_html = get_html_and_del("htmlstore module.pdfview")
+            let imageview_html = get_html_and_del("htmlstore module.imageview")
         </script>
-
-
-        <script type="text/javascript" src="./libs/main.js"></script>
+        <script type="text/javascript" src="./libs/libs/corefunc.js"></script>
         <script type="text/javascript" src="./libs/libs/monitor.js"></script>
         <script type="text/javascript" src="./libs/libs/innerview.js"></script>
         <script type="text/javascript" src="./libs/libs/player.js"></script>
@@ -601,174 +643,8 @@
         <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
         <script type="text/javascript" src="./outLibs/showdown.min.js"></script>
         <script type="text/javascript" src="./outLibs/highlight.min.js"></script>
-        <script>
-            // ========================================================
-            let imanager = InnerManager({ 
-                box: document.body.appendChild(document.createElement('div')), 
-                html: innerview_manager_html,
-                innerview_html: innerview_html,
-                zindex_min: 10, 
-                zindex_max: 100, 
-                basic_size: "12px",
-            });
-
-            function genViewer(width = "90%", height = "90%", iBox = null, types = [], btnShow = [], startAction = null, stopAction = null) {
-                let iobj = imanager.buildView({
-                    box: iBox, width: width, height: height, title: types[0], btnShow: btnShow,
-                    prev: () => { startView(iobj.itools._path, "", "", "prev", types); },
-                    next: () => { startView(iobj.itools._path, "", "", "next", types); },
-                    down: () => { adminCore.download(iobj.itools._path); },
-                    exit: () => { stopAction(iobj.itools._path); iobj.iview.hide("hide"); },
-                });
-                let startView = (path = "", type = "", tag = "", next = "", types = []) => {
-                    if (next == "prev" || next == "next") {
-                        let tmp = nextPath(types, next, path);
-                        path = tmp.path;
-                        type = tmp.type;
-                        tag = tmp.tag;
-                    }
-                    try {
-                        startAction(path, type, tag);
-                        iobj.itools._path = path;
-                        iobj.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-                        iobj.iview.hide("show");
-                    } catch (error) { }
-                }
-                return {iobj: iobj, start: startView};
-            }
-
-            // // ========================================================
-            // let innerview = new InnerViewer({
-            //     box: document.body.appendChild(document.createElement('div')),
-            //     html: innerview_html,
-            //     basic_size: "12px",
-            // })
-
-            // monitor ================================================
-            {
-                let isMonitorOpen = false
-                let monitor_box = document.createElement("div")
-                let monitor = new MonitorView({
-                    box: monitor_box,
-                    html: monitor_html,
-                    pie_html: pie_progress_html,
-                    basic_size: "14px",
-                    waitTime: 3000,
-                    getMonitor: (callback) => { },
-                })
-                let monitor_handler = imanager.buildView({
-                    box: monitor_box,
-                    width: "90%", height: "90%", title: "monitor", btnShow: ["min", "max", "exit"],
-                    exit: () => {
-                        monitor.close();
-                        monitor_handler.iview.hide("hide"); 
-                        isMonitorOpen = false;
-                    },
-                });
-                let monitor_card = document.querySelector(".mainline .flows .card.monitor")
-                monitor_card.onclick = function () { 
-                    if (isMonitorOpen == false) {
-                        monitor.open(); 
-                        monitor_handler.iview.hide("show"); 
-                        isMonitorOpen = true;
-                    }
-                };
-            }
-
-            // ========================================================
-            let music_box = imanager.buildView({
-                width: "22em", height: "44em", title: "Muse", btnShow: ["down", "min", "exit"],
-                down: () => { adminCore.download(musicPlayer.getPlayPath()); },
-                exit: () => { musicPlayer.playStop(); music_box.iview.hide("hide"); },
-            });
-            let musicPlayer = MusicPlayer({ 
-                box: music_box.ibox,
-                html: musicplayer_html,
-                sliderbar_html: sliderbar_html, 
-                pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
-            });
-            let __audiocheck = (path) => {
-                if (musicPlayer.thisPos(path) == -1) {
-                    musicPlayer.setPlayList(filePreviewList, true);
-                    if (musicPlayer.thisPos(path) == -1)
-                        musicPlayer.setPlayList([path], true);
-                }
-            }
-            let __audiostart = (path, type, tag) => {
-                musicPlayer.playThis(path);
-                music_box.iview.hide("show");
-            };
-            music_box.iview.hide("show");
-
-            // ========================================================
-            let video_box = document.createElement('div');
-            let videoPlayer = VideoPlayer({
-                box: video_box, 
-                html: videoplayer_html,
-                sliderbar_html: sliderbar_html, 
-                pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
-            });
-            let __videoobj = genViewer("90%", "90%", video_box,
-                ["video"], ["prev", "next", "down", "min", "max", "exit"],
-                function (path, type, tag) { videoPlayer.playThis(path); },
-                function () { videoPlayer.playStop(); }
-            );
-            let __videostart = __videoobj.start
-            video_box = __videoobj.iobj
-            video_box.iview.hide("show");
-
-            // ========================================================
-            let chooseIcon = SVGIcons().chooseIcon;
-            let file_box = document.createElement('div');
-            let file_view = FileViewer({
-                    box: file_box,
-                    html: fileviewer_html,
-                    chooseIcon: chooseIcon,
-                    openPath: (path, isFolder) => {
-                        if (isFolder)
-                            openFolder(path);
-                        else
-                            __openMedia(path);
-                    },
-                    sortCallBack: (currentInfo) => {
-                        filePreviewList = currentInfo.FileNodes.map((info) => { return info.path; });
-                    },
-                    menuAction: (info, node, thisFolder) => { infopart.genInfo(info, node, thisFolder); },
-                    logAction: (button) => {
-                        button.innerText = "IN";
-                        button.onclick = function () {
-                            let button = this;
-                            adminView.login((button.innerText == "IN"), function () {
-                                button.innerText = "OUT";
-                            }, function () {
-                                button.innerText = "IN";
-                            });
-                        };
-                    }
-                });
-            let file_obj = genViewer("90%", "90%", file_box,
-                ["files"], ["min", "max", "exit"],
-                function (path, type, tag) { },
-                function () { }
-            );
-            file_box = file_obj.iobj
-            file_box.iview.hide("show");
-        
-
-            // ========================================================
-            let popMenu = PopupMenu({ 
-                box: document.body.appendChild(document.createElement('div')), 
-                html: popmenu_html,
-                zindex: 100, 
-            });
-            popMenu.appendMessage("fail", "Authorization Fail");
-            popMenu.appendMessage("fail", " test")
-            popMenu.appendMessage("warn", " test")
-            popMenu.appendMessage("info", " test")
-            popMenu.appendMessage("pass", " test")
-        </script>
-    </htmlstore>
-
+        <script type="text/javascript" src="./libs/main.js"></script>
+        </htmlstore>
 </body>
 
 

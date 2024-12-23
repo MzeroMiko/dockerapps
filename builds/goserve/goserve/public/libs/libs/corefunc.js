@@ -115,7 +115,7 @@ function AdminCore(opts = {}) {
             currentParts: {},
         },
     }
-    params = params
+    let params = args.params
     params.currentParts = getUrlParts(window.location.href); // when assignned, dict is refered as a point, not value!
     for (let key in opts) if (key in params) params[key] = opts[key];
 

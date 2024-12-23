@@ -9,15 +9,13 @@ function html_to_shadow(module_html) {
 
 function CodeViewer(opts = {}) {
     let args = {
-        box: ("box" in opts) ? opts.box : document.createElement('div'),
+        box: opts.box,
+        html: opts.html,
         params: {
 
         },
         styles: {
             basicSize: "14px", backColor: "#fff",
-        },
-        htmlParts: {
-            style: "", main: "", fix: (str) => "",
         },
     }
     for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];

@@ -11,6 +11,7 @@ function AdminViewer(opts = {}) {
     let args = {
         box: document.createElement('div'),
         html: opts.html,
+        fileviewer_html: opts.fileviewer_html,
         params: {
             adminCore: {}, popMenu: {}, iView: {}, PView: (opts)=>{ return {}},
         },
@@ -33,8 +34,11 @@ function AdminViewer(opts = {}) {
     let moveBox = document.createElement("div");
     let movePage = args.params.PView({ 
         box: moveBox, 
-        colWidth: ["100%", "0%", "0%"], 
-        colmenu: false, 
+        html: fileviewer_html,
+        colname_width: "100%",
+        coltime_width: "0%",
+        colsize_width: "0%",
+        colmenu_display: "none", 
     });
 
     function popTemplates(sign, finishCallBack) {

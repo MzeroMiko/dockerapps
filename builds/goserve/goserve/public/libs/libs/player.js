@@ -16,9 +16,6 @@ function SliderBar(opts = {}) {
         style: {
             basicSize: "2px", pointSize: 5, sliderColor: "#ddd", bufferColor: "#aaa", progressColor: "#2d3",
         },
-        htmlParts: {
-            style: "", main: "", fix: (str) => "",
-        },
     }
     for (let key in opts) if (key in args.style) args.style[key] = opts[key];
     for (let key in opts) if (key in args.params) args.params[key] = opts[key];
@@ -326,7 +323,7 @@ function MusicPlayer(opts = {}) {
         let htmlItem = playList.map(function (path, index, array) {
             return '<div class="item" path="' + path + '">' + index + ' : ' + path.slice(path.lastIndexOf("/") + 1) + '</div>';
         });
-        mediaList.innerHTML = args.htmlParts.fix(htmlItem.join('\n'));
+        mediaList.innerHTML = htmlItem.join('\n');
         let items = mediaList.querySelectorAll('.item');
         let numItems = items.length;
         for (let i = 0; i < numItems; i++) {

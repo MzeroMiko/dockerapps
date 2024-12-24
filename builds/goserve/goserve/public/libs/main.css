@@ -27,9 +27,9 @@
 
 @font-face {
     font-family: "iconfont";
-    src: url('./libs/fonts/iconfont.woff2') format('woff2'),
-    url('./libs/fonts/iconfont.woff') format('woff'),
-    url('./libs/fonts/iconfont.ttf') format('truetype');
+    src: url('./fonts/iconfont.woff2') format('woff2'),
+    url('./fonts/iconfont.woff') format('woff'),
+    url('./fonts/iconfont.ttf') format('truetype');
 }
 
 /* .iconfont {

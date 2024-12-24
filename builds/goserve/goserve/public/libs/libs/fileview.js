@@ -27,7 +27,11 @@ function FileViewer(opts = {}) {
             timeAction: (path, ele, isFolder) => { },
         },
         styles: {
-            basicSize: "14px", colWidth: ['55%', '25%', '20%'], colmenu_display: "block",
+            basicSize: "14px",
+            colname_width: "55%",
+            coltime_width: "25%",
+            colsize_width: "20%",
+            colmenu_display: "block",
             ctrlHeadColor: "rgba(255,255,255,0.2)", pathHeadColor: "rgba(120,120,180,0.25)",
             listItemColor: "rgba(255,255,255,0.5)", listItemHover: "rgba(196,196,196,0.75)",
         },
@@ -106,7 +110,7 @@ function FileViewer(opts = {}) {
         let pathChainList = pathList.map(function (value, index, array) {
             return '<a class="path" path="' + value.path + '"> > ' + value.name + '</a>';
         });
-        pathChain.innerHTML = args.htmlParts.fix('<a class="path" path="/"> Home </a>' + pathChainList.join("\n"));
+        pathChain.innerHTML = '<a class="path" path="/"> Home </a>' + pathChainList.join("\n");
         pathChain.setAttribute("path", currentPath);
         let items = pathChain.querySelectorAll('.path');
         let numItem = items.length;
@@ -183,8 +187,8 @@ function FileViewer(opts = {}) {
         // update listFolder and listFile
         let htmlFolder = folderList.map(function (value) { return getItemHtml(value); });
         let htmlFile = fileList.map(function (value) { return getItemHtml(value); });
-        listFolder.innerHTML = args.htmlParts.fix(htmlFolder.join(""));
-        listFile.innerHTML = args.htmlParts.fix(htmlFile.join(""));
+        listFolder.innerHTML = htmlFolder.join("");
+        listFile.innerHTML = htmlFile.join("");
         // append onclick
         setTimeout(function () {
             Array.prototype.slice.call(listFolder.children)

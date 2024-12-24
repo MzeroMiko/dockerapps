@@ -28,8 +28,8 @@ function PieProgress(opts={}) {
     for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let lastPercent = 0;
-    let centerInfo = args.box.querySelector(".centerInfo");
-    let rightCircle = args.box.querySelector(".rightCircle");
+    let centerInfo = shadow_module.shadowRoot.querySelector(".centerInfo");
+    let rightCircle = shadow_module.shadowRoot.querySelector(".rightCircle");
 
     function updateProg(percent) {
         function updatePie(current = 0, percent = 0) {
@@ -110,7 +110,7 @@ function MonitorView(opts={}) {
         args.params.getMonitor((monitorInfo) => {
             function updateText(selector, info) {
                 if (!info) info = "-";
-                args.box.querySelector(selector).innerText = info;
+                shadow_module.shadowRoot.querySelector(selector).innerText = info;
             }
 
             function updateCpu(CpuInfo) {

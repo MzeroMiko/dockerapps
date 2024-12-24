@@ -170,7 +170,7 @@ let monitor_app = function () {
         pie_html: pie_progress_html,
         basic_size: "14px",
         waitTime: 3000,
-        getMonitor: (callback) => { },
+        getMonitor: adminCore.getMonitor,
     })
     let monitor_handler = imanager.buildView({
         box: monitor_box,
@@ -223,7 +223,7 @@ function address_line_push (url) {
 
 function open_folder(path = "") {
     adminCore.openFolder(path, true, function (info) {
-        pageView.updateInfo(info);
+        explorer_app.update_info(info);
         address_line_push(adminCore.pathToUrl(info.Path))
     });
 }
@@ -295,6 +295,7 @@ let explorer_app = function () {
 
     return {
         open_explorer: open_explorer,
+        update_info: file_view.updateInfo,
     }
 }()
 document.querySelector(".mainline .flows .card.explorer").onclick = explorer_app.open_explorer
@@ -669,6 +670,7 @@ let image_viewer_app = function () {
 
 let admin_view = AdminViewer({ 
     html: adminview_html,
+    fileviewer_html: fileviewer_html,
     adminCore: adminCore, 
     popMenu: popMenu,
     iView: imanager.newView("24em", "80%"), 

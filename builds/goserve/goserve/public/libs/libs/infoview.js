@@ -263,16 +263,16 @@ function InfoViewer(opts = {}) {
             }
 
             let tableHtml = table_template.innerHTML
-            tableHtml.replace("__INFO_NAME__", info.Name)
-            tableHtml.replace("__INFO_SIZE__", formatSize(info.Size))
-            tableHtml.replace("__INFO_MODE__", info.Mode)
-            tableHtml.replace("__INFO_ISDIR__", info.IsDir)
-            tableHtml.replace("__INFO_MTIME__", new Date(Number(info.Mtim + "000")).toISOString())
-            tableHtml.replace("__INFO_CTIME__", new Date(Number(info.Ctim + "000")).toISOString())
-            tableHtml.replace("__INFO_FINUM__", info.FileNum)
-            tableHtml.replace("__INFO_FONUM__", info.FolderNum)
-            tableHtml.replace("__INFO_PATH__", info.Path)
-            tableHtml.replace("__INFO_LINK__", args.params.pathToUrl(info.Path))
+            tableHtml = tableHtml.replace("__INFO_NAME__", info.Name)
+            tableHtml = tableHtml.replace("__INFO_SIZE__", formatSize(info.Size))
+            tableHtml = tableHtml.replace("__INFO_MODE__", info.Mode)
+            tableHtml = tableHtml.replace("__INFO_ISDIR__", info.IsDir)
+            tableHtml = tableHtml.replace("__INFO_MTIME__", new Date(Number(info.Mtim + "000")).toISOString())
+            tableHtml = tableHtml.replace("__INFO_CTIME__", new Date(Number(info.Ctim + "000")).toISOString())
+            tableHtml = tableHtml.replace("__INFO_FINUM__", info.FileNum)
+            tableHtml = tableHtml.replace("__INFO_FONUM__", info.FolderNum)
+            tableHtml = tableHtml.replace("__INFO_PATH__", info.Path)
+            tableHtml = tableHtml.replace("__INFO_LINK__", args.params.pathToUrl(info.Path))
             tableInfo.innerHTML = tableHtml;
             tableInfo.querySelectorAll("tr.folder_spec").style.display = ((info.IsDir) ? "" : "none");
 

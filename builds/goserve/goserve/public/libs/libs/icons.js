@@ -2437,13 +2437,19 @@ var ascend = "data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1w
 
 }
 
-function SVGIcons() {
+function SVGIcons(box=null) {
     let isvgSprite = svgSprite;
     let isvgAnno = svgAnno;
     let spriteDiv = document.createElement('div');
     spriteDiv.style.display = "none";
     spriteDiv.innerHTML = isvgSprite;
-    document.body.appendChild(spriteDiv);
+    
+    if (box == null) {
+      document.body.appendChild(spriteDiv);
+    } else {
+      box.appendChild(spriteDiv);
+    }
+    
 
     function chooseIcon (name='', isFolder=false) {
       if (isFolder) {

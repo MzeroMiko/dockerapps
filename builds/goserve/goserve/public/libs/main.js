@@ -40,11 +40,11 @@ let popMenu = PopupMenu({
     html: popmenu_html,
     zindex: 100, 
 });
-popMenu.appendMessage("fail", "Authorization Fail");
-popMenu.appendMessage("fail", " test")
-popMenu.appendMessage("warn", " test")
-popMenu.appendMessage("info", " test")
-popMenu.appendMessage("pass", " test")
+// popMenu.appendMessage("fail", "Authorization Fail");
+// popMenu.appendMessage("fail", " test")
+// popMenu.appendMessage("warn", " test")
+// popMenu.appendMessage("info", " test")
+// popMenu.appendMessage("pass", " test")
 
 // ========================================================
 const view_type = {
@@ -221,8 +221,10 @@ function address_line_push (url) {
     }
 }
 
+let explorer_current_parts = {}
 function open_folder(path = "") {
-    adminCore.openFolder(path, true, function (info) {
+    adminCore.openFolder(path, function (info) {
+        // explorer_current_parts = {}
         explorer_app.update_info(info);
         address_line_push(adminCore.pathToUrl(info.Path))
     });
@@ -687,7 +689,7 @@ let deltailed_info = InfoViewer({
     admin_view: admin_view,
     pathToUrl: (path) => { return adminCore.pathToUrl(path); },
     getAuthStat: () => { return adminCore.getAuthStat(); },
-    refresh: () => { openFolder(); info_handler.itools.exitBtn.click(); },
+    refresh: () => { open_folder(); info_handler.itools.exitBtn.click(); },
     tagChosen: (signEle, tag = true) => {
         let bg = (tag) ? args.styles.tableItemChose : "";
         signEle.style.background = bg;

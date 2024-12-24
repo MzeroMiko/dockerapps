@@ -240,7 +240,7 @@ function AdminViewer(opts = {}) {
         let openFolder = (path = "", isFolder = true) => {
             if (!isFolder)
                 return;
-            args.params.adminCore.openFolder(path, false, (info) => {
+            args.params.adminCore.openFolder(path, (info) => {
                 tools.titleBar.innerText = "move to " + info.Path;
                 info.FileList = [];
                 movePage.updateInfo(info);
@@ -273,7 +273,7 @@ function AdminViewer(opts = {}) {
         let openFolder = (path = "", isFolder = true) => {
             if (!isFolder)
                 return;
-            args.params.adminCore.openFolder(path, false, (info) => {
+            args.params.adminCore.openFolder(path, (info) => {
                 tools.titleBar.innerText = "copy to " + info.Path;
                 info.FileList = [];
                 movePage.updateInfo(info);

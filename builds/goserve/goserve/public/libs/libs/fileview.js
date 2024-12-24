@@ -43,6 +43,8 @@ function FileViewer(opts = {}) {
     args.box.appendChild(shadow_module)
     for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
+    args.params.chooseIcon = SVGIcons(shadow_module.shadowRoot).chooseIcon
+
     let currentInfo = {};
     // {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", Path:"", IsDir:true, FileNum:"", FolderNum:""} 
     // + {FileNodes:[], FolderNodes:[]}
@@ -57,7 +59,28 @@ function FileViewer(opts = {}) {
     let listParent = listPage.querySelector(".parent");
     let listFolder = listPage.querySelector(".folder");
     let listFile = listPage.querySelector(".file");
-    let template = listPage.querySelector(".padding .item")
+    
+    function get_template_list() {
+        let template = listPage.querySelector(".padding")
+        template.remove()
+        let item_html = template.innerHTML;
+        let item_html_list = [];
+        let pos = [0]
+        let key_list = ["__DATA_RAW__", "__DATA_ICON__", "__DATA_NAME__", "__DATA_TIME__", "__DATA_SIZE__"]
+        for (let i=0; i<key_list.length; i++) {
+            let start = item_html.indexOf(key_list[i])
+            let end = start + key_list[i].length
+            pos.push(start)
+            pos.push(end)
+        }
+        for (let i = 0; i < pos.length; i+=2) {
+            item_html_list.push((i == pos.length - 1)? item_html.slice(pos[i]): item_html.slice(pos[i], pos[i+1]))
+        }
+        return item_html_list
+    }
+    let item_html_list = get_template_list()
+
+
 
     // ======================= //
     ctrlHead.querySelector('.colname').onclick = function () { sortItem("name"); };
@@ -81,7 +104,7 @@ function FileViewer(opts = {}) {
             pathChain.setAttribute("contenteditable", "false");
             pathChain.setAttribute("path", pathChain.innerText);
             if (pathChain.innerText != currentPath) {
-                args.params.openPath(pathChain.innerText, true);
+                open_path(pathChain.innerText, true);
             } else {
                 updatePathChain();
             }
@@ -95,12 +118,16 @@ function FileViewer(opts = {}) {
             pathChain.setAttribute("contenteditable", "false");
             pathChain.setAttribute("path", pathChain.innerText);
             if (pathChain.innerText != currentPath) {
-                args.params.openPath(pathChain.innerText, true);
+                open_path(pathChain.innerText, true);
             } else {
                 updatePathChain();
             }
         }
     };
+
+    function open_path(path, is_dir) {
+        args.params.openPath(path, is_dir)
+    }
 
     function updatePathChain() {
         // update pathChain
@@ -116,7 +143,7 @@ function FileViewer(opts = {}) {
         let numItem = items.length;
         for (let i = 0; i < numItem; i++) {
             items[i].onclick = function () {
-                args.params.openPath(this.getAttribute('path'), true);
+                open_path(this.getAttribute('path'), true);
                 return args.params.noMaskLink;
             };
         }
@@ -125,7 +152,7 @@ function FileViewer(opts = {}) {
         listParent.querySelector('.colicon').innerHTML = '<svg style="height:1em;width:1em;">' + args.params.chooseIcon("home", true) + '</svg>';
         listParent.setAttribute("path", parentPath);
         listParent.querySelector('.colname').onclick = function () {
-            args.params.openPath(this.parentNode.parentNode.getAttribute('path'), true);
+            open_path(this.parentNode.parentNode.getAttribute('path'), true);
             return args.params.noMaskLink;
         };
     }
@@ -144,14 +171,14 @@ function FileViewer(opts = {}) {
         }
 
         function getItemHtml(item = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", FileNum: "", FolderNum: "" }) {
-            let item_html = template.innerHTML;
-            // item.Path = currentPath.replace(/(\/$)/g, "") + "/" + item.Name;
+            item.Path = currentPath.replace(/(\/$)/g, "") + "/" + item.Name;
             item.IsDir = (item.FileNum != "");
-            item_html.replace("__DATA_RAW__", encodeURIComponent(JSON.stringify(item)))
-            item_html.replace("__DATA_ICON__", args.params.chooseIcon(item.Name, item.IsDir))
-            item_html.replace("__DATA_NAME__", item.Name)
-            item_html.replace("__DATA_TIME__", new Date(Number(item.Mtim + "000")).toISOString().slice(0, -5))
-            item_html.replace("__DATA_SIZE__", formatSize(Number(item.Size)))
+            let item_html = item_html_list[0] + encodeURIComponent(JSON.stringify(item)) + item_html_list[1] + args.params.chooseIcon(item.Name, item.IsDir) + item_html_list[2] + item.Name + item_html_list[3] + new Date(Number(item.Mtim + "000")).toISOString().slice(0, -5) + item_html_list[4] +  formatSize(Number(item.Size)) + item_html_list[5];
+            // item_html = item_html.replace("__DATA_RAW__", encodeURIComponent(JSON.stringify(item)))
+            // item_html = item_html.replace("__DATA_ICON__", args.params.chooseIcon(item.Name, item.IsDir))
+            // item_html = item_html.replace("__DATA_NAME__", item.Name)
+            // item_html = item_html.replace("__DATA_TIME__", new Date(Number(item.Mtim + "000")).toISOString().slice(0, -5))
+            // item_html = item_html.replace("__DATA_SIZE__", formatSize(Number(item.Size)))
             return item_html;
         }
 
@@ -170,7 +197,7 @@ function FileViewer(opts = {}) {
             };
             item.querySelector(".colname").onclick = function () {
                 let node = this.parentNode.parentNode;
-                args.params.openPath(node.fileinfo.Path, node.fileinfo.IsDir);
+                open_path(node.fileinfo.Path, node.fileinfo.IsDir);
                 return args.params.noMaskLink;
             };
             item.querySelector(".coltime").onclick = function () {

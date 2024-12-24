@@ -328,18 +328,18 @@ function AdminCore(opts = {}) {
         window.open(url, "_self");
     }
 
-    function openFolder(path = "", updateCurrentPath = false, callback = (info) => { }) {
+    function openFolder(path = "", callback = (info) => { }) {
         let newParts = {};
         let url = comm.pathToUrl(path, params.currentParts, (parts) => {
             parts.query.method = "getdir";
             newParts = parts;
         });
         comm.getAction(url, (result) => {
-            if (updateCurrentPath) {
-                params.currentParts.path = newParts.path;
-                params.currentParts.query.path = newParts.query.path;
-                params.currentParts.hash = newParts.hash;
-            }
+            // if (updateCurrentPath) {
+            //     params.currentParts.path = newParts.path;
+            //     params.currentParts.query.path = newParts.query.path;
+            //     params.currentParts.hash = newParts.hash;
+            // }
             try {
                 // tmpele: <pre name="" size="" mode="" mtim="" ctim="" error="" filenum="1" foldernum="3"> <div type="folder"><a href="" name="" size="" mode="" mtim="" ctim="" filenum="10" foldernum="0">__BACK</a><br></div><div type="file"></div></pre>
                 // info: {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", Path:"", FileList:[], FolderList:[]}

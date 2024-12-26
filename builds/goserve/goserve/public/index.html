@@ -400,7 +400,18 @@
                             <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+"/>
                         </div>
                         <div class="pathChain"></div>
-                        <div class="colmenu log"></div>
+                        <div class="colmenu">
+                            <div class="menu">
+                                <div class="action_item first mkdir">mkdir</div>
+                                <div class="action_item mkfile">mkfile</div>
+                                <div class="action_item upload">upload</div>
+                                <div class="action_item archive">archive</div>
+                                <div class="action_item download"> download </div>
+                                <div class="action_item chooseall">choose all</div>
+                                <div class="action_item reverse">reverse</div>
+                            </div>
+                            <div class="tag">@</div>
+                        </div>
                     </div>
                     <div class="ctrlHead">
                         <div class="colicon"></div>
@@ -412,29 +423,110 @@
                         <div class="colmenu">#</div>
                     </div>
                 </div>
-                <div class="listPage">
-                    <div class="item parent">
-                        <div class="colicon"></div>
-                        <div class="coltext">
-                            <div class="colname">Parent Directory</div>
-                            <div class="coltime">-</div>
-                            <div class="colsize">-</div>
-                        </div>
-                        <div class="colmenu"></div>
-                    </div>
-                    <div class="folder"></div>
-                    <div class="file"></div>
-                    <div class="padding">
-                        <div class="item" raw="__DATA_RAW__" >
+                <div class="page_container">
+                    <div class="listPage">
+                        <div class="item parent">
                             <div class="colicon">
-                                <svg style="height:1em;width:1em;">__DATA_ICON__</svg>
+                                <svg></svg>
                             </div>
                             <div class="coltext">
-                                <div class="colname">__DATA_NAME__</div>
-                                <div class="coltime">__DATA_TIME__</div>
-                                <div class="colsize">__DATA_SIZE__</div>
+                                <div class="colname">Parent Directory</div>
+                                <div class="coltime">-</div>
+                                <div class="colsize">-</div>
                             </div>
-                            <div class="colmenu">#</div>
+                            <div class="colmenu"></div>
+                        </div>
+                        <div class="folder"></div>
+                        <div class="file"></div>
+
+                        <div class="padding">
+                            <div class="item_wrapper">
+                                <div class="item" raw="__DATA_RAW__" >
+                                    <div class="colicon">
+                                        <svg>__DATA_ICON__</svg>
+                                    </div>
+                                    <div class="coltext">
+                                        <div class="colname">__DATA_NAME__</div>
+                                        <div class="coltime">__DATA_TIME__</div>
+                                        <div class="colsize">__DATA_SIZE__</div>
+                                    </div>
+                                    <div class="colmenu">#</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item_menu" style="display: none;">
+                        <div class="item_menu_sub basic">
+                            <div class="basic_icon">
+                                <svg>__DATA_ICON__</svg>
+                            </div>
+                            <div class="basic_text">
+                                <div class="basic_text_name">__DATA_NAME__</div>
+                                <div class="basic_text_size">__DATA_SIZE__</div>
+                            </div>
+                        </div>
+                        <div class="item_menu_sub">
+                            <div class="action_item first download"> download </div>
+                            <div class="action_item archive"> archive </div>
+                            <div class="action_item rename"> rename </div>
+                            <div class="action_item moveto"> moveto </div>
+                            <div class="action_item copyto"> copyto </div>
+                            <div class="action_item delete"> delete </div>
+                        </div>
+                        <div class="item_menu_sub">
+                            <div class="action_item first detail"> detail </div>
+                        </div>
+                    </div>
+                    <div class="detail_info" style="display: none;">
+                        <div class="detail_info_sub">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="key">
+                                            <div class="basic_icon">
+                                                <svg>__DATA_ICON__</svg>
+                                            </div>
+                                        </td>
+                                        <td class="value name">__INFO_NAME__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Size</td>
+                                        <td class="value size">__INFO_SIZE__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Mode</td>
+                                        <td class="value mode">__INFO_MODE__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">IsDir</td>
+                                        <td class="value isdir">__INFO_ISDIR__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Last Modified</td>
+                                        <td class="value mtime">__INFO_MTIME__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Create Time</td>
+                                        <td class="value ctime">__INFO_CTIME__</td>
+                                    </tr>
+                                    <tr class="folder_spec">
+                                        <td class="key">FileNum</td>
+                                        <td class="value finum">__INFO_FINUM__</td>
+                                    </tr>
+                                    <tr class="folder_spec">
+                                        <td class="key">FolderNum</td>
+                                        <td class="value fonum">__INFO_FONUM__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Path</td>
+                                        <td class="value path">__INFO_PATH__</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="key">Link</td>
+                                        <td class="value link">__INFO_LINK__</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

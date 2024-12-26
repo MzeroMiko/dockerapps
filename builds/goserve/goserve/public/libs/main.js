@@ -259,13 +259,11 @@ function open_file(path = "") {
 }
 
 let explorer_app = function () {
-    let chooseIcon = SVGIcons().chooseIcon;
     let is_file_open = false
     let file_box = document.createElement('div');
     let file_view = FileViewer({
             box: file_box,
             html: fileviewer_html,
-            chooseIcon: chooseIcon,
             openPath: (path, isFolder) => {
                 if (isFolder)
                     open_folder(path);
@@ -274,9 +272,6 @@ let explorer_app = function () {
             },
             sortCallBack: (currentInfo) => {
                 catagory_file_list(currentInfo.FileNodes.map((info) => { return info.path; }))
-            },
-            menuAction: (info, node, thisFolder) => { 
-                deltailed_info.genInfo(info, node, thisFolder); 
             },
     });
     let file_handler = imanager.buildView({
@@ -290,9 +285,10 @@ let explorer_app = function () {
     });
     let open_explorer = function () {
         if (is_file_open == false) {
-            file_handler.iview.hide("show"); 
+            open_folder("/"); 
             is_file_open = true;
         }
+        file_handler.iview.hide("show"); 
     }
 
     return {

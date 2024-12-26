@@ -255,6 +255,7 @@
 
 .item_menu .basic_text {
     height:3em;
+    overflow: hidden;
 }
 
 .item_menu .basic_text_name {

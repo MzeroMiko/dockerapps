@@ -60,6 +60,11 @@
     position: absolute;
 }
 
+.padding {
+    display: none;
+}
+
+
 /* ================================= */
 .colicon {
     flex-shrink:0;
@@ -170,6 +175,10 @@
     color:#8ac;
 }
 
+.listPage .item .colmenu::before,  .ctrlHead .colmenu::before {
+    content: "#";
+}
+
 .listPage .item .colname, .listPage .item .coltime, .listPage .item .colsize, .ctrlHead .colname, .ctrlHead .coltime, .ctrlHead .colsize {
     overflow:auto;
     float:left;
@@ -200,7 +209,9 @@
     width:var(--colsize_width);
 }
 
-
+.listPage .final {
+    height: 2em;
+}
 /* =========================================== */
 
 
@@ -260,7 +271,6 @@
 
 .item_menu .basic_text_name {
     padding: 0.25em; 
-    font-size: 1.2em; 
     overflow: hidden;
 }
 
@@ -273,10 +283,11 @@
 
 /* ================================= */
 .detail_info {
-    top: 50%;
     position: absolute;
-    transform: translate(-50%, -50%);
+    top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
     background-color: #eeee; 
     border-radius: 0.5em;
 }
@@ -285,11 +296,12 @@
     border-radius: 0.5em; 
     margin: 0.5em; 
     padding: 0.5em;
+    max-width: 100%;
     background-color: #fff;
     overflow:auto;
 }
 
-.detail_info .detail_info_sub tr td {
+.detail_info tr td {
     white-space:nowrap;
     color:#555;
     font-weight:600;
@@ -297,22 +309,137 @@
     cursor: pointer;
 }
 
-.detail_info .detail_info_sub .basic_icon {
+.detail_info .basic_icon {
     height:3em;
     width:3em;
     margin: 0.5em;
 }
 
-.detail_info .detail_info_sub .basic_icon svg {
+.detail_info .basic_icon svg {
     height:3em;
     width:3em;
 }
 /* ================================= */
 
-.padding .item {
+
+/* ================================= */
+.simple_page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30em;
+    max-width: 90%;
+    max-height: 90%;
+    background-color: #eeee; 
+    border-radius: 0.5em;
+    display: flex;
+    flex-direction: column;
+}
+
+.simple_page_sub {
+    border-radius: 0.5em; 
+    margin: 0.5em; 
+    padding: 0.5em;
+    max-width: 100%;
+    background-color: #fff;
+    overflow:auto;
+}
+
+.simple_page_sub.head {
+    flex-shrink: 0;
+}
+
+.simple_page .item {
+    display:flex;
+    overflow:hidden;
+    border-top:1px solid rgba(0, 0, 0, 0.125);
+    background:var(--listItemColor);
+    min-height: 3em;
+}
+
+.simple_page .item:hover { 
+    background:var(--listItemHover); 
+}
+
+.simple_page .item .coltext {
+    flex:auto;
+    overflow:hidden;
+    text-align:left;
+    color:#233;
+    font-weight:600;
+}
+
+.simple_page .item .colmenu {
+    flex-shrink:0;
+    font-size:1.3em;
+    height:1em;
+    width:1em;
+    cursor:pointer;
+    font-weight:900;
+    padding:0.6em;
+    color:#8ac;
+}
+
+.simple_page .item .colname, .simple_page .item .coltime {
+    overflow:hidden;
+    float:left;
+    padding:0.7em;
+    box-sizing:border-box;
+    word-break:break-all;
+}
+
+.simple_page .item .colname {
+    overflow:auto;
+}
+
+.simple_page .item .coltext {
+    cursor:pointer;
+}
+
+.simple_page .colname, .simple_page .coltime {
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.simple_page .item .colname {
+    width:60%;
+}
+
+.simple_page .item .coltime {
+    width:40%;
+} 
+
+.simple_page .item .colsize {
     display: none;
 }
 
-.padding {
-    height: 2em;
+.simple_page .fromto .from, .simple_page .fromto .to {
+    display: flex;
 }
+
+.simple_page .fromto .title {
+    font-weight: 600;
+    font-size: 1.5em;
+    text-align: center;
+    padding:0.5em;
+}
+
+.simple_page .fromto .key {
+    padding:0.5em;
+    width: 4em;
+}
+
+.simple_page .fromto .input {
+    outline: none;
+    background: transparent;
+    flex: auto;
+    font-weight: 600;
+    padding: 0.2em;
+    border-width: 0 0 0.2em 0;
+    border-bottom: inset #000;
+}
+
+
+/* ================================= */
+

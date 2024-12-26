@@ -13,13 +13,18 @@ function FileViewer(opts = {}) {
         html: opts.html,
         params: {
             noMaskLink: false,
-            chooseIcon: null,
             sortCallBack: (cinfo) => { }, 
-            openPath: (path, isFolder) => { },
-            // menuAction: (info, node, thisFolder) => { }, 
-            // iconAction: (path, ele, isFolder) => { },
-            // sizeAction: (path, ele, isFolder) => { }, 
-            // timeAction: (path, ele, isFolder) => { },
+            openfile: (path) => { },
+            openfolder: (path, callback, simple=false) => { },
+            download: (paths) => { },
+            archive: (paths, callback) => {},
+            rename: (paths, callback) => {},
+            moveto: (paths, callback) => {},
+            copyto: (paths, callback) => {},
+            remove: (paths, callback) => {},
+            upload: (paths, callback) => {},
+            mkdir: (paths, callback) => {},
+            mkfile: (paths, callback) => {},
         },
         styles: {
             basicSize: "14px",
@@ -41,10 +46,9 @@ function FileViewer(opts = {}) {
     let currentInfo = {};
     // {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", Path:"", IsDir:true, FileNum:"", FolderNum:""} 
     // + {FileNodes:[], FolderNodes:[]}
+    // + {FileList:[], FolderList:[]}
 
     let currentPath = ""; // /xx/xxx/xxx with URIDecoded
-    let fileList = [];
-    let folderList = [];
     let nameOrder = false // false means sort small -> big
     let timeOrder = false
     let sizeOrder = false
@@ -83,33 +87,55 @@ function FileViewer(opts = {}) {
     let detail_info_path = detail_info.querySelector(".value.path")
     let detail_info_link = detail_info.querySelector(".value.link")
 
+    let simple_page = container.querySelector(".simple_page")
+    let simple_page_action = container.querySelector(".simple_page .title")
+    let simple_page_input0 = container.querySelector(".simple_page .from .input")
+    let simple_page_input1 = container.querySelector(".simple_page .to .input")
+    let simple_page_content = simple_page.querySelector(".content")
+    let simple_page_folder = simple_page.querySelector(".folder")
+
+    let choose_icon = null
+    try {
+        choose_icon = SVGIcons(shadow_module.shadowRoot).chooseIcon
+    } catch (error) {
+        choose_icon = (name = "", isFolder = false) => {
+        if (isFolder)
+            return '<path d="M10 4H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8c0-1.11-.9-2-2-2h-8l-2-2z" fill="#90a4ae" />';
+            else
+                return '<path d="M13 9h5.5L13 3.5V9M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4c0-1.11.89-2 2-2m5 2H6v16h12v-9h-7V4z" fill="#42a5f5" />';
+        }
+    }
+
     init_head_menu_function()
     init_head_path_function()
     init_ctrl_menu_function()
     init_item_menu_function()
     init_item_detail_function()
-
+    init_simple_page_function()
 
     let operations = {
         refresh: () => {open_path(currentPath, True)},
-        download: args.params.adminView.download,
-        archive: args.params.adminView.archive,
-        rename: args.params.adminView.rename,
-        moveto: args.params.adminView.moveto,
-        copyto: args.params.adminView.copyto,
-        remove: args.params.adminView.remove,
-        upload: args.params.adminView.upload,
-        mkdir: args.params.adminView.mkdir,
-        mkfile: args.params.adminView.mkfile,
-        sort_callback: args.params.sortCallBack,
+        openfile: (path) => {args.params.openfile(path)},
+        openfolder: args.params.openfolder,
+        download: (paths) => {args.params.download(paths)},
+        archive: (paths, callback) => {args.params.archive(paths, callback)},
+        rename: (paths, callback) => {args.params.rename(paths, callback)},
+        moveto: (paths, callback) => {args.params.moveto(paths, callback)},
+        copyto: (paths, callback) => {args.params.copyto(paths, callback)},
+        remove: (paths, callback) => {args.params.remove(paths, callback)},
+        upload: (paths, callback) => {args.params.upload(paths, callback)},
+        mkdir: (paths, callback) => {args.params.mkdir(paths, callback)},
+        mkfile: (paths, callback) => {args.params.mkfile(paths, callback)},
+        sort_callback: (cinfo) => {args.params.sortCallBack(cinfo)},
     }
 
-    
     function open_path(path, is_dir) {
         let ori_background = container.style.background;
         container.style.background = "#666";
-        if (args.params.openPath) 
-            args.params.openPath(path, is_dir);
+        if (is_dir)
+            operations.openfolder(path, (info)=>{ update_info(info); });
+        else
+            operations.openfile(path);
         container.style.background = ori_background;
     }
 
@@ -119,20 +145,17 @@ function FileViewer(opts = {}) {
         return ""
     }
 
-    function choose_icon(name, is_dir) {
-        if (!args.params.chooseIcon) {
-            try {
-                args.params.chooseIcon = SVGIcons(shadow_module.shadowRoot).chooseIcon
-            } catch (error) {
-                args.params.chooseIcon = (name = "", isFolder = false) => {
-                    if (isFolder)
-                        return '<path d="M10 4H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8c0-1.11-.9-2-2-2h-8l-2-2z" fill="#90a4ae" />';
-                    else
-                        return '<path d="M13 9h5.5L13 3.5V9M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4c0-1.11.89-2 2-2m5 2H6v16h12v-9h-7V4z" fill="#42a5f5" />';
-                }
-            }            
-        }
-        args.params.chooseIcon(name, is_dir)
+    function format_size(sizeB = 0) {
+        // Cautions: >> is limited to 32bit signed int, 1<<31 
+        let GB = 1 << 30, MB = 1 << 20, KB = 1 << 10;
+        if (sizeB > GB)
+            return (sizeB / GB).toFixed(2) + "G";
+        else if (sizeB > MB)
+            return (sizeB / MB).toFixed(2) + "M";
+        else if (sizeB > KB)
+            return (sizeB / KB).toFixed(2) + "K";
+        else
+            return sizeB.toString() + "B";
     }
 
     let item_html_list = (() => {
@@ -154,21 +177,8 @@ function FileViewer(opts = {}) {
         return item_html_list
     })()
 
-    function format_size(sizeB = 0) {
-        // Cautions: >> is limited to 32bit signed int, 1<<31 
-        let GB = 1 << 30, MB = 1 << 20, KB = 1 << 10;
-        if (sizeB > GB)
-            return (sizeB / GB).toFixed(2) + "G";
-        else if (sizeB > MB)
-            return (sizeB / MB).toFixed(2) + "M";
-        else if (sizeB > KB)
-            return (sizeB / KB).toFixed(2) + "K";
-        else
-            return sizeB.toString() + "B";
-    }
-
-    function get_item_html(item = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", FileNum: "", FolderNum: "" }) {
-        item.Path = currentPath.replace(/(\/$)/g, "") + "/" + item.Name;
+    function get_item_html(item = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", FileNum: "", FolderNum: "" }, current_path) {
+        item.Path = current_path.replace(/(\/$)/g, "") + "/" + item.Name;
         item.IsDir = (item.FileNum != "");
         let item_html = item_html_list[0] + encodeURIComponent(JSON.stringify(item)) + item_html_list[1] + choose_icon(item.Name, item.IsDir) + item_html_list[2] + item.Name + item_html_list[3] + new Date(Number(item.Mtim + "000")).toISOString().slice(0, -5) + item_html_list[4] +  format_size(Number(item.Size)) + item_html_list[5];
         return item_html;
@@ -181,10 +191,10 @@ function FileViewer(opts = {}) {
         ctrlHead.querySelector('.colmenu').onclick = function () {
             if (currentInfo.FileNodes.length + currentInfo.FolderNodes.length == 0) {
                 Array.prototype.slice.call(listFolder.children).forEach(function (item) {
-                    currentInfo.FolderNodes.push({ path: item.fileinfo.Path, node: item });
+                    currentInfo.FolderNodes.push({ path: item.__fileinfo__.Path, node: item });
                 });
                 Array.prototype.slice.call(listFile.children).forEach(function (item) {
-                    currentInfo.FileNodes.push({ path: item.fileinfo.Path, node: item });
+                    currentInfo.FileNodes.push({ path: item.__fileinfo__.Path, node: item });
                 });
             }
 
@@ -222,15 +232,11 @@ function FileViewer(opts = {}) {
         }
         // update parentDir
         let parentPath = ((pathList.length < 2) ? "/" : pathList[pathList.length - 2].path);
-        listParent.querySelector('.colicon svg').innerHTML = choose_icon("home", true);
         listParent.setAttribute("path", parentPath);
-        listParent.querySelector('.colname').onclick = function () {
-            open_path(this.parentNode.parentNode.getAttribute('path'), true);
-            return no_mask_link;
-        };
     }
 
     function init_head_path_function() {
+        pathHead.querySelector('.colicon img').src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+"
         pathHead.querySelector('.colicon').onclick = function () {
             if (listPage.scrollTop != 0)
                 listPage.scrollTop = 0;
@@ -258,6 +264,12 @@ function FileViewer(opts = {}) {
                 }
             }
         };
+        listParent.querySelector('.colicon svg').innerHTML = choose_icon("home", true);
+        listParent.querySelector('.colname').onclick = function () {
+            open_path(this.parentNode.parentNode.getAttribute('path'), true);
+            return no_mask_link;
+        };
+        
     }
 
     function set_item_detail_display(info=null, icon=null, stop=false) {
@@ -279,9 +291,9 @@ function FileViewer(opts = {}) {
                 item.style.display = ((info.IsDir) ? "" : "none");
             });
             detail_info.style.display = ""
-            detail_info.operation_time = Date.now()
+            detail_info.__operation_time__ = Date.now()
             function close_display_fn() {
-                if (Date.now() - detail_info.operation_time > 3000) set_item_detail_display(null, null, true); 
+                if (Date.now() - detail_info.__operation_time__ > 3000) set_item_detail_display(null, null, true); 
                 else setTimeout(close_display_fn, 3000)
             }
             close_display_fn()
@@ -302,17 +314,17 @@ function FileViewer(opts = {}) {
                 input.remove();
                 value.style.background = "#abf";
                 setTimeout(() => { value.style.background = ""; }, 1000);
-                detail_info.operation_time = Date.now()
+                detail_info.__operation_time__ = Date.now()
             };
         });
     }
 
     function set_item_menu_display(node=null) {
-        if (!node || (item_menu_open && (item_menu.fileinfo == node.fileinfo))) {
+        if (!node || (item_menu_open && (item_menu.__fileinfo__ == node.__fileinfo__))) {
             item_menu_icon.innerHTML = "";
             item_menu_name.innerHTML = "";
             item_menu_size.innerHTML = "";
-            item_menu.fileinfo = null;
+            item_menu.__fileinfo__ = null;
             item_menu.style.display = "none";
             item_menu_open = false;
         } else {
@@ -329,11 +341,11 @@ function FileViewer(opts = {}) {
             item_menu_icon.innerHTML = node.querySelector(".colicon svg").innerHTML;
             item_menu_name.innerHTML = node.querySelector(".colname").innerHTML;
             item_menu_size.innerHTML = node.querySelector(".colsize").innerHTML;
-            item_menu.fileinfo = node.fileinfo;
+            item_menu.__fileinfo__ = node.__fileinfo__;
             item_menu_open = true;
-            item_menu.operation_time = Date.now()
+            item_menu.__operation_time__ = Date.now()
             function close_display_fn() {
-                if (Date.now() - item_menu.operation_time > 3000) set_item_menu_display(null); 
+                if (Date.now() - item_menu.__operation_time__ > 3000) set_item_menu_display(null); 
                 else setTimeout(close_display_fn, 3000)
             }
             close_display_fn()
@@ -342,58 +354,94 @@ function FileViewer(opts = {}) {
 
     function init_item_menu_function() {
         item_menu.querySelector(".action_item.download").onclick = function () {
-            item_menu.operation_time = Date.now()
-            if (item_menu.fileinfo.IsDir) {
+            item_menu.__operation_time__ = Date.now()
+            if (item_menu.__fileinfo__.IsDir) {
                 // warn("dir can not be downloaded.")
             } else {
-                operations.download(item_menu.fileinfo.Path, operations.refresh)
+                operations.download([item_menu.__fileinfo__.Path])
             }
         }
         item_menu.querySelector(".action_item.archive").onclick = function () {
-            item_menu.operation_time = Date.now()
-            if (!item_menu.fileinfo.IsDir) {
+            item_menu.__operation_time__ = Date.now()
+            if (!item_menu.__fileinfo__.IsDir) {
                 // warn("file can not be tared.")
             } else {
-                operations.archive(item_menu.fileinfo.Path, operations.refresh)
+                // confirm pop menu
+                operations.archive(item_menu.__fileinfo__.Path, operations.refresh)
             }
         }
         item_menu.querySelector(".action_item.rename").onclick = function () {
-            item_menu.operation_time = Date.now()
-            operations.rename(item_menu.fileinfo.Path, operations.refresh);
+            item_menu.__operation_time__ = Date.now()
+            simple_page_action.innerText = "Rename";
+            simple_page_input0.value = item_menu.__fileinfo__.Path;
+            simple_page_input1.value = item_menu.__fileinfo__.Path;
+            simple_page.style.display = ""
+            simple_page_content.style.display = "none"
+            simple_page_action.onclick = function () {
+                simple_page.style.display = "none"
+                simple_page_content.style.display = ""
+                // confirm pop menu
+                operations.rename([simple_page_input0.value, simple_page_input1.value], operations.refresh);
+            }
         }
         item_menu.querySelector(".action_item.moveto").onclick = function () {
-            item_menu.operation_time = Date.now()
-            operations.moveto(item_menu.fileinfo.Path, operations.refresh);
+            item_menu.__operation_time__ = Date.now()
+            simple_page_action.innerText = "Move To";
+            simple_page_input0.value = item_menu.__fileinfo__.Path;
+            simple_page_input1.value = item_menu.__fileinfo__.Path;
+            simple_page.style.display = ""
+            operations.openfolder(currentPath, (info)=>{ 
+                set_simple_page_display(info); 
+            });
+            simple_page_action.onclick = function () {
+                simple_page.style.display = "none"
+                // confirm pop menu
+                operations.moveto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
+            }
         }
         item_menu.querySelector(".action_item.copyto").onclick = function () {
-            item_menu.operation_time = Date.now()
-            operations.copyto(item_menu.fileinfo.Path, operations.refresh);
+            item_menu.__operation_time__ = Date.now()
+            simple_page_action.innerText = "Move To";
+            simple_page_input0.value = item_menu.__fileinfo__.Path;
+            simple_page_input1.value = item_menu.__fileinfo__.Path;
+            simple_page.style.display = ""
+            operations.openfolder(currentPath, (info)=>{ 
+                set_simple_page_display(info); 
+            });
+            simple_page_action.onclick = function () {
+                simple_page.style.display = "none"
+                // confirm pop menu
+                operations.copyto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
+            }
         }
         item_menu.querySelector(".action_item.delete").onclick = function () {
-            item_menu.operation_time = Date.now()
-            operations.remove(item_menu.fileinfo.Path, operations.refresh);
+            item_menu.__operation_time__ = Date.now()
+            // confirm pop menu
+            operations.remove(item_menu.__fileinfo__.Path, operations.refresh);
         }
         item_menu.querySelector(".action_item.detail").onclick = function () {
-            item_menu.operation_time = Date.now()
-            set_item_detail_display(item_menu.fileinfo, item_menu_icon.innerHTML)
+            item_menu.__operation_time__ = Date.now()
+            set_item_detail_display(item_menu.__fileinfo__, item_menu_icon.innerHTML)
         }
     }
 
     function init_head_menu_function() {
         head_menu.querySelector(".action_item.mkdir").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
+            // confirm pop menu
             operations.mkdir(currentInfo.Path, operations.refresh);
         }
         head_menu.querySelector(".action_item.mkfile").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
+            // confirm pop menu
             operations.mkfile(currentInfo.Path, operations.refresh);
         }
         head_menu.querySelector(".action_item.upload").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
             operations.upload(currentInfo.Path, operations.refresh);
         }
         head_menu.querySelector(".action_item.download").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
 
             if (choose_mode) {
                 let all_path = chosenFiles.map(function (item) { return item.path; })
@@ -405,7 +453,7 @@ function FileViewer(opts = {}) {
             }
         }
         head_menu.querySelector(".action_item.archive").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
 
             if (choose_mode) {
                 let all_path = chosenFiles.concat(chosenFolders).map(function (item) { return item.path; })
@@ -418,7 +466,7 @@ function FileViewer(opts = {}) {
             }
         }
         head_menu.querySelector(".action_item.chooseall").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
 
             if (chosenFiles.length + chosenFolders.length == currentInfo.FileNodes.length + currentInfo.FolderNodes.length) {
                 chosenFiles.forEach(function (item) {
@@ -445,7 +493,7 @@ function FileViewer(opts = {}) {
             }
         }
         head_menu.querySelector(".action_item.reverse").onclick = function () {
-            head_menu.operation_time = Date.now()
+            head_menu.__operation_time__ = Date.now()
 
             chosenFiles.forEach(function (item) {
                 if (item.node)
@@ -472,6 +520,19 @@ function FileViewer(opts = {}) {
         }
     }
 
+    function init_simple_page_function() {
+        simple_page.querySelector('.item.parent .colicon svg').innerHTML = choose_icon("home", true);
+        simple_page.querySelector('.item.parent .colname').onclick = function () {
+            operations.openfolder(this.parentNode.parentNode.getAttribute('path'), (info)=>{ 
+                set_simple_page_display(info); 
+            });
+            return no_mask_link;
+        };
+        simple_page.querySelector('.item.parent .colmenu').onclick = function () {
+            simple_page_input1.value = simple_page.__this_info__.Path;
+        };
+    }
+
     function tag_chosen(node=null, choose=true) {
         if (choose) {
             node.style.background = "rgba(255,255,200,0.75)"
@@ -481,8 +542,8 @@ function FileViewer(opts = {}) {
     }
 
     function choose_item(node = null, append = true) {
-        let path = node.fileinfo.Path
-        let isFolder = node.fileinfo.IsDir
+        let path = node.__fileinfo__.Path
+        let isFolder = node.__fileinfo__.IsDir
         if (!append) {
             chosenFiles = [];
             chosenFolders = [];
@@ -509,11 +570,16 @@ function FileViewer(opts = {}) {
     }
 
     function set_item_action(item = null) {
-        item.fileinfo = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
+        item.__fileinfo__ = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
         item.setAttribute("raw", "");
         item.querySelector(".colicon").onclick = function () {
             let node = this.parentNode;
-            open_path(node.fileinfo.Path, node.fileinfo.IsDir);
+            open_path(node.__fileinfo__.Path, node.__fileinfo__.IsDir);
+            return no_mask_link;
+        };
+        item.querySelector(".colname").onclick = function () {
+            let node = this.parentNode.parentNode;
+            open_path(node.__fileinfo__.Path, node.__fileinfo__.IsDir);
             return no_mask_link;
         };
         item.querySelector(".colmenu").onclick = function () {
@@ -525,24 +591,19 @@ function FileViewer(opts = {}) {
             }
             return no_mask_link;
         };
-        item.querySelector(".colname").onclick = function () {
-            let node = this.parentNode.parentNode;
-            open_path(node.fileinfo.Path, node.fileinfo.IsDir);
-            return no_mask_link;
-        };
     }
 
     function update_items(fileList = [], folderList = [], updateCallBack = null) {
         // update listFolder and listFile
-        let htmlFolder = folderList.map(function (value) { return get_item_html(value); });
-        let htmlFile = fileList.map(function (value) { return get_item_html(value); });
+        let htmlFolder = folderList.map(function (value) { return get_item_html(value, currentPath); });
+        let htmlFile = fileList.map(function (value) { return get_item_html(value, currentPath); });
         listFolder.innerHTML = htmlFolder.join("");
         listFile.innerHTML = htmlFile.join("");
         // append onclick
         setTimeout(function () {
-            Array.prototype.slice.call(listFolder.children)
-                .concat(Array.prototype.slice.call(listFile.children))
-                .forEach(function (item) { set_item_action(item); });
+            let all_items = Array.prototype.slice.call(listFolder.children);
+            all_items = all_items.concat(Array.prototype.slice.call(listFile.children));
+            all_items.forEach(function (item) { set_item_action(item); });
             updateCallBack();
         }, 32); // timeOut to process after (but not exact time to process)
     }
@@ -574,22 +635,22 @@ function FileViewer(opts = {}) {
             default:
                 return;
         }
-        fileList.sort(sortf);
-        folderList.sort(sortf);
-        update_items(fileList, folderList, function () {
+        currentInfo.FileList.sort(sortf);
+        currentInfo.FolderList.sort(sortf);
+        update_items(currentInfo.FileList, currentInfo.FolderList, function () {
             currentInfo.FileNodes = [];
             currentInfo.FolderNodes = [];
             Array.prototype.slice.call(listFolder.children).forEach(function (item) {
-                currentInfo.FolderNodes.push({ path: item.fileinfo.Path, node: item });
+                currentInfo.FolderNodes.push({ path: item.__fileinfo__.Path, node: item });
             });
             Array.prototype.slice.call(listFile.children).forEach(function (item) {
-                currentInfo.FileNodes.push({ path: item.fileinfo.Path, node: item });
+                currentInfo.FileNodes.push({ path: item.__fileinfo__.Path, node: item });
             });
             operations.sort_callback(currentInfo);
         });
     }
 
-    function update_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
+    function get_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
         try {
             info.FileList = JSON.parse(info.FileList);
             info.FolderList = JSON.parse(info.FolderList);
@@ -598,23 +659,63 @@ function FileViewer(opts = {}) {
             info.FileList = [];
         if (!info.FolderList)
             info.FolderList = [];
-        currentInfo = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "/", IsDir: true, FileNum: "", FolderNum: "" };
+        let this_info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "/", IsDir: true, FileNum: "", FolderNum: "" };
         for (let key in info)
-            if (key in currentInfo)
-                currentInfo[key] = info[key];
-        currentInfo.FileNum = info.FileList.length + "";
-        currentInfo.FolderNum = info.FolderList.length + "";
-        currentInfo.FileNodes = [];
-        currentInfo.FolderNodes = [];
+            if (key in this_info)
+                this_info[key] = info[key];
+        this_info.FileNum = info.FileList.length + "";
+        this_info.FolderNum = info.FolderList.length + "";
+        this_info.FileNodes = [];
+        this_info.FolderNodes = [];
+        this_info.FileList = info.FileList.slice(0);
+        this_info.FolderList = info.FolderList.slice(0);
+        return this_info
+    }
+
+    function update_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
+        currentInfo = get_info(info);
         currentPath = currentInfo.Path; // /xx/xxx/xxx with URIDecoded
-        fileList = info.FileList.slice(0);
-        folderList = info.FolderList.slice(0);
         nameOrder = false;
-        set_head_path_display();
         sort_items("name");
+        set_head_path_display();
+    }
+
+    function set_simple_page_display(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
+        let this_info = get_info(info);
+        let sortf = function (a, b) { return a.Name.localeCompare(b.Name); };
+        this_info.FileList.sort(sortf);
+        this_info.FileList.sort(sortf);
+        let current_path = this_info.Path;
+        simple_page.__this_info__ = this_info;
+
+        let htmlFolder = this_info.FolderList.map(function (value) { return get_item_html(value, current_path); });
+        // let htmlFile = this_info.FileList.map(function (value) { return get_item_html(value, current_path); });
+        simple_page_folder.innerHTML = htmlFolder.join("");
+        // simple_page_file.innerHTML = htmlFile.join("");
+        
+        // append onclick
+        setTimeout(function () {
+            let all_items = Array.prototype.slice.call(simple_page_folder.children);
+            // all_items = all_items.concat(Array.prototype.slice.call(simple_page_file.children));
+            all_items.forEach(function (item) {
+                item.__fileinfo__ = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
+                item.setAttribute("raw", "");
+                item.onclick = function () {
+                    let node = this.parentNode;
+                    if (node.__fileinfo__.IsDir) {
+                        operations.openfolder(node.__fileinfo__.Path, (info)=>{ 
+                            set_simple_page_display(info); 
+                        });
+                    }
+                    return no_mask_link;
+                };
+            });
+        }, 32); // timeOut to process after (but not exact time to process)
+
     }
 
     return {
         updateInfo: update_info,
     }
 }
+

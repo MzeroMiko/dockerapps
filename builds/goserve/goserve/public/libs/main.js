@@ -38,13 +38,8 @@ let imanager = InnerManager({
 let popMenu = PopupMenu({ 
     box: document.body.appendChild(document.createElement('div')), 
     html: popmenu_html,
-    zindex: 100, 
+    zindex: 101, 
 });
-// popMenu.appendMessage("fail", "Authorization Fail");
-// popMenu.appendMessage("fail", " test")
-// popMenu.appendMessage("warn", " test")
-// popMenu.appendMessage("info", " test")
-// popMenu.appendMessage("pass", " test")
 
 // ========================================================
 const view_type = {
@@ -70,6 +65,7 @@ function get_type(path) {
     }
     return type;
 }
+
 function catagory_file_list(file_list) {
     file_preview_List = file_list;
 
@@ -84,6 +80,7 @@ function catagory_file_list(file_list) {
     //     file_preview_list_dict[get_type(f)].push(f)
     // }
 }
+
 function next_path(type = ["plain"], tag = "next", path = "") {
     let pathList = filePreviewList;
     let pos = pathList.indexOf(path);
@@ -209,7 +206,11 @@ let historyMode = false;
 function address_line_init(url) {
     if (windowPush) {
         window.addEventListener('popstate', function (evt) {
-            try { open_folder(adminCore.urlToPath(evt.state.url)); } catch (err) { }
+            try { 
+                open_folder(adminCore.urlToPath(evt.state.url), (info)=>{
+                    file_view.updateInfo(info);
+                });
+            } catch (err) { }
         });
     }
 }
@@ -222,11 +223,13 @@ function address_line_push (url) {
 }
 
 let explorer_current_parts = {}
-function open_folder(path = "") {
+function open_folder(path = "", callback=(info)=>{}, simple=false) {
     adminCore.openFolder(path, function (info) {
         // explorer_current_parts = {}
-        explorer_app.update_info(info);
-        address_line_push(adminCore.pathToUrl(info.Path))
+        callback(info);
+        if (!simple) {
+            address_line_push(adminCore.pathToUrl(info.Path))
+        }
     });
 }
 
@@ -264,14 +267,20 @@ let explorer_app = function () {
     let file_view = FileViewer({
             box: file_box,
             html: fileviewer_html,
-            openPath: (path, isFolder) => {
-                if (isFolder)
-                    open_folder(path);
-                else
-                    open_file(path);
-            },
+            openfile: open_file,
+            openfolder: open_folder,
             sortCallBack: (currentInfo) => {
                 catagory_file_list(currentInfo.FileNodes.map((info) => { return info.path; }))
+            },
+            download: (chosenFiles = []) => {
+                chosenFiles.slice(0).forEach((path, index) => {
+                    setTimeout(() => { adminCore.download(path); }, 800 * index);
+                });
+            },
+            mkdir: (dirPath = "", finishCallBack = () => { }) => {
+                popMenu.appendMessage("input", "New Directory", "", (name) => {
+                    adminCore.mkdirCore(dirPath + "/" + name, popTemplates("mkdir " + name, finishCallBack));
+                });
             },
     });
     let file_handler = imanager.buildView({
@@ -285,7 +294,9 @@ let explorer_app = function () {
     });
     let open_explorer = function () {
         if (is_file_open == false) {
-            open_folder("/"); 
+            open_folder("/", (info)=>{
+                file_view.updateInfo(info);
+            }); 
             is_file_open = true;
         }
         file_handler.iview.hide("show"); 
@@ -679,22 +690,23 @@ let info_handler = imanager.buildView({
     btnshow: ["min", "max", "exit"],
     exit: () => { deltailed_info.setChooseMode(false); info_handler.iview.hide("hide"); }
 });
-let deltailed_info = InfoViewer({
-    box: info_handler.ibox, 
-    html: infoview_html,
-    admin_view: admin_view,
-    pathToUrl: (path) => { return adminCore.pathToUrl(path); },
-    getAuthStat: () => { return adminCore.getAuthStat(); },
-    refresh: () => { open_folder(); info_handler.itools.exitBtn.click(); },
-    tagChosen: (signEle, tag = true) => {
-        let bg = (tag) ? args.styles.tableItemChose : "";
-        signEle.style.background = bg;
-    },
-    changeCallBack: () => {
-        info_handler.iview.hide("show");
-        info_handler.iview.setView("22em", info_handler.ibox.getBoundingClientRect().height + 1.5 * info_handler.itools.titleBar.getBoundingClientRect().height + "px");
-    },
-});
+let deltailed_info = null
+// let deltailed_info = InfoViewer({
+//     box: info_handler.ibox, 
+//     html: infoview_html,
+//     admin_view: admin_view,
+//     pathToUrl: (path) => { return adminCore.pathToUrl(path); },
+//     getAuthStat: () => { return adminCore.getAuthStat(); },
+//     refresh: () => { open_folder(); info_handler.itools.exitBtn.click(); },
+//     tagChosen: (signEle, tag = true) => {
+//         let bg = (tag) ? args.styles.tableItemChose : "";
+//         signEle.style.background = bg;
+//     },
+//     changeCallBack: () => {
+//         info_handler.iview.hide("show");
+//         info_handler.iview.setView("22em", info_handler.ibox.getBoundingClientRect().height + 1.5 * info_handler.itools.titleBar.getBoundingClientRect().height + "px");
+//     },
+// });
 
 // ============================================================
 function buildLinks(exLinks) {

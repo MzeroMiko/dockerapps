@@ -70,16 +70,16 @@ function AdminViewer(opts = {}) {
             args.params.adminCore.closeSessionCore(function () { logoutCallBack(); });
         }
     }
-    function download(chosenFiles = []) {
-        chosenFiles.slice(0).forEach((path, index) => {
-            setTimeout(() => { args.params.adminCore.download(path); }, 800 * index);
-        });
-    }
-    function mkdir(dirPath = "", finishCallBack = () => { }) {
-        args.params.popMenu.appendMessage("input", "New Directory", "", (name) => {
-            args.params.adminCore.mkdirCore(dirPath + "/" + name, popTemplates("mkdir " + name, finishCallBack));
-        });
-    }
+    // function download(chosenFiles = []) {
+    //     chosenFiles.slice(0).forEach((path, index) => {
+    //         setTimeout(() => { args.params.adminCore.download(path); }, 800 * index);
+    //     });
+    // }
+    // function mkdir(dirPath = "", finishCallBack = () => { }) {
+    //     args.params.popMenu.appendMessage("input", "New Directory", "", (name) => {
+    //         args.params.adminCore.mkdirCore(dirPath + "/" + name, popTemplates("mkdir " + name, finishCallBack));
+    //     });
+    // }
     function rename(chosenPath = [], finishCallBack = () => { }) {
         chosenPath.slice(0).forEach((srcPath) => {
             let srcName = srcPath.slice(srcPath.lastIndexOf("/") + 1);
@@ -304,9 +304,9 @@ function AdminViewer(opts = {}) {
         getArgs: () => { return args; },
         setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         login: login,
-        download: download,
+        // download: download,
         upload: upload,
-        mkdir: mkdir,
+        // mkdir: mkdir,
         mkfile: mkfile,
         rename: rename,
         archive: archive,

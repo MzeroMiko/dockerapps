@@ -16,7 +16,7 @@ let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
 let popmenu_html = get_html_and_del("htmlstore module.popmenu")
 // let infoview_html = get_html_and_del("htmlstore module.infoview")
 let codeview_html = get_html_and_del("htmlstore module.codeview")
-let adminview_html = get_html_and_del("htmlstore module.adminview")
+// let adminview_html = get_html_and_del("htmlstore module.adminview")
 let plainview_html = get_html_and_del("htmlstore module.plainview")
 let htmlview_html = get_html_and_del("htmlstore module.htmlview")
 let pdfview_html = get_html_and_del("htmlstore module.pdfview")
@@ -148,7 +148,7 @@ let adminCore = AdminCore({ authFailCallBack: () => { popMenu.appendMessage("fai
         button.innerText = "IN";
         button.onclick = function () {
             let button = this;
-            admin_view.login((button.innerText == "IN"), function () {
+            LoginPage().login((button.innerText == "IN"), function () {
                 button.innerText = "OUT";
             }, function () {
                 button.innerText = "IN";
@@ -281,6 +281,33 @@ function pop_templates(sign, finish_callBack) {
         info: (info) => { popmenu.appendMessage("info", sign + " : get info " + info); },
         pass: (info) => { popmenu.appendMessage("pass", sign + " : pass " + info); finish_callBack(); },
         all: (info) => { },
+    }
+}
+
+
+function LoginPage() {
+    let authTimeHandler;
+    function login(login = true, loginCallBack = () => { }, logoutCallBack = () => { }) {
+        let waitAuthTimeout = (waitTime) => {
+            if (!adminCore.getAuthStat()) { logoutCallBack(); clearTimeout(authTimeHandler); }
+            authTimeHandler = setTimeout(function () { waitAuthTimeout(waitTime); }, waitTime);
+        }
+
+        if (login) {
+            popMenu.appendAuth((name, key) => {
+                if (!(name + key))
+                    return false;
+                adminCore.askAuthCore(name + key,
+                    () => { waitAuthTimeout(2000); loginCallBack(); },
+                    () => { pop_templates("").authFail(); logoutCallBack(); }
+                );
+            });
+        } else {
+            adminCore.closeSessionCore(function () { logoutCallBack(); });
+        }
+    }
+    return {
+        login: login,
     }
 }
 
@@ -713,14 +740,14 @@ let image_viewer_app = function () {
 
 // ======================================================
 
-let admin_view = AdminViewer({ 
-    html: adminview_html,
-    fileviewer_html: fileviewer_html,
-    adminCore: adminCore, 
-    popMenu: popMenu,
-    iView: imanager.newView("24em", "80%"), 
-    PView: FileViewer, 
-});
+// let admin_view = AdminViewer({ 
+//     html: adminview_html,
+//     fileviewer_html: fileviewer_html,
+//     adminCore: adminCore, 
+//     popMenu: popMenu,
+//     iView: imanager.newView("24em", "80%"), 
+//     PView: FileViewer, 
+// });
 
 // let info_handler = imanager.buildView({
 //     width: "22em", height: "44em", title: "info", 

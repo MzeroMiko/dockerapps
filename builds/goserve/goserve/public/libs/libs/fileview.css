@@ -12,7 +12,7 @@
     --listItemHover: rgba(196,196,196,0.75);
     --colname_width: 55%;
     --coltime_width: 25%;
-    --colsize_width: 20%;
+    --colsize_width: 25%;
     --colmenu_display: block;
     --ctrlHeadColor: rgba(255,255,255,0.2);
     --pathHeadColor: rgba(120,120,180,0.25);
@@ -162,6 +162,7 @@
     text-align:left;
     color:#233;
     font-weight:600;
+    display: flex;
 }
 
 .listPage .item .colmenu,  .ctrlHead .colmenu {
@@ -181,8 +182,6 @@
 
 .listPage .item .colname, .listPage .item .coltime, .listPage .item .colsize, .ctrlHead .colname, .ctrlHead .coltime, .ctrlHead .colsize {
     overflow:auto;
-    float:left;
-    /* cursor:pointer; */
     padding:0.7em;
     box-sizing:border-box;
     word-break:break-all;
@@ -328,7 +327,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 30em;
+    width: 40em;
     max-width: 90%;
     max-height: 90%;
     background-color: #eeee; 
@@ -368,6 +367,7 @@
     text-align:left;
     color:#233;
     font-weight:600;
+    display: flex;
 }
 
 .simple_page .item .colmenu {
@@ -381,20 +381,19 @@
     color:#8ac;
 }
 
-.simple_page .item .colname, .simple_page .item .coltime {
+.simple_page .item .colname, .simple_page .item .coltime, .simple_page .item .colsize {
     overflow:hidden;
-    float:left;
     padding:0.7em;
     box-sizing:border-box;
     word-break:break-all;
 }
 
 .simple_page .item .colname {
-    overflow:auto;
+    overflow: auto;
 }
 
 .simple_page .item .coltext {
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .simple_page .colname, .simple_page .coltime {
@@ -407,14 +406,20 @@
 }
 
 .simple_page .item .coltime {
-    display: none;
+    width: 0%;
+    padding: 0;
 } 
 
 .simple_page .item .colsize {
-    display: none;
+    width: 0%;
+    padding: 0;
 }
 
 .simple_page .fromto .from, .simple_page .fromto .to {
+    display: flex;
+}
+
+.simple_page .fromto .headline {
     display: flex;
 }
 
@@ -423,6 +428,16 @@
     font-size: 1.5em;
     text-align: center;
     padding:0.5em;
+    flex: auto;
+    cursor: pointer;
+}
+
+.simple_page .fromto .quit {
+    font-weight: 600;
+    font-size: 1.5em;
+    text-align: center;
+    padding:0.5em;
+    cursor: pointer;
 }
 
 .simple_page .fromto .key {
@@ -450,5 +465,39 @@
 }
 
 
+.simple_page .upload .item .colname {
+    width:60%;
+    padding: 0.7em;
+}
+
+.simple_page .upload .item .coltime {
+    width: 20%;
+    padding: 0.7em;
+} 
+
+.simple_page .upload .item .colsize {
+    width: 20%;
+    padding: 0.7em;
+}
+
+.simple_page .upload .item .colprog {
+    position: absolute;
+    padding: 0.6em;
+    padding-left: 0em;
+    padding-right: 0em;
+    font-size:1.3em;
+    height:1em;
+    width:0%;
+    font-weight:900;
+    background-color:#8ac9;
+}
+
+.simple_page .upload .final {
+    height: 4em;
+}
+
+.simple_page .upload .item_wrapper {
+    display: none;
+}
 /* ================================= */
 

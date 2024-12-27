@@ -7,6 +7,415 @@ function html_to_shadow(module_html) {
     return shadow_module
 }
 
+function html_to_element(html = "") {
+    let div = document.createElement('div');
+    div.innerHTML = html;
+    div.remove();
+    return div.firstElementChild;
+}
+
+function format_size(sizeB = 0) {
+    // Cautions: >> is limited to 32bit signed int, 1<<31 
+    let GB = 1 << 30, MB = 1 << 20, KB = 1 << 10;
+    if (sizeB > GB)
+        return (sizeB / GB).toFixed(2) + "G";
+    else if (sizeB > MB)
+        return (sizeB / MB).toFixed(2) + "M";
+    else if (sizeB > KB)
+        return (sizeB / KB).toFixed(2) + "K";
+    else
+        return sizeB.toString() + "B";
+}
+
+function SimpPageActions(simple_page, operations) {
+    let simple_page_do = simple_page.querySelector(".title");
+    let simple_page_quit = simple_page.querySelector(".quit");
+    let simple_page_src = simple_page.querySelector(".from");
+    let simple_page_dst = simple_page.querySelector(".to");
+    let simple_page_src_input = simple_page.querySelector(".from .input");
+    let simple_page_dst_input = simple_page.querySelector(".to .input");
+    let simple_page_content = simple_page.querySelector(".content");
+    let simple_page_item_folder = simple_page.querySelector(".content .folder");
+    let simple_page_item_parent = simple_page.querySelector(".content .parent");
+    let simple_page_blank = simple_page.querySelector(".blank");
+    let simple_page_writeboard = simple_page.querySelector(".write_board");
+    let simple_page_upload = simple_page.querySelector(".upload");
+
+    let update_info_callback = () => {};
+
+    init_simple_page_function()
+
+    function init_simple_page_function() {
+        simple_page.querySelector('.item.parent .colicon svg').innerHTML = operations.choose_icon("home", true);
+        simple_page.querySelector('.item.parent .colname').onclick = function () {
+            operations.openfolder(this.parentNode.parentNode.getAttribute('path'), (info)=>{ 
+                simple_page_update_info(info); 
+            });
+        };
+    }
+
+    function do_mkdir(cpath) {
+        function init() {
+            simple_page_do.innerText = "New Directory";
+            simple_page_dst_input.value = (cpath + "/" + "New Directory").replace("//", "/");
+            simple_page.style.display = "";
+            simple_page_src.style.display = "none";
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page_dst_input.value = "";
+            simple_page.style.display = "none";
+            simple_page_src.style.display = "";
+        }
+
+        init();
+        simple_page_do.onclick = function () {
+            let input = simple_page_dst_input.value;
+            clean();
+            // confirm pop menu
+            operations.mkdir(input, operations.refresh);
+        }
+        simple_page_quit.onclick = () => { clean(); }
+    }
+
+    function do_mkfile(cpath) {
+        function init() {
+            simple_page_do.innerText = "Touch";
+            simple_page_dst_input.value = (cpath + "/" + "New File").replace("//", "/");
+            simple_page.style.display = "";
+            simple_page_src.style.display = "none";
+            simple_page_blank.style.display = "";
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page_dst_input.value = "";
+            simple_page.style.display = "none";
+            simple_page_src.style.display = "";
+            simple_page_blank.style.display = "none";
+        }
+
+        init();
+        simple_page_do.onclick = function () {
+            let input = [simple_page_dst_input.value, simple_page_writeboard.innerText];
+            clean();
+            // confirm pop menu
+            operations.mkfile(input[0], input[1], operations.refresh);
+        }
+        simple_page_quit.onclick = () => { clean(); }
+    }
+
+    function do_rename(path) {
+        function init() {
+            simple_page_do.innerText = "Rename";
+            simple_page_src_input.value = path;
+            simple_page_dst_input.value = path;
+            simple_page.style.display = "";
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page_src_input.value = "";
+            simple_page_dst_input.value = "";
+            simple_page.style.display = "none";
+        }
+
+        init();
+        simple_page_do.onclick = function () {
+            let input = [simple_page_src_input.value, simple_page_dst_input.value];
+            clean();
+            // confirm pop menu
+            operations.rename(input, operations.refresh);
+        }
+        simple_page_quit.onclick = () => { clean(); }
+    }
+
+    function do_moveto(cpath, path) {
+        function init() {
+            simple_page_do.innerText = "Move To";
+            simple_page_src_input.value = path;
+            simple_page_dst_input.value = cpath;
+            simple_page.style.display = "";
+            simple_page_content.style.display = "";
+            update_info_callback = ()=>{
+                simple_page_dst_input.value = simple_page.__this_info__.Path;
+            };
+            operations.openfolder(cpath, (info)=>{ 
+                simple_page_update_info(info); 
+            });
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page_src_input.value = "";
+            simple_page_dst_input.value = "";
+            simple_page.style.display = "none";
+            simple_page_content.style.display = "none";
+        }
+
+        init();
+        simple_page_do.onclick = function () {
+            let input = [simple_page_src_input.value, simple_page_dst_input.value];
+            clean();
+            // confirm pop menu
+            operations.moveto(input, operations.refresh);
+        }
+        simple_page_quit.onclick = () => { clean(); }
+    }
+
+    function do_copyto(cpath, path) {
+        function init() {
+            simple_page_do.innerText = "Copy To";
+            simple_page_src_input.value = path;
+            simple_page_dst_input.value = cpath;
+            simple_page.style.display = "";
+            simple_page_content.style.display = "";
+            update_info_callback = ()=>{
+                simple_page_dst_input.value = simple_page.__this_info__.Path;
+            };
+            operations.openfolder(cpath, (info)=>{ 
+                simple_page_update_info(info); 
+            });
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page_src_input.value = "";
+            simple_page_dst_input.value = "";
+            simple_page.style.display = "none";
+            simple_page_content.style.display = "none";
+        }
+
+        init();
+        simple_page_do.onclick = function () {
+            let input = [simple_page_src_input.value, simple_page_dst_input.value];
+            clean();
+            // confirm pop menu
+            operations.copyto(input, operations.refresh);
+        }
+        simple_page_quit.onclick = () => { clean(); }
+    }
+
+    function do_remove(path) {
+        let input = path;
+        // confirm pop menu
+        operations.remove(input, operations.refresh);
+    }
+
+    function do_archive(cpath, paths) {
+        function init() {
+            simple_page_do.innerText = "Archive [.tgz | .zip]";
+            simple_page_dst_input.value = (cpath + "/" + "Archive.tgz").replace("//", "/");
+            simple_page.style.display = "";
+            simple_page_src.style.display = "none";
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page_dst_input.value = "";
+            simple_page.style.display = "none";
+            simple_page_src.style.display = "";
+        }
+
+        init();
+        simple_page_do.onclick = function () {
+            let input = [paths, simple_page_dst_input.value];
+            clean();
+            // confirm pop menu
+            operations.archive(input[0], input[1], operations.refresh);
+        }
+        simple_page_quit.onclick = () => { clean(); }
+    }
+
+    function do_upload(path) {
+        init();
+
+        let finish_callback = () => {
+            operations.refresh();
+        }
+
+        let upload_file_core = (file, callback) => { operations.uploadFile(file, path, callback); }
+        let up_item_html = simple_page_upload.querySelector(".item_wrapper").innerHTML
+        let up_item_container = simple_page_upload.querySelector(".files")
+        up_item_container.onclick = (event) => { event.cancelBubble = true; };
+        simple_page_upload.querySelector(".final").onclick = () => { append_file(); }
+        simple_page_do.onclick = () => { start_upload(); }
+        simple_page_quit.onclick = () => { 
+            reset();
+            clean();
+        }
+        
+        function init() {
+            simple_page_do.innerText = "Upload";
+            simple_page.style.display = "";
+            simple_page_upload.style.display = "";
+            simple_page_src.style.display = "none";
+            simple_page_dst_input.value = path;
+        }
+
+        function clean() {
+            simple_page_do.innerText = "";
+            simple_page.style.display = "none";
+            simple_page_upload.style.display = "none";
+            simple_page_src.style.display = "";
+            simple_page_dst_input.value = "";
+        }
+
+        function append_file() {
+            let file_input = document.createElement("input");
+            file_input.type = "file";
+            file_input.multiple = "multiple";
+            file_input.onchange = function () {
+                let finput = this;
+                for (let i = 0; i < finput.files.length; i++) {
+                    let file = finput.files[i];
+                    let item_node = html_to_element(up_item_html);
+                    item_node.__this_info__ = {
+                        carry_file: file,
+                        on_upload: false,
+                        upload_stop: false,
+                        upload_finish: false,
+                    }
+
+                    item_node.querySelector('.colicon svg').innerHTML = operations.choose_icon(file.name, false);
+                    item_node.querySelector('.colname').innerText = file.name;
+                    item_node.querySelector('.coltime').innerText = format_size(file.size);
+                    item_node.querySelector('.colsize').innerText = "wait";
+                    item_node.querySelector('.colsize').onclick = function () {
+                        let node = this.parentNode.parentNode;
+                        if (node.__this_info__.on_upload)
+                            node.__this_info__.upload_stop = true;
+                        else
+                            node.remove();
+                    };
+                    up_item_container.appendChild(item_node);
+                }
+                finput.remove();
+            };
+            file_input.click();
+        }
+    
+        function upload_file_callback(tnode, progress, status) {
+            // status: md5 / upload / finish / exist / fail / stop; progress: -1 or [0-1] 
+            if (progress >= 0) {
+                tnode.querySelector(".colprog").style.width = (100 * progress).toFixed(2) + "%";
+            }
+            tnode.querySelector(".colsize").innerText = status;
+            if (status == "stop") {
+                tnode.__this_info__.on_upload = false;
+                tnode.__this_info__.upload_finish = true;
+                tnode.remove();
+            } else if (status == "finish" || status == "exist" || status == "fail") {
+                tnode.__this_info__.on_upload = false;
+                tnode.__this_info__.upload_finish = true;
+                tnode = tnode.nextSibling;
+                while (tnode) {
+                    if (!tnode)
+                        break;
+                    if (tnode.__this_info__.upload_finish == false)
+                        break;
+                    tnode = tnode.nextSibling;
+                }
+                if (tnode) {
+                    tnode.__this_info__.on_upload = true;
+                    upload_file_core(tnode.__this_info__.carry_file, (progress, status) => {
+                        upload_file_callback(tnode, progress, status);
+                    });
+                } else {
+                    finish_callback();
+                }
+            } // else md5 upload
+
+            return (tnode) ? tnode.__this_info__.upload_stop : false;
+        }
+
+        function start_upload() {
+            let tnode = up_item_container.firstChild;
+            while (tnode) {
+                if (!tnode)
+                    break;
+                if (tnode.__this_info__.upload_finish == false && tnode.__this_info__.on_upload == false)
+                    break;
+                tnode = tnode.nextSibling;
+            }
+            if (tnode) {
+                tnode.__this_info__.on_upload = true;
+                upload_file_core(tnode.__this_info__.carry_file, (progress, status) => {
+                    upload_file_callback(tnode, progress, status);
+                });
+            }
+    
+
+        }
+    
+        function reset() {
+            setTimeout(() => {
+                if (!up_item_container.firstChild) {
+                    return;
+                } else if (up_item_container.firstChild.__this_info__.on_upload == true) {
+                    up_item_container.firstChild.__this_info__.upload_stop = true;
+                    reset();
+                } else {
+                    up_item_container.firstChild.remove();
+                }
+            }, 20);
+        }
+    }
+
+    function simple_page_update_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
+        let this_info = operations.get_open_folder_info(info);
+        let current_path = this_info.Path;
+        let sortf = function (a, b) { return a.Name.localeCompare(b.Name); };
+        simple_page.__this_info__ = this_info;
+        this_info.FileList.sort(sortf);
+        this_info.FileList.sort(sortf);
+        update_info_callback();
+
+        let htmlFolder = this_info.FolderList.map(function (value) { return operations.get_item_html(value, current_path); });
+        // let htmlFile = this_info.FileList.map(function (value) { return operations.get_item_html(value, current_path); });
+        simple_page_item_folder.innerHTML = htmlFolder.join("");
+        // simple_page_item_file.innerHTML = htmlFile.join("");
+        
+        // append onclick
+        setTimeout(function () {
+            let all_items = Array.prototype.slice.call(simple_page_item_folder.children);
+            // all_items = all_items.concat(Array.prototype.slice.call(simple_page_item_file.children));
+            all_items.forEach(function (item) {
+                item.__fileinfo__ = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
+                item.setAttribute("raw", "");
+                item.onclick = function () {
+                    let node = this;
+                    if (node.__fileinfo__.IsDir) {
+                        operations.openfolder(node.__fileinfo__.Path, (info)=>{ 
+                            simple_page_update_info(info); 
+                        });
+                    }
+                };
+            });
+        }, 32); // timeOut to process after (but not exact time to process)
+        
+        // set parent path
+        let pathList = current_path.split("/").filter(Boolean).map(function (value, index, array) {
+            return { name: value, path: "/" + array.slice(0, index + 1).join("/") };
+        });
+        let parentPath = ((pathList.length < 2) ? "/" : pathList[pathList.length - 2].path);
+        simple_page_item_parent.setAttribute("path", parentPath);
+    }
+
+    return {
+        do_mkdir: do_mkdir,
+        do_mkfile: do_mkfile,
+        do_rename: do_rename,
+        do_moveto: do_moveto,
+        do_copyto: do_copyto,
+        do_remove: do_remove,
+        do_archive: do_archive,
+        do_upload: do_upload,
+    }
+
+}
+
 function FileViewer(opts = {}) {
     let args = {
         box: opts.box,
@@ -43,60 +452,54 @@ function FileViewer(opts = {}) {
     args.box.appendChild(shadow_module)
     for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
-    let currentInfo = {};
+    let current_info = {};
     // {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", Path:"", IsDir:true, FileNum:"", FolderNum:""} 
+    // + {Path: ""/xx/xxx/xxx with URIDecoded }
     // + {FileNodes:[], FolderNodes:[]}
     // + {FileList:[], FolderList:[]}
 
-    let currentPath = ""; // /xx/xxx/xxx with URIDecoded
-    let nameOrder = false // false means sort small -> big
-    let timeOrder = false
-    let sizeOrder = false
-    let chosenFiles = []
-    let chosenFolders = []
-    let choose_mode = false
-    let item_menu_open = false
-    let no_mask_link = args.params.noMaskLink
+    let name_order = false; // false means sort small -> big
+    let time_order = false;
+    let size_order = false;
+    let chosen_files = [];
+    let chosen_folders = [];
+    let choose_mode = false;
+    let no_mask_link = args.params.noMaskLink;
 
     let container = shadow_module.shadowRoot.querySelector(".listTable");
-    let pathHead = container.querySelector(".pathHead");
-    let pathChain = pathHead.querySelector(".pathChain");
-    let ctrlHead = container.querySelector(".ctrlHead");
-    let listPage = container.querySelector(".listPage");
-    let listParent = listPage.querySelector(".parent");
-    let listFolder = listPage.querySelector(".folder");
-    let listFile = listPage.querySelector(".file");
 
-    let head_menu = container.querySelector(".pathHead .colmenu")
+    let func_head = container.querySelector(".pathHead");
+    
+    let path_chain = container.querySelector(".pathHead .pathChain");
 
-    let item_menu = container.querySelector(".page_container .item_menu")
-    let item_menu_icon = item_menu.querySelector(".basic_icon svg")
-    let item_menu_name = item_menu.querySelector(".basic_text_name")
-    let item_menu_size = item_menu.querySelector(".basic_text_size")
+    let control_head = container.querySelector(".ctrlHead");
 
-    let detail_info = container.querySelector(".page_container .detail_info")
-    let detail_info_icon = detail_info.querySelector(".basic_icon svg")
-    let detail_info_name = detail_info.querySelector(".value.name")
-    let detail_info_size = detail_info.querySelector(".value.size")
-    let detail_info_mode = detail_info.querySelector(".value.mode")
-    let detail_info_isdir = detail_info.querySelector(".value.isdir")
-    let detail_info_mtime = detail_info.querySelector(".value.mtime")
-    let detail_info_ctime = detail_info.querySelector(".value.ctime")
-    let detail_info_finum = detail_info.querySelector(".value.finum")
-    let detail_info_fonum = detail_info.querySelector(".value.fonum")
-    let detail_info_path = detail_info.querySelector(".value.path")
-    let detail_info_link = detail_info.querySelector(".value.link")
+    let head_menu = container.querySelector(".pathHead .colmenu");
 
-    let simple_page = container.querySelector(".simple_page")
-    let simple_page_action = container.querySelector(".simple_page .title")
-    let simple_page_input0 = container.querySelector(".simple_page .from .input")
-    let simple_page_input1 = container.querySelector(".simple_page .to .input")
-    let simple_page_content = simple_page.querySelector(".content")
-    let simple_page_folder = simple_page.querySelector(".content .folder")
-    let simple_page_blank = container.querySelector(".simple_page .blank")
-    let simple_page_writeboard = container.querySelector(".simple_page .write_board")
+    let item_menu = container.querySelector(".page_container .item_menu");
+    let item_menu_icon = item_menu.querySelector(".basic_icon svg");
+    let item_menu_name = item_menu.querySelector(".basic_text_name");
+    let item_menu_size = item_menu.querySelector(".basic_text_size");
 
-    let choose_icon = null
+    let list_page = container.querySelector(".listPage");
+    let list_page_parent = list_page.querySelector(".parent");
+    let list_page_folder = list_page.querySelector(".folder");
+    let list_page_file = list_page.querySelector(".file");
+
+    let detail_info = container.querySelector(".page_container .detail_info");
+    let detail_info_icon = detail_info.querySelector(".basic_icon svg");
+    let detail_info_name = detail_info.querySelector(".value.name");
+    let detail_info_size = detail_info.querySelector(".value.size");
+    let detail_info_mode = detail_info.querySelector(".value.mode");
+    let detail_info_isdir = detail_info.querySelector(".value.isdir");
+    let detail_info_mtime = detail_info.querySelector(".value.mtime");
+    let detail_info_ctime = detail_info.querySelector(".value.ctime");
+    let detail_info_finum = detail_info.querySelector(".value.finum");
+    let detail_info_fonum = detail_info.querySelector(".value.fonum");
+    let detail_info_path = detail_info.querySelector(".value.path");
+    let detail_info_link = detail_info.querySelector(".value.link");
+
+    let choose_icon = null;
     try {
         choose_icon = SVGIcons(shadow_module.shadowRoot).chooseIcon
     } catch (error) {
@@ -113,10 +516,12 @@ function FileViewer(opts = {}) {
     init_ctrl_menu_function()
     init_item_menu_function()
     init_item_detail_function()
-    init_simple_page_function()
 
     let operations = {
-        refresh: () => {open_path(currentPath, True)},
+        choose_icon: choose_icon,
+        get_item_html: (item, path) => {return get_item_html(item, path);},
+        get_open_folder_info: (info) => {return get_open_folder_info(info); },
+        refresh: () => {open_path(current_info.Path, True)},
         openfile: (path) => {args.params.openfile(path)},
         openfolder: args.params.openfolder,
         download: (paths) => {args.params.download(paths)},
@@ -130,6 +535,9 @@ function FileViewer(opts = {}) {
         mkfile: (paths, callback) => {args.params.mkfile(paths, callback)},
         sort_callback: (cinfo) => {args.params.sortCallBack(cinfo)},
     }
+
+    let simple_page = container.querySelector(".simple_page")
+    let actions = SimpPageActions(simple_page, operations)
 
     function open_path(path, is_dir) {
         let ori_background = container.style.background;
@@ -147,21 +555,8 @@ function FileViewer(opts = {}) {
         return ""
     }
 
-    function format_size(sizeB = 0) {
-        // Cautions: >> is limited to 32bit signed int, 1<<31 
-        let GB = 1 << 30, MB = 1 << 20, KB = 1 << 10;
-        if (sizeB > GB)
-            return (sizeB / GB).toFixed(2) + "G";
-        else if (sizeB > MB)
-            return (sizeB / MB).toFixed(2) + "M";
-        else if (sizeB > KB)
-            return (sizeB / KB).toFixed(2) + "K";
-        else
-            return sizeB.toString() + "B";
-    }
-
     let item_html_list = (() => {
-        let template = listPage.querySelector(".padding .item_wrapper")
+        let template = list_page.querySelector(".padding .item_wrapper")
         template.remove()
         let item_html = template.innerHTML;
         let item_html_list = [];
@@ -187,44 +582,23 @@ function FileViewer(opts = {}) {
     }
 
     function init_ctrl_menu_function() {
-        ctrlHead.querySelector('.colname').onclick = function () { sort_items("name"); };
-        ctrlHead.querySelector('.coltime').onclick = function () { sort_items("time"); };
-        ctrlHead.querySelector('.colsize').onclick = function () { sort_items("size"); };
-        ctrlHead.querySelector('.colmenu').onclick = function () {
-            if (currentInfo.FileNodes.length + currentInfo.FolderNodes.length == 0) {
-                Array.prototype.slice.call(listFolder.children).forEach(function (item) {
-                    currentInfo.FolderNodes.push({ path: item.__fileinfo__.Path, node: item });
-                });
-                Array.prototype.slice.call(listFile.children).forEach(function (item) {
-                    currentInfo.FileNodes.push({ path: item.__fileinfo__.Path, node: item });
-                });
-            }
-
-            if (choose_mode) {
-                choose_mode = false
-                chosenFiles.forEach(function (item) {
-                    if (item.node) tag_chosen(item.node, false);
-                });
-                chosenFolders.forEach(function (item) {
-                    if (item.node) tag_chosen(item.node, false);
-                });
-            } else {
-                choose_mode = true
-            }
-        };
+        control_head.querySelector('.colname').onclick = function () { sort_items("name"); };
+        control_head.querySelector('.coltime').onclick = function () { sort_items("time"); };
+        control_head.querySelector('.colsize').onclick = function () { sort_items("size"); };
+        control_head.querySelector('.colmenu').onclick = function () { set_choose_mode();  };
     }
     
     function set_head_path_display() {
-        // update pathChain
-        let pathList = currentPath.split("/").filter(Boolean).map(function (value, index, array) {
+        // update path_chain
+        let pathList = current_info.Path.split("/").filter(Boolean).map(function (value, index, array) {
             return { name: value, path: "/" + array.slice(0, index + 1).join("/") };
         });
         let pathChainList = pathList.map(function (value, index, array) {
             return '<a class="path" path="' + value.path + '"> > ' + value.name + '</a>';
         });
-        pathChain.innerHTML = '<a class="path" path="/"> Home </a>' + pathChainList.join("\n");
-        pathChain.setAttribute("path", currentPath);
-        let items = pathChain.querySelectorAll('.path');
+        path_chain.innerHTML = '<a class="path" path="/"> Home </a>' + pathChainList.join("\n");
+        path_chain.setAttribute("path", current_info.Path);
+        let items = path_chain.querySelectorAll('.path');
         let numItem = items.length;
         for (let i = 0; i < numItem; i++) {
             items[i].onclick = function () {
@@ -234,40 +608,40 @@ function FileViewer(opts = {}) {
         }
         // update parentDir
         let parentPath = ((pathList.length < 2) ? "/" : pathList[pathList.length - 2].path);
-        listParent.setAttribute("path", parentPath);
+        list_page_parent.setAttribute("path", parentPath);
     }
 
     function init_head_path_function() {
-        pathHead.querySelector('.colicon img').src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+"
-        pathHead.querySelector('.colicon').onclick = function () {
-            if (listPage.scrollTop != 0)
-                listPage.scrollTop = 0;
-            else if (pathChain.getAttribute("contenteditable") == "true") {
-                pathChain.setAttribute("contenteditable", "false");
-                pathChain.setAttribute("path", pathChain.innerText);
-                if (pathChain.innerText != currentPath) {
-                    open_path(pathChain.innerText, true);
+        func_head.querySelector('.colicon img').src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+"
+        func_head.querySelector('.colicon').onclick = function () {
+            if (list_page.scrollTop != 0)
+                list_page.scrollTop = 0;
+            else if (path_chain.getAttribute("contenteditable") == "true") {
+                path_chain.setAttribute("contenteditable", "false");
+                path_chain.setAttribute("path", path_chain.innerText);
+                if (path_chain.innerText != current_info.Path) {
+                    open_path(path_chain.innerText, true);
                 } else {
                     set_head_path_display();
                 }
             } else {
-                pathChain.innerText = pathChain.getAttribute("path");
-                pathChain.setAttribute("contenteditable", "true");
+                path_chain.innerText = path_chain.getAttribute("path");
+                path_chain.setAttribute("contenteditable", "true");
             }
         };
-        pathChain.onkeydown = function (event) {
+        path_chain.onkeydown = function (event) {
             if (event.key == "Enter") {
-                pathChain.setAttribute("contenteditable", "false");
-                pathChain.setAttribute("path", pathChain.innerText);
-                if (pathChain.innerText != currentPath) {
-                    open_path(pathChain.innerText, true);
+                path_chain.setAttribute("contenteditable", "false");
+                path_chain.setAttribute("path", path_chain.innerText);
+                if (path_chain.innerText != current_info.Path) {
+                    open_path(path_chain.innerText, true);
                 } else {
                     set_head_path_display();
                 }
             }
         };
-        listParent.querySelector('.colicon svg').innerHTML = choose_icon("home", true);
-        listParent.querySelector('.colname').onclick = function () {
+        list_page_parent.querySelector('.colicon svg').innerHTML = choose_icon("home", true);
+        list_page_parent.querySelector('.colname').onclick = function () {
             open_path(this.parentNode.parentNode.getAttribute('path'), true);
             return no_mask_link;
         };
@@ -322,18 +696,17 @@ function FileViewer(opts = {}) {
     }
 
     function set_item_menu_display(node=null) {
-        if (!node || (item_menu_open && (item_menu.__fileinfo__ == node.__fileinfo__))) {
+        if (!node) {
             item_menu_icon.innerHTML = "";
             item_menu_name.innerHTML = "";
             item_menu_size.innerHTML = "";
             item_menu.__fileinfo__ = null;
             item_menu.style.display = "none";
-            item_menu_open = false;
         } else {
-            // <div: relative><listPage: absolute><item_menu: absolute></div>
+            // <div: relative><list_page: absolute><item_menu: absolute></div>
             item_menu.style.display = "";
             let node_rect = node.getBoundingClientRect();
-            let page_rect = listPage.getBoundingClientRect();
+            let page_rect = list_page.getBoundingClientRect();
             let menu_rect = item_menu.getBoundingClientRect();
             let new_menu_top_min = 10
             let new_menu_top_max = (page_rect.height - menu_rect.height - 10)
@@ -344,210 +717,16 @@ function FileViewer(opts = {}) {
             item_menu_name.innerHTML = node.querySelector(".colname").innerHTML;
             item_menu_size.innerHTML = node.querySelector(".colsize").innerHTML;
             item_menu.__fileinfo__ = node.__fileinfo__;
-            item_menu_open = true;
-            item_menu.__operation_time__ = Date.now()
+            item_menu.__operation_time__ = Date.now();
+            item_menu_icon.onclick = function () {
+                set_item_menu_display(null);
+            }
             function close_display_fn() {
                 if (Date.now() - item_menu.__operation_time__ > 3000) set_item_menu_display(null); 
                 else setTimeout(close_display_fn, 3000)
             }
-            close_display_fn()
+            close_display_fn();
         }
-    }
-
-    function do_archive(paths) {
-        simple_page_action.innerText = "Archive [.tgz | .zip]";
-        simple_page_input1.value = (currentPath + "/" + "Archive.tgz").replace("//", "/");
-        simple_page.style.display = ""
-        simple_page.querySelector(".from").style.display = "none"
-        simple_page_action.onclick = function () {
-            simple_page.style.display = "none"
-            simple_page.querySelector(".from").style.display = ""
-            // confirm pop menu
-            operations.archive(paths, operations.refresh);
-        }
-    }
-
-    function do_mkdir(currentPath) {
-        simple_page_action.innerText = "New Directory";
-        simple_page_input1.value = (currentPath + "/" + "New Directory").replace("//", "/");
-        simple_page.style.display = ""
-        simple_page.querySelector(".from").style.display = "none"
-        simple_page_action.onclick = function () {
-            simple_page.style.display = "none"
-            simple_page.querySelector(".from").style.display = ""
-            // confirm pop menu
-            operations.mkdir(simple_page_input1.value, operations.refresh);
-        }
-    }
-
-    function do_mkfile(currentPath) {
-        simple_page_action.innerText = "Touch";
-        simple_page_input1.value = (currentPath + "/" + "New File").replace("//", "/");
-        simple_page.style.display = ""
-        simple_page.querySelector(".from").style.display = "none"
-        simple_page_blank.style.display = ""
-        simple_page_action.onclick = function () {
-            simple_page.style.display = "none"
-            simple_page_blank.style.display = "none"
-            simple_page.querySelector(".from").style.display = ""
-            // confirm pop menu
-            operations.mkfile(simple_page_input1.value, simple_page_writeboard.innerText, operations.refresh);
-        }
-    }
-
-    function do_rename(path) {
-        simple_page_action.innerText = "Rename";
-        simple_page_input0.value = path;
-        simple_page_input1.value = path;
-        simple_page.style.display = ""
-        simple_page_action.onclick = function () {
-            simple_page.style.display = "none"
-            // confirm pop menu
-            operations.rename([simple_page_input0.value, simple_page_input1.value], operations.refresh);
-        }
-    }
-
-    function do_moveto(path) {
-        simple_page_action.innerText = "Move To";
-        simple_page_input0.value = path;
-        simple_page_input1.value = path;
-        simple_page.style.display = ""
-        simple_page_content.style.display = ""
-        operations.openfolder(currentPath, (info)=>{ 
-            set_simple_page_display(info, ()=>{
-                simple_page_input1.value = simple_page.__this_info__.Path;
-            }); 
-        });
-        simple_page_action.onclick = function () {
-            simple_page.style.display = "none"
-            simple_page_content.style.display = "none"
-            // confirm pop menu
-            operations.moveto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
-        }
-    }
-
-    function do_copyto(path) {
-        simple_page_action.innerText = "Copy To";
-        simple_page_input0.value = path;
-        simple_page_input1.value = path;
-        simple_page.style.display = ""
-        simple_page_content.style.display = ""
-        operations.openfolder(currentPath, (info)=>{ 
-            set_simple_page_display(info, ()=>{
-                simple_page_input1.value = simple_page.__this_info__.Path;
-            }); 
-        });
-        simple_page_action.onclick = function () {
-            simple_page.style.display = "none"
-            simple_page_content.style.display = "none"
-            // confirm pop menu
-            operations.copyto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
-        }
-    }
-
-    // wrong
-    function do_upload(path) {
-        let dirPath = path
-        let finishCallBack = () => { }
-        let uploadFileCore = (file, callback) => { args.params.adminCore.uploadFile(file, dirPath, callback); }
-        let upItemList = upBox.querySelector(".itemList");
-        upItemList.onclick = (event) => { event.cancelBubble = true; };
-        upBox.querySelector(".blank").onclick = () => { appendFiles(); }
-    
-        function appendFiles() {
-            let fileInput = document.createElement("input");
-            fileInput.type = "file";
-            fileInput.multiple = "multiple";
-            fileInput.onchange = function () {
-                let finput = this;
-                for (let i = 0; i < finput.files.length; i++) {
-                    let file = finput.files[i];
-                    let itemNode = document.createElement('div');
-                    itemNode.innerHTML = upItemHtml;
-                    itemNode = itemNode.firstChild;
-                    itemNode.carryFile = file;
-                    itemNode.onUpload = false;
-                    itemNode.uploadStop = false;
-                    itemNode.uploadFinish = false;
-                    itemNode.querySelector('.colname').innerText = itemNode.carryFile.name;
-                    itemNode.querySelector('.colsize').innerText = format_size(itemNode.carryFile.size);
-                    itemNode.querySelector('.colstat').innerText = "wait";
-                    itemNode.querySelector('.colstat').onclick = function () {
-                        let node = this.parentNode.parentNode;
-                        if (node.onUpload)
-                            node.uploadStop = true;
-                        else
-                            node.remove();
-                    };
-                    upItemList.appendChild(itemNode);
-                }
-                finput.remove();
-            };
-            fileInput.click();
-        }
-    
-        function doUpload() {
-            let tnode = upItemList.firstChild;
-            while (tnode) {
-                if (!tnode)
-                    break;
-                if (tnode.uploadFinish == false && tnode.onUpload == false)
-                    break;
-                tnode = tnode.nextSibling;
-            }
-            if (tnode) {
-                tnode.onUpload = true;
-                uploadFileCore(tnode.carryFile, uploadFileCallBack);
-            }
-    
-            function uploadFileCallBack(progress, status) {
-                // status: md5 / upload / finish / exist / fail / stop; progress: -1 or [0-1] 
-                if (progress >= 0) {
-                    tnode.querySelector(".progress").style.width = (100 * progress).toFixed(2) + "%";
-                }
-                tnode.querySelector(".colstat").innerText = status;
-                if (status == "stop") {
-                    tnode.onUpload = false;
-                    tnode.uploadFinish = true;
-                    tnode.remove();
-                } else if (status == "finish" || status == "exist" || status == "fail") {
-                    tnode.onUpload = false;
-                    tnode.uploadFinish = true;
-                    tnode = tnode.nextSibling;
-                    while (tnode) {
-                        if (!tnode)
-                            break;
-                        if (tnode.uploadFinish == false)
-                            break;
-                        tnode = tnode.nextSibling;
-                    }
-                    if (tnode) {
-                        tnode.onUpload = true;
-                        uploadFileCore(tnode.carryFile, uploadFileCallBack);
-                    } else {
-                        finishCallBack();
-                    }
-                } // else md5 upload
-                return (tnode) ? tnode.uploadStop : false;
-            }
-        }
-    
-        function reset() {
-            setTimeout(() => {
-                if (!upItemList.firstChild) {
-                    return;
-                } else if (upItemList.firstChild.onUpload == true) {
-                    upItemList.firstChild.uploadStop = true;
-                    reset();
-                } else {
-                    upItemList.firstChild.remove();
-                }
-            }, 20);
-        }
-    
-        let tools = args.params.iView.draw(upBox, "upload to " + dirPath, ["down", "exit"]);
-        tools.exitBtn.onclick = () => { reset(); args.params.iView.hide("hide"); };
-        tools.downBtn.onclick = () => { doUpload(); };
     }
 
     function init_item_menu_function() {
@@ -565,25 +744,25 @@ function FileViewer(opts = {}) {
                 // warn("file can not be tared.")
             } else {
                 // confirm pop menu
-                do_archive([item_menu.__fileinfo__.Path]);
+                actions.do_archive(current_info.Path, [item_menu.__fileinfo__.Path]);
             }
         }
         item_menu.querySelector(".action_item.rename").onclick = function () {
             item_menu.__operation_time__ = Date.now()
-            do_rename(item_menu.__fileinfo__.Path);
+            actions.do_rename(item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.moveto").onclick = function () {
             item_menu.__operation_time__ = Date.now()
-            do_moveto(item_menu.__fileinfo__.Path);
+            actions.do_moveto(current_info.Path, item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.copyto").onclick = function () {
             item_menu.__operation_time__ = Date.now()
-            do_copyto(item_menu.__fileinfo__.Path);
+            actions.do_copyto(current_info.Path, item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.delete").onclick = function () {
             item_menu.__operation_time__ = Date.now()
             // confirm pop menu
-            operations.remove(item_menu.__fileinfo__.Path, operations.refresh);
+            actions.remove(item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.detail").onclick = function () {
             item_menu.__operation_time__ = Date.now()
@@ -594,107 +773,124 @@ function FileViewer(opts = {}) {
     function init_head_menu_function() {
         head_menu.querySelector(".action_item.mkdir").onclick = function () {
             head_menu.__operation_time__ = Date.now()
-            do_mkdir(currentPath);
+            actions.do_mkdir(current_info.Path);
         }
         head_menu.querySelector(".action_item.mkfile").onclick = function () {
             head_menu.__operation_time__ = Date.now()
-            do_mkfile(currentPath);
+            actions.do_mkfile(current_info.Path);
         }
         head_menu.querySelector(".action_item.upload").onclick = function () {
             head_menu.__operation_time__ = Date.now()
-            operations.upload(currentInfo.Path, operations.refresh);
+            actions.do_upload(current_info.Path);
         }
         head_menu.querySelector(".action_item.download").onclick = function () {
             head_menu.__operation_time__ = Date.now()
 
             if (choose_mode) {
-                let all_path = chosenFiles.map(function (item) { return item.path; })
+                let all_path = chosen_files.map(function (item) { return item.path; })
                 operations.download(all_path);
-                chosenFiles.forEach(function (item) {
+                chosen_files.forEach(function (item) {
                     if (item.node) tag_chosen(item.node, false);
                 });
-                chosenFiles = [];
+                chosen_files = [];
             }
         }
         head_menu.querySelector(".action_item.archive").onclick = function () {
             head_menu.__operation_time__ = Date.now()
 
             if (choose_mode) {
-                let all_path = chosenFiles.concat(chosenFolders).map(function (item) { return item.path; })
-                do_archive(all_path);
-                chosenFolders.forEach(function (item) {
+                let all_path = chosen_files.concat(chosen_folders).map(function (item) { return item.path; })
+                actions.do_archive(current_info.Path, all_path);
+                chosen_folders.forEach(function (item) {
                     if (item.node)
                         tag_chosen(item.node, false);
                 });
-                chosenFolders = [];
+                chosen_folders = [];
             }
         }
         head_menu.querySelector(".action_item.chooseall").onclick = function () {
-            head_menu.__operation_time__ = Date.now()
-
-            if (chosenFiles.length + chosenFolders.length == currentInfo.FileNodes.length + currentInfo.FolderNodes.length) {
-                chosenFiles.forEach(function (item) {
-                    if (item.node)
-                        tag_chosen(item.node, false);
-                });
-                chosenFolders.forEach(function (item) {
-                    if (item.node)
-                        tag_chosen(item.node, false);
-                });
-                chosenFiles = [];
-                chosenFolders = [];
-            } else {
-                chosenFiles = currentInfo.FileNodes;
-                chosenFolders = currentInfo.FolderNodes;
-                chosenFiles.forEach(function (item) {
-                    if (item.node)
-                        tag_chosen(item.node, true);
-                });
-                chosenFolders.forEach(function (item) {
-                    if (item.node)
-                        tag_chosen(item.node, true);
-                });
-            }
+            head_menu.__operation_time__ = Date.now();
+            choose_all();
         }
         head_menu.querySelector(".action_item.reverse").onclick = function () {
-            head_menu.__operation_time__ = Date.now()
+            head_menu.__operation_time__ = Date.now();
+            reverse_choose();
+        }
+    }
 
-            chosenFiles.forEach(function (item) {
+    function set_choose_mode() {
+        // if (current_info.FileNodes.length + current_info.FolderNodes.length == 0) {
+        //     Array.prototype.slice.call(list_page_folder.children).forEach(function (item) {
+        //         current_info.FolderNodes.push({ path: item.__fileinfo__.Path, node: item });
+        //     });
+        //     Array.prototype.slice.call(list_page_file.children).forEach(function (item) {
+        //         current_info.FileNodes.push({ path: item.__fileinfo__.Path, node: item });
+        //     });
+        // }
+
+        if (choose_mode) {
+            choose_mode = false
+            chosen_files.forEach(function (item) {
+                if (item.node) tag_chosen(item.node, false);
+            });
+            chosen_folders.forEach(function (item) {
+                if (item.node) tag_chosen(item.node, false);
+            });
+        } else {
+            choose_mode = true
+        }
+    }
+
+    function choose_all() {
+        let all_chosen = (chosen_files.length + chosen_folders.length == current_info.FileNodes.length + current_info.FolderNodes.length);
+        if (all_chosen) {
+            chosen_files.forEach(function (item) {
                 if (item.node)
                     tag_chosen(item.node, false);
             });
-            chosenFolders.forEach(function (item) {
+            chosen_folders.forEach(function (item) {
                 if (item.node)
                     tag_chosen(item.node, false);
             });
-            chosenFiles = currentInfo.FileNodes.filter(function (item) {
-                return (chosenFiles.findIndex(function (citem) { return (item.path == citem.path); }) == -1);
-            });
-            chosenFolders = currentInfo.FolderNodes.filter(function (item) {
-                return (chosenFolders.findIndex(function (citem) { return (item.path == citem.path); }) == -1);
-            });
-            chosenFiles.forEach(function (item) {
+            chosen_files = [];
+            chosen_folders = [];
+        } else {
+            chosen_files = current_info.FileNodes.slice(0);
+            chosen_folders = current_info.FolderNodes.slice(0);
+            chosen_files.forEach(function (item) {
                 if (item.node)
                     tag_chosen(item.node, true);
             });
-            chosenFolders.forEach(function (item) {
+            chosen_folders.forEach(function (item) {
                 if (item.node)
                     tag_chosen(item.node, true);
             });
         }
     }
 
-    function init_simple_page_function() {
-        simple_page.querySelector('.item.parent .colicon svg').innerHTML = choose_icon("home", true);
-        simple_page.querySelector('.item.parent .colname').onclick = function () {
-            operations.openfolder(this.parentNode.parentNode.getAttribute('path'), (info)=>{ 
-                set_simple_page_display(info); 
-            });
-            return no_mask_link;
-        };
-        simple_page.querySelector('.item.parent .colmenu').onclick = function () {
-            // simple_page_input1.value = simple_page.__this_info__.Path;
-        };
+    function reverse_choose() {
+        chosen_files.forEach(function (item) {
+            if (item.node)
+                tag_chosen(item.node, false);
+        });
+        chosen_folders.forEach(function (item) {
+            if (item.node)
+                tag_chosen(item.node, false);
+        });
+        chosen_files = current_info.FileNodes.filter(function (item) {
+            return (chosen_files.findIndex(function (citem) { return (item.path == citem.path); }) == -1);
+        });
+        chosen_folders = current_info.FolderNodes.filter(function (item) {
+            return (chosen_folders.findIndex(function (citem) { return (item.path == citem.path); }) == -1);
+        });
+        chosen_files.forEach(function (item) {
+            if (item.node)
+                tag_chosen(item.node, true);
+        });
+        chosen_folders.forEach(function (item) {
+            if (item.node)
+                tag_chosen(item.node, true);
+        });
     }
 
     function tag_chosen(node=null, choose=true) {
@@ -709,28 +905,50 @@ function FileViewer(opts = {}) {
         let path = node.__fileinfo__.Path
         let isFolder = node.__fileinfo__.IsDir
         if (!append) {
-            chosenFiles = [];
-            chosenFolders = [];
+            chosen_files = [];
+            chosen_folders = [];
         }
         if (isFolder) {
-            let pos = chosenFolders.findIndex(function (citem) { return (path == citem.path); });
+            let pos = chosen_folders.findIndex(function (citem) { return (path == citem.path); });
             if (pos == -1) {
                 tag_chosen(node, true)
-                chosenFolders.push({ path: path, node: node });
+                chosen_folders.push({ path: path, node: node });
             } else {
                 tag_chosen(node, false)
-                chosenFolders.splice(pos, 1);
+                chosen_folders.splice(pos, 1);
             }
         } else {
-            let pos = chosenFiles.findIndex(function (citem) { return (path == citem.path); });
+            let pos = chosen_files.findIndex(function (citem) { return (path == citem.path); });
             if (pos == -1) {
                 tag_chosen(node, true)
-                chosenFiles.push({ path: path, node: node });
+                chosen_files.push({ path: path, node: node });
             } else {
                 tag_chosen(node, false)
-                chosenFiles.splice(pos, 1);
+                chosen_files.splice(pos, 1);
             }
         }
+    }
+
+    function get_open_folder_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
+        try {
+            info.FileList = JSON.parse(info.FileList);
+            info.FolderList = JSON.parse(info.FolderList);
+        } catch (err) { }
+        if (!info.FileList)
+            info.FileList = [];
+        if (!info.FolderList)
+            info.FolderList = [];
+        let this_info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "/", IsDir: true, FileNum: "", FolderNum: "" };
+        for (let key in info)
+            if (key in this_info)
+                this_info[key] = info[key];
+        this_info.FileNum = info.FileList.length + "";
+        this_info.FolderNum = info.FolderList.length + "";
+        this_info.FileNodes = [];
+        this_info.FolderNodes = [];
+        this_info.FileList = info.FileList.slice(0);
+        this_info.FolderList = info.FolderList.slice(0);
+        return this_info
     }
 
     function set_item_action(item = null) {
@@ -758,15 +976,16 @@ function FileViewer(opts = {}) {
     }
 
     function update_items(fileList = [], folderList = [], updateCallBack = null) {
-        // update listFolder and listFile
-        let htmlFolder = folderList.map(function (value) { return get_item_html(value, currentPath); });
-        let htmlFile = fileList.map(function (value) { return get_item_html(value, currentPath); });
-        listFolder.innerHTML = htmlFolder.join("");
-        listFile.innerHTML = htmlFile.join("");
+        // update list_page_folder and list_page_file
+        let current_path = current_info.Path;
+        let htmlFolder = folderList.map(function (value) { return get_item_html(value, current_path); });
+        let htmlFile = fileList.map(function (value) { return get_item_html(value, current_path); });
+        list_page_folder.innerHTML = htmlFolder.join("");
+        list_page_file.innerHTML = htmlFile.join("");
         // append onclick
         setTimeout(function () {
-            let all_items = Array.prototype.slice.call(listFolder.children);
-            all_items = all_items.concat(Array.prototype.slice.call(listFile.children));
+            let all_items = Array.prototype.slice.call(list_page_folder.children);
+            all_items = all_items.concat(Array.prototype.slice.call(list_page_file.children));
             all_items.forEach(function (item) { set_item_action(item); });
             updateCallBack();
         }, 32); // timeOut to process after (but not exact time to process)
@@ -776,107 +995,49 @@ function FileViewer(opts = {}) {
         let sortf = function () { };
         switch (section) {
             case "name":
-                if (nameOrder)
+                if (name_order)
                     sortf = function (b, a) { return a.Name.localeCompare(b.Name); };
                 else
                     sortf = function (a, b) { return a.Name.localeCompare(b.Name); };
-                nameOrder = !nameOrder;
+                name_order = !name_order;
                 break;
             case "time":
-                if (timeOrder)
+                if (time_order)
                     sortf = function (b, a) { return a.Mtim - b.Mtim; };
                 else
                     sortf = function (a, b) { return a.Mtim - b.Mtim; };
-                timeOrder = !timeOrder;
+                time_order = !time_order;
                 break;
             case "size":
-                if (sizeOrder)
+                if (size_order)
                     sortf = function (b, a) { return a.Size - b.Size; };
                 else
                     sortf = function (a, b) { return a.Size - b.Size; };
-                sizeOrder = !sizeOrder;
+                size_order = !size_order;
                 break;
             default:
                 return;
         }
-        currentInfo.FileList.sort(sortf);
-        currentInfo.FolderList.sort(sortf);
-        update_items(currentInfo.FileList, currentInfo.FolderList, function () {
-            currentInfo.FileNodes = [];
-            currentInfo.FolderNodes = [];
-            Array.prototype.slice.call(listFolder.children).forEach(function (item) {
-                currentInfo.FolderNodes.push({ path: item.__fileinfo__.Path, node: item });
+        current_info.FileList.sort(sortf);
+        current_info.FolderList.sort(sortf);
+        update_items(current_info.FileList, current_info.FolderList, function () {
+            current_info.FileNodes = [];
+            current_info.FolderNodes = [];
+            Array.prototype.slice.call(list_page_folder.children).forEach(function (item) {
+                current_info.FolderNodes.push({ path: item.__fileinfo__.Path, node: item });
             });
-            Array.prototype.slice.call(listFile.children).forEach(function (item) {
-                currentInfo.FileNodes.push({ path: item.__fileinfo__.Path, node: item });
+            Array.prototype.slice.call(list_page_file.children).forEach(function (item) {
+                current_info.FileNodes.push({ path: item.__fileinfo__.Path, node: item });
             });
-            operations.sort_callback(currentInfo);
+            operations.sort_callback(current_info);
         });
     }
 
-    function get_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
-        try {
-            info.FileList = JSON.parse(info.FileList);
-            info.FolderList = JSON.parse(info.FolderList);
-        } catch (err) { }
-        if (!info.FileList)
-            info.FileList = [];
-        if (!info.FolderList)
-            info.FolderList = [];
-        let this_info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "/", IsDir: true, FileNum: "", FolderNum: "" };
-        for (let key in info)
-            if (key in this_info)
-                this_info[key] = info[key];
-        this_info.FileNum = info.FileList.length + "";
-        this_info.FolderNum = info.FolderList.length + "";
-        this_info.FileNodes = [];
-        this_info.FolderNodes = [];
-        this_info.FileList = info.FileList.slice(0);
-        this_info.FolderList = info.FolderList.slice(0);
-        return this_info
-    }
-
     function update_info(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
-        currentInfo = get_info(info);
-        currentPath = currentInfo.Path; // /xx/xxx/xxx with URIDecoded
-        nameOrder = false;
+        current_info = get_open_folder_info(info);
+        name_order = false;
         sort_items("name");
         set_head_path_display();
-    }
-
-    function set_simple_page_display(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }, callback=()=>{}) {
-        let this_info = get_info(info);
-        let sortf = function (a, b) { return a.Name.localeCompare(b.Name); };
-        this_info.FileList.sort(sortf);
-        this_info.FileList.sort(sortf);
-        let current_path = this_info.Path;
-        simple_page.__this_info__ = this_info;
-        callback();
-
-        let htmlFolder = this_info.FolderList.map(function (value) { return get_item_html(value, current_path); });
-        // let htmlFile = this_info.FileList.map(function (value) { return get_item_html(value, current_path); });
-        simple_page_folder.innerHTML = htmlFolder.join("");
-        // simple_page_file.innerHTML = htmlFile.join("");
-        
-        // append onclick
-        setTimeout(function () {
-            let all_items = Array.prototype.slice.call(simple_page_folder.children);
-            // all_items = all_items.concat(Array.prototype.slice.call(simple_page_file.children));
-            all_items.forEach(function (item) {
-                item.__fileinfo__ = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
-                item.setAttribute("raw", "");
-                item.onclick = function () {
-                    let node = this;
-                    if (node.__fileinfo__.IsDir) {
-                        operations.openfolder(node.__fileinfo__.Path, (info)=>{ 
-                            set_simple_page_display(info); 
-                        });
-                    }
-                    return no_mask_link;
-                };
-            });
-        }, 32); // timeOut to process after (but not exact time to process)
-
     }
 
     return {

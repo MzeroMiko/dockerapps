@@ -440,6 +440,15 @@
     border-bottom: inset #000;
 }
 
+.simple_page .write_board {
+    width:100%;
+    height:100%;
+    padding:1em;
+    outline:none; 
+    overflow:auto;
+    box-sizing: border-box;
+}
+
 
 /* ================================= */
 

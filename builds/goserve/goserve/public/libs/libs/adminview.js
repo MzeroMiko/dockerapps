@@ -307,11 +307,11 @@ function AdminViewer(opts = {}) {
         // download: download,
         upload: upload,
         // mkdir: mkdir,
-        mkfile: mkfile,
-        rename: rename,
-        archive: archive,
-        remove: remove,
-        moveto: moveto,
-        copyto: copyto,
+        // mkfile: mkfile,
+        // rename: rename,
+        // archive: archive,
+        // remove: remove,
+        // moveto: moveto,
+        // copyto: copyto,
     }
 }

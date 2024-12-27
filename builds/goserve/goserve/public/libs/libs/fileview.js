@@ -92,7 +92,9 @@ function FileViewer(opts = {}) {
     let simple_page_input0 = container.querySelector(".simple_page .from .input")
     let simple_page_input1 = container.querySelector(".simple_page .to .input")
     let simple_page_content = simple_page.querySelector(".content")
-    let simple_page_folder = simple_page.querySelector(".folder")
+    let simple_page_folder = simple_page.querySelector(".content .folder")
+    let simple_page_blank = container.querySelector(".simple_page .blank")
+    let simple_page_writeboard = container.querySelector(".simple_page .write_board")
 
     let choose_icon = null
     try {
@@ -352,6 +354,97 @@ function FileViewer(opts = {}) {
         }
     }
 
+    function do_archive(paths) {
+        simple_page_action.innerText = "Archive [.tgz | .zip]";
+        simple_page_input1.value = (currentPath + "/" + "Archive.tgz").replace("//", "/");
+        simple_page.style.display = ""
+        simple_page.querySelector(".from").style.display = "none"
+        simple_page_action.onclick = function () {
+            simple_page.style.display = "none"
+            simple_page.querySelector(".from").style.display = ""
+            // confirm pop menu
+            operations.archive(paths, operations.refresh);
+        }
+    }
+
+    function do_mkdir(currentPath) {
+        simple_page_action.innerText = "New Directory";
+        simple_page_input1.value = (currentPath + "/" + "New Directory").replace("//", "/");
+        simple_page.style.display = ""
+        simple_page.querySelector(".from").style.display = "none"
+        simple_page_action.onclick = function () {
+            simple_page.style.display = "none"
+            simple_page.querySelector(".from").style.display = ""
+            // confirm pop menu
+            operations.mkdir(simple_page_input1.value, operations.refresh);
+        }
+    }
+
+    function do_mkfile(currentPath) {
+        simple_page_action.innerText = "Touch";
+        simple_page_input1.value = (currentPath + "/" + "New File").replace("//", "/");
+        simple_page.style.display = ""
+        simple_page.querySelector(".from").style.display = "none"
+        simple_page_blank.style.display = ""
+        simple_page_action.onclick = function () {
+            simple_page.style.display = "none"
+            simple_page_blank.style.display = "none"
+            simple_page.querySelector(".from").style.display = ""
+            // confirm pop menu
+            operations.mkfile(simple_page_input1.value, simple_page_writeboard.innerText, operations.refresh);
+        }
+    }
+
+    function do_rename(path) {
+        simple_page_action.innerText = "Rename";
+        simple_page_input0.value = path;
+        simple_page_input1.value = path;
+        simple_page.style.display = ""
+        simple_page_action.onclick = function () {
+            simple_page.style.display = "none"
+            // confirm pop menu
+            operations.rename([simple_page_input0.value, simple_page_input1.value], operations.refresh);
+        }
+    }
+
+    function do_moveto(path) {
+        simple_page_action.innerText = "Move To";
+        simple_page_input0.value = path;
+        simple_page_input1.value = path;
+        simple_page.style.display = ""
+        simple_page_content.style.display = ""
+        operations.openfolder(currentPath, (info)=>{ 
+            set_simple_page_display(info, ()=>{
+                simple_page_input1.value = simple_page.__this_info__.Path;
+            }); 
+        });
+        simple_page_action.onclick = function () {
+            simple_page.style.display = "none"
+            simple_page_content.style.display = "none"
+            // confirm pop menu
+            operations.moveto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
+        }
+    }
+
+    function do_copyto(path) {
+        simple_page_action.innerText = "Copy To";
+        simple_page_input0.value = path;
+        simple_page_input1.value = path;
+        simple_page.style.display = ""
+        simple_page_content.style.display = ""
+        operations.openfolder(currentPath, (info)=>{ 
+            set_simple_page_display(info, ()=>{
+                simple_page_input1.value = simple_page.__this_info__.Path;
+            }); 
+        });
+        simple_page_action.onclick = function () {
+            simple_page.style.display = "none"
+            simple_page_content.style.display = "none"
+            // confirm pop menu
+            operations.copyto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
+        }
+    }
+
     function init_item_menu_function() {
         item_menu.querySelector(".action_item.download").onclick = function () {
             item_menu.__operation_time__ = Date.now()
@@ -367,56 +460,20 @@ function FileViewer(opts = {}) {
                 // warn("file can not be tared.")
             } else {
                 // confirm pop menu
-                operations.archive(item_menu.__fileinfo__.Path, operations.refresh)
+                do_archive([item_menu.__fileinfo__.Path]);
             }
         }
         item_menu.querySelector(".action_item.rename").onclick = function () {
             item_menu.__operation_time__ = Date.now()
-            simple_page_action.innerText = "Rename";
-            simple_page_input0.value = item_menu.__fileinfo__.Path;
-            simple_page_input1.value = item_menu.__fileinfo__.Path;
-            simple_page.style.display = ""
-            simple_page_content.style.display = "none"
-            simple_page_action.onclick = function () {
-                simple_page.style.display = "none"
-                simple_page_content.style.display = ""
-                // confirm pop menu
-                operations.rename([simple_page_input0.value, simple_page_input1.value], operations.refresh);
-            }
+            do_rename(item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.moveto").onclick = function () {
             item_menu.__operation_time__ = Date.now()
-            simple_page_action.innerText = "Move To";
-            simple_page_input0.value = item_menu.__fileinfo__.Path;
-            simple_page_input1.value = item_menu.__fileinfo__.Path;
-            simple_page.style.display = ""
-            operations.openfolder(currentPath, (info)=>{ 
-                set_simple_page_display(info, ()=>{
-                    simple_page_input1.value = simple_page.__this_info__.Path;
-                }); 
-            });
-            simple_page_action.onclick = function () {
-                simple_page.style.display = "none"
-                // confirm pop menu
-                operations.moveto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
-            }
+            do_moveto(item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.copyto").onclick = function () {
             item_menu.__operation_time__ = Date.now()
-            simple_page_action.innerText = "Move To";
-            simple_page_input0.value = item_menu.__fileinfo__.Path;
-            simple_page_input1.value = item_menu.__fileinfo__.Path;
-            simple_page.style.display = ""
-            operations.openfolder(currentPath, (info)=>{ 
-                set_simple_page_display(info, ()=>{
-                    simple_page_input1.value = simple_page.__this_info__.Path;
-                }); 
-            });
-            simple_page_action.onclick = function () {
-                simple_page.style.display = "none"
-                // confirm pop menu
-                operations.copyto([simple_page_input0.value, simple_page_input1.value], operations.refresh);
-            }
+            do_copyto(item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.delete").onclick = function () {
             item_menu.__operation_time__ = Date.now()
@@ -432,24 +489,11 @@ function FileViewer(opts = {}) {
     function init_head_menu_function() {
         head_menu.querySelector(".action_item.mkdir").onclick = function () {
             head_menu.__operation_time__ = Date.now()
-            simple_page_action.innerText = "New Directory";
-            simple_page_input1.value = (currentPath + "/" + "New Directory").replace("//", "/");
-            simple_page.style.display = ""
-            simple_page.querySelector(".from").style.display = "none"
-            simple_page_content.style.display = "none"
-            
-            simple_page_action.onclick = function () {
-                simple_page.style.display = "none"
-                simple_page.querySelector(".from").style.display = ""
-                simple_page_content.style.display = ""
-                // confirm pop menu
-                operations.mkdir(simple_page_input1.value, operations.refresh);
-            }
+            do_mkdir(currentPath);
         }
         head_menu.querySelector(".action_item.mkfile").onclick = function () {
             head_menu.__operation_time__ = Date.now()
-            // confirm pop menu
-            operations.mkfile(currentInfo.Path, operations.refresh);
+            do_mkfile(currentPath);
         }
         head_menu.querySelector(".action_item.upload").onclick = function () {
             head_menu.__operation_time__ = Date.now()
@@ -472,8 +516,7 @@ function FileViewer(opts = {}) {
 
             if (choose_mode) {
                 let all_path = chosenFiles.concat(chosenFolders).map(function (item) { return item.path; })
-                // confirm pop menu
-                operations.archive(all_path, operations.refresh);
+                do_archive(all_path);
                 chosenFolders.forEach(function (item) {
                     if (item.node)
                         tag_chosen(item.node, false);

@@ -403,11 +403,11 @@
 }
 
 .simple_page .item .colname {
-    width:60%;
+    width:100%;
 }
 
 .simple_page .item .coltime {
-    width:40%;
+    display: none;
 } 
 
 .simple_page .item .colsize {

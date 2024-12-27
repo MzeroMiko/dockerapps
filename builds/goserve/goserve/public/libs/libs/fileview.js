@@ -391,7 +391,9 @@ function FileViewer(opts = {}) {
             simple_page_input1.value = item_menu.__fileinfo__.Path;
             simple_page.style.display = ""
             operations.openfolder(currentPath, (info)=>{ 
-                set_simple_page_display(info); 
+                set_simple_page_display(info, ()=>{
+                    simple_page_input1.value = simple_page.__this_info__.Path;
+                }); 
             });
             simple_page_action.onclick = function () {
                 simple_page.style.display = "none"
@@ -406,7 +408,9 @@ function FileViewer(opts = {}) {
             simple_page_input1.value = item_menu.__fileinfo__.Path;
             simple_page.style.display = ""
             operations.openfolder(currentPath, (info)=>{ 
-                set_simple_page_display(info); 
+                set_simple_page_display(info, ()=>{
+                    simple_page_input1.value = simple_page.__this_info__.Path;
+                }); 
             });
             simple_page_action.onclick = function () {
                 simple_page.style.display = "none"
@@ -428,8 +432,19 @@ function FileViewer(opts = {}) {
     function init_head_menu_function() {
         head_menu.querySelector(".action_item.mkdir").onclick = function () {
             head_menu.__operation_time__ = Date.now()
-            // confirm pop menu
-            operations.mkdir(currentInfo.Path, operations.refresh);
+            simple_page_action.innerText = "New Directory";
+            simple_page_input1.value = (currentPath + "/" + "New Directory").replace("//", "/");
+            simple_page.style.display = ""
+            simple_page.querySelector(".from").style.display = "none"
+            simple_page_content.style.display = "none"
+            
+            simple_page_action.onclick = function () {
+                simple_page.style.display = "none"
+                simple_page.querySelector(".from").style.display = ""
+                simple_page_content.style.display = ""
+                // confirm pop menu
+                operations.mkdir(simple_page_input1.value, operations.refresh);
+            }
         }
         head_menu.querySelector(".action_item.mkfile").onclick = function () {
             head_menu.__operation_time__ = Date.now()
@@ -457,6 +472,7 @@ function FileViewer(opts = {}) {
 
             if (choose_mode) {
                 let all_path = chosenFiles.concat(chosenFolders).map(function (item) { return item.path; })
+                // confirm pop menu
                 operations.archive(all_path, operations.refresh);
                 chosenFolders.forEach(function (item) {
                     if (item.node)
@@ -529,7 +545,7 @@ function FileViewer(opts = {}) {
             return no_mask_link;
         };
         simple_page.querySelector('.item.parent .colmenu').onclick = function () {
-            simple_page_input1.value = simple_page.__this_info__.Path;
+            // simple_page_input1.value = simple_page.__this_info__.Path;
         };
     }
 
@@ -680,13 +696,14 @@ function FileViewer(opts = {}) {
         set_head_path_display();
     }
 
-    function set_simple_page_display(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }) {
+    function set_simple_page_display(info = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", Path: "", FileList: [], FolderList: [] }, callback=()=>{}) {
         let this_info = get_info(info);
         let sortf = function (a, b) { return a.Name.localeCompare(b.Name); };
         this_info.FileList.sort(sortf);
         this_info.FileList.sort(sortf);
         let current_path = this_info.Path;
         simple_page.__this_info__ = this_info;
+        callback();
 
         let htmlFolder = this_info.FolderList.map(function (value) { return get_item_html(value, current_path); });
         // let htmlFile = this_info.FileList.map(function (value) { return get_item_html(value, current_path); });
@@ -701,7 +718,7 @@ function FileViewer(opts = {}) {
                 item.__fileinfo__ = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
                 item.setAttribute("raw", "");
                 item.onclick = function () {
-                    let node = this.parentNode;
+                    let node = this;
                     if (node.__fileinfo__.IsDir) {
                         operations.openfolder(node.__fileinfo__.Path, (info)=>{ 
                             set_simple_page_display(info); 

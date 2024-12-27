@@ -445,6 +445,111 @@ function FileViewer(opts = {}) {
         }
     }
 
+    // wrong
+    function do_upload(path) {
+        let dirPath = path
+        let finishCallBack = () => { }
+        let uploadFileCore = (file, callback) => { args.params.adminCore.uploadFile(file, dirPath, callback); }
+        let upItemList = upBox.querySelector(".itemList");
+        upItemList.onclick = (event) => { event.cancelBubble = true; };
+        upBox.querySelector(".blank").onclick = () => { appendFiles(); }
+    
+        function appendFiles() {
+            let fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.multiple = "multiple";
+            fileInput.onchange = function () {
+                let finput = this;
+                for (let i = 0; i < finput.files.length; i++) {
+                    let file = finput.files[i];
+                    let itemNode = document.createElement('div');
+                    itemNode.innerHTML = upItemHtml;
+                    itemNode = itemNode.firstChild;
+                    itemNode.carryFile = file;
+                    itemNode.onUpload = false;
+                    itemNode.uploadStop = false;
+                    itemNode.uploadFinish = false;
+                    itemNode.querySelector('.colname').innerText = itemNode.carryFile.name;
+                    itemNode.querySelector('.colsize').innerText = format_size(itemNode.carryFile.size);
+                    itemNode.querySelector('.colstat').innerText = "wait";
+                    itemNode.querySelector('.colstat').onclick = function () {
+                        let node = this.parentNode.parentNode;
+                        if (node.onUpload)
+                            node.uploadStop = true;
+                        else
+                            node.remove();
+                    };
+                    upItemList.appendChild(itemNode);
+                }
+                finput.remove();
+            };
+            fileInput.click();
+        }
+    
+        function doUpload() {
+            let tnode = upItemList.firstChild;
+            while (tnode) {
+                if (!tnode)
+                    break;
+                if (tnode.uploadFinish == false && tnode.onUpload == false)
+                    break;
+                tnode = tnode.nextSibling;
+            }
+            if (tnode) {
+                tnode.onUpload = true;
+                uploadFileCore(tnode.carryFile, uploadFileCallBack);
+            }
+    
+            function uploadFileCallBack(progress, status) {
+                // status: md5 / upload / finish / exist / fail / stop; progress: -1 or [0-1] 
+                if (progress >= 0) {
+                    tnode.querySelector(".progress").style.width = (100 * progress).toFixed(2) + "%";
+                }
+                tnode.querySelector(".colstat").innerText = status;
+                if (status == "stop") {
+                    tnode.onUpload = false;
+                    tnode.uploadFinish = true;
+                    tnode.remove();
+                } else if (status == "finish" || status == "exist" || status == "fail") {
+                    tnode.onUpload = false;
+                    tnode.uploadFinish = true;
+                    tnode = tnode.nextSibling;
+                    while (tnode) {
+                        if (!tnode)
+                            break;
+                        if (tnode.uploadFinish == false)
+                            break;
+                        tnode = tnode.nextSibling;
+                    }
+                    if (tnode) {
+                        tnode.onUpload = true;
+                        uploadFileCore(tnode.carryFile, uploadFileCallBack);
+                    } else {
+                        finishCallBack();
+                    }
+                } // else md5 upload
+                return (tnode) ? tnode.uploadStop : false;
+            }
+        }
+    
+        function reset() {
+            setTimeout(() => {
+                if (!upItemList.firstChild) {
+                    return;
+                } else if (upItemList.firstChild.onUpload == true) {
+                    upItemList.firstChild.uploadStop = true;
+                    reset();
+                } else {
+                    upItemList.firstChild.remove();
+                }
+            }, 20);
+        }
+    
+        let tools = args.params.iView.draw(upBox, "upload to " + dirPath, ["down", "exit"]);
+        tools.exitBtn.onclick = () => { reset(); args.params.iView.hide("hide"); };
+        tools.downBtn.onclick = () => { doUpload(); };
+    }
+
     function init_item_menu_function() {
         item_menu.querySelector(".action_item.download").onclick = function () {
             item_menu.__operation_time__ = Date.now()

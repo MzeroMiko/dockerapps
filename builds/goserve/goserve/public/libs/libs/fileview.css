@@ -440,6 +440,10 @@
     cursor: pointer;
 }
 
+.simple_page .fromto .quit::before {
+    content: "Q";
+}
+
 .simple_page .fromto .key {
     padding:0.5em;
     width: 4em;

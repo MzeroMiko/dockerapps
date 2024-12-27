@@ -14,7 +14,7 @@ let musicplayer_html = get_html_and_del("htmlstore module.musicplayer")
 let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
 let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
 let popmenu_html = get_html_and_del("htmlstore module.popmenu")
-let infoview_html = get_html_and_del("htmlstore module.infoview")
+// let infoview_html = get_html_and_del("htmlstore module.infoview")
 let codeview_html = get_html_and_del("htmlstore module.codeview")
 let adminview_html = get_html_and_del("htmlstore module.adminview")
 let plainview_html = get_html_and_del("htmlstore module.plainview")
@@ -261,6 +261,29 @@ function open_file(path = "") {
     }
 }
 
+
+function pop_templates(sign, finish_callBack) {
+    let popmenu = popMenu;
+    if (!popmenu) {
+        return {
+            authFail: (info) => { console.log("fail" + "Authorization Fail"); },
+            fail: (info) => { console.log("fail" + sign + " : fail " + info); },
+            exist: (info) => { console.log("warn" + sign + " : exist " + info); },
+            info: (info) => { console.log("info" + sign + " : get info " + info); },
+            pass: (info) => { console.log("pass" + sign + " : pass " + info); finish_callBack(); },
+            all: (info) => { },
+        }
+    }
+    return {
+        authFail: (info) => { popmenu.appendMessage("fail", "Authorization Fail"); },
+        fail: (info) => { popmenu.appendMessage("fail", sign + " : fail " + info); },
+        exist: (info) => { popmenu.appendMessage("warn", sign + " : exist " + info); },
+        info: (info) => { popmenu.appendMessage("info", sign + " : get info " + info); },
+        pass: (info) => { popmenu.appendMessage("pass", sign + " : pass " + info); finish_callBack(); },
+        all: (info) => { },
+    }
+}
+
 let explorer_app = function () {
     let is_file_open = false
     let file_box = document.createElement('div');
@@ -269,7 +292,7 @@ let explorer_app = function () {
             html: fileviewer_html,
             openfile: open_file,
             openfolder: open_folder,
-            sortCallBack: (currentInfo) => {
+            sort_callback: (currentInfo) => {
                 catagory_file_list(currentInfo.FileNodes.map((info) => { return info.path; }))
             },
             download: (chosenFiles = []) => {
@@ -277,10 +300,23 @@ let explorer_app = function () {
                     setTimeout(() => { adminCore.download(path); }, 800 * index);
                 });
             },
-            mkdir: (dirPath = "", finishCallBack = () => { }) => {
-                popMenu.appendMessage("input", "New Directory", "", (name) => {
-                    adminCore.mkdirCore(dirPath + "/" + name, popTemplates("mkdir " + name, finishCallBack));
-                });
+            mkdir: (path, callBack) => {
+                adminCore.mkdirCore(path, pop_templates("mkdir " + path, callBack));
+            },
+            mkfile: (path, content, callback) => {
+                adminCore.mkfileCore(path, content, pop_templates("mkfile " + path, callback));
+            },
+            rename: (src, dst, callback) => {
+                adminCore.renameCore(src, dst, pop_templates("rename " + src + " to " + dst, callback));
+            },
+            moveto: (src, dst, callback) => {
+                adminCore.renameCore(src, dst, pop_templates("move " + src + " to " + dst, callback));
+            },
+            copyto: (src, dst, callback) => {
+                adminCore.copytoCore(src, dst, pop_templates("copy " + src + " to " + dst, callback));
+            },
+            remove: (path, callback) => {
+                adminCore.removeCore(path, pop_templates("remove " + path, callback));
             },
     });
     let file_handler = imanager.buildView({
@@ -685,12 +721,13 @@ let admin_view = AdminViewer({
     iView: imanager.newView("24em", "80%"), 
     PView: FileViewer, 
 });
-let info_handler = imanager.buildView({
-    width: "22em", height: "44em", title: "info", 
-    btnshow: ["min", "max", "exit"],
-    exit: () => { deltailed_info.setChooseMode(false); info_handler.iview.hide("hide"); }
-});
-let deltailed_info = null
+
+// let info_handler = imanager.buildView({
+//     width: "22em", height: "44em", title: "info", 
+//     btnshow: ["min", "max", "exit"],
+//     exit: () => { deltailed_info.setChooseMode(false); info_handler.iview.hide("hide"); }
+// });
+// let deltailed_info = null
 // let deltailed_info = InfoViewer({
 //     box: info_handler.ibox, 
 //     html: infoview_html,

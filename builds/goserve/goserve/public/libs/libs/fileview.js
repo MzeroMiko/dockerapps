@@ -1,5 +1,8 @@
 "use strict"
 
+const MIcon = '<svg viewBox="-50 -50 425 400" xmlns="http://www.w3.org/2000/svg"><g><rect rx="20" height="240" width="80" y="75" x="25" stroke="#e32a77" fill="#e32a77"/><rect rx="20" height="240" width="80" y="75" x="270" stroke="#bc22df" fill="#bc22df"/><rect transform="rotate(-45 130 145)" rx="20" height="240" width="80" y="25" x="90" stroke="#34e3bb" fill="#34e3bb"/><rect transform="rotate(45 243.5 145)" rx="20" height="240" width="87" y="25" x="200" stroke="#fbdb04" fill="#fbdb04"/></g></svg>';
+
+
 function html_to_shadow(module_html) {
     let shadow_module = document.createElement('div')
     shadow_module.attachShadow({mode: "open"})
@@ -27,7 +30,7 @@ function format_size(sizeB = 0) {
         return sizeB.toString() + "B";
 }
 
-function SimpPageActions(simple_page, operations) {
+function SimpPageActions(simple_page, operations, popmenu=null) {
     let simple_page_do = simple_page.querySelector(".title");
     let simple_page_quit = simple_page.querySelector(".quit");
     let simple_page_src = simple_page.querySelector(".from");
@@ -54,6 +57,27 @@ function SimpPageActions(simple_page, operations) {
         };
     }
 
+    function pop_templates(sign, finish_callBack) {
+        if (!popmenu) {
+            return {
+                authFail: (info) => { console.log("fail" + "Authorization Fail"); },
+                fail: (info) => { console.log("fail" + sign + " : fail " + info); },
+                exist: (info) => { console.log("warn" + sign + " : exist " + info); },
+                info: (info) => { console.log("info" + sign + " : get info " + info); },
+                pass: (info) => { console.log("pass" + sign + " : pass " + info); finish_callBack(); },
+                all: (info) => { },
+            }
+        }
+        return {
+            authFail: (info) => { popmenu.appendMessage("fail", "Authorization Fail"); },
+            fail: (info) => { popmenu.appendMessage("fail", sign + " : fail " + info); },
+            exist: (info) => { popmenu.appendMessage("warn", sign + " : exist " + info); },
+            info: (info) => { popmenu.appendMessage("info", sign + " : get info " + info); },
+            pass: (info) => { popmenu.appendMessage("pass", sign + " : pass " + info); finish_callBack(); },
+            all: (info) => { },
+        }
+    }
+
     function do_mkdir(cpath) {
         function init() {
             simple_page_do.innerText = "New Directory";
@@ -73,7 +97,6 @@ function SimpPageActions(simple_page, operations) {
         simple_page_do.onclick = function () {
             let input = simple_page_dst_input.value;
             clean();
-            // confirm pop menu
             operations.mkdir(input, operations.refresh);
         }
         simple_page_quit.onclick = () => { clean(); }
@@ -125,8 +148,7 @@ function SimpPageActions(simple_page, operations) {
         simple_page_do.onclick = function () {
             let input = [simple_page_src_input.value, simple_page_dst_input.value];
             clean();
-            // confirm pop menu
-            operations.rename(input, operations.refresh);
+            operations.rename(input[0], input[1], operations.refresh);
         }
         simple_page_quit.onclick = () => { clean(); }
     }
@@ -158,8 +180,7 @@ function SimpPageActions(simple_page, operations) {
         simple_page_do.onclick = function () {
             let input = [simple_page_src_input.value, simple_page_dst_input.value];
             clean();
-            // confirm pop menu
-            operations.moveto(input, operations.refresh);
+            operations.moveto(input[0], input[1], operations.refresh);
         }
         simple_page_quit.onclick = () => { clean(); }
     }
@@ -192,15 +213,14 @@ function SimpPageActions(simple_page, operations) {
             let input = [simple_page_src_input.value, simple_page_dst_input.value];
             clean();
             // confirm pop menu
-            operations.copyto(input, operations.refresh);
+            operations.copyto(input[0], input[1], operations.refresh);
         }
         simple_page_quit.onclick = () => { clean(); }
     }
 
     function do_remove(path) {
         let input = path;
-        // confirm pop menu
-        operations.remove(input, operations.refresh);
+        operations.remove(input, pop_templates("remove " + input, operations.refresh));;
     }
 
     function do_archive(cpath, paths) {
@@ -220,10 +240,11 @@ function SimpPageActions(simple_page, operations) {
 
         init();
         simple_page_do.onclick = function () {
-            let input = [paths, simple_page_dst_input.value];
+            let input = simple_page_dst_input.value;
             clean();
-            // confirm pop menu
-            operations.archive(input[0], input[1], operations.refresh);
+            let suffix = dstName.slice(dstName.lastIndexOf(".") + 1);
+            let format = (suffix == "tgz") ? "targz" : "zip";
+            operations.archive(paths, input, format, operations.refresh);
         }
         simple_page_quit.onclick = () => { clean(); }
     }
@@ -235,7 +256,7 @@ function SimpPageActions(simple_page, operations) {
             operations.refresh();
         }
 
-        let upload_file_core = (file, callback) => { operations.uploadFile(file, path, callback); }
+        let upload_file_core = (file, callback) => { operations.upload(file, path, callback); }
         let up_item_html = simple_page_upload.querySelector(".item_wrapper").innerHTML
         let up_item_container = simple_page_upload.querySelector(".files")
         up_item_container.onclick = (event) => { event.cancelBubble = true; };
@@ -422,18 +443,18 @@ function FileViewer(opts = {}) {
         html: opts.html,
         params: {
             noMaskLink: false,
-            sortCallBack: (cinfo) => { }, 
+            sort_callback: (cinfo) => { }, 
             openfile: (path) => { },
             openfolder: (path, callback, simple=false) => { },
             download: (paths) => { },
-            archive: (paths, callback) => {},
-            rename: (paths, callback) => {},
-            moveto: (paths, callback) => {},
-            copyto: (paths, callback) => {},
-            remove: (paths, callback) => {},
-            upload: (paths, callback) => {},
-            mkdir: (paths, callback) => {},
-            mkfile: (paths, callback) => {},
+            archive: (paths, input, format, callback) => {},
+            rename: (src, dst, callback) => {},
+            moveto: (src, dst, callback) => {},
+            copyto: (src, dst, callback) => {},
+            remove: (path, callback) => {},
+            upload: (file, path, callback) => {},
+            mkdir: (path, callback) => {},
+            mkfile: (path, content, callback) => {},
         },
         styles: {
             basicSize: "14px",
@@ -453,7 +474,7 @@ function FileViewer(opts = {}) {
     for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
     let current_info = {};
-    // {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", Path:"", IsDir:true, FileNum:"", FolderNum:""} 
+    // {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", IsDir:true, FileNum:"", FolderNum:""} 
     // + {Path: ""/xx/xxx/xxx with URIDecoded }
     // + {FileNodes:[], FolderNodes:[]}
     // + {FileList:[], FolderList:[]}
@@ -511,33 +532,35 @@ function FileViewer(opts = {}) {
         }
     }
 
-    init_head_menu_function()
-    init_head_path_function()
-    init_ctrl_menu_function()
-    init_item_menu_function()
-    init_item_detail_function()
+    init_head_menu_function();
+    init_head_path_function();
+    init_ctrl_menu_function();
+    init_item_menu_function();
+    init_item_detail_function();
 
     let operations = {
         choose_icon: choose_icon,
         get_item_html: (item, path) => {return get_item_html(item, path);},
         get_open_folder_info: (info) => {return get_open_folder_info(info); },
         refresh: () => {open_path(current_info.Path, True)},
-        openfile: (path) => {args.params.openfile(path)},
+        openfile: args.params.openfile,
         openfolder: args.params.openfolder,
-        download: (paths) => {args.params.download(paths)},
-        archive: (paths, callback) => {args.params.archive(paths, callback)},
-        rename: (paths, callback) => {args.params.rename(paths, callback)},
-        moveto: (paths, callback) => {args.params.moveto(paths, callback)},
-        copyto: (paths, callback) => {args.params.copyto(paths, callback)},
-        remove: (paths, callback) => {args.params.remove(paths, callback)},
-        upload: (paths, callback) => {args.params.upload(paths, callback)},
-        mkdir: (paths, callback) => {args.params.mkdir(paths, callback)},
-        mkfile: (paths, callback) => {args.params.mkfile(paths, callback)},
-        sort_callback: (cinfo) => {args.params.sortCallBack(cinfo)},
+        download: args.params.download,
+        archive: args.params.archive,
+        rename: args.params.rename,
+        moveto: args.params.moveto,
+        copyto: args.params.copyto,
+        remove: args.params.remove,
+        upload: args.params.upload,
+        mkdir: args.params.mkdir,
+        mkfile: args.params.mkfile,
+        sort_callback: args.params.sort_callback,
     }
 
-    let simple_page = container.querySelector(".simple_page")
-    let actions = SimpPageActions(simple_page, operations)
+    let simple_page = container.querySelector(".simple_page");
+    let actions = SimpPageActions(simple_page, operations);
+    change_auth_state(false);
+    change_auth_state(true);
 
     function open_path(path, is_dir) {
         let ori_background = container.style.background;
@@ -612,7 +635,7 @@ function FileViewer(opts = {}) {
     }
 
     function init_head_path_function() {
-        func_head.querySelector('.colicon img').src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMCAwIDQwMCA0MDAiPjxnIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTM1NyAxMjRsLTMgNi00MiA0My00MiA0MnYxMDVjMiA4IDggMTMgMTUgMTVoNThjNy0zIDEzLTggMTQtMTZWMTI0IiBmaWxsPSIjYmMyMmYzIi8+PHBhdGggZD0iTTQxIDIxOWwxIDk5YzEgOCA3IDE1IDE1IDE3aDU3YzctMSAxMi03IDE0LTE0bDEtMlYyMTVsLTQyLTQyYy00NS00NS00My00My00NC00N2EyMyAyMyAwIDAgMS0xLTNjLTEtMS0xIDEtMSA5Nm0yNzEtNDZsLTQyIDQyIDQyLTQyIiBmaWxsPSIjZTMyYTc3Ii8+PHBhdGggZD0iTTkzIDY1Yy0yIDAtNSAxLTcgM2wtNDEgMzljLTMgNC00IDExLTMgMTV2MmwzIDYgMTA0IDEwNGMtNS02LTUtMTQgMC0yMWwyNi0yNiAyNS0yNi00NS00NC00Ny00N2MtNC00LTEwLTYtMTUtNSIgZmlsbD0iIzM0ZTNiYiIvPjxwYXRoIGQ9Ik0zMDEgNjVsLTggMy0xNDQgMTQ1Yy01IDctNCAxNSAwIDIxIDEgMyAzNyAzOCAzOSA0MCA4IDUgMTcgNCAyNC0xbDE0My0xNDRjNC02IDQtMTQtMS0yMWwtNDEtNDBjLTMtMy04LTQtMTItMyIgZmlsbD0iI2ZiZGIwNCIvPjxwYXRoIGQ9Ik0xNDUgMjIzbDEgMWExMyAxMyAwIDAgMCAwLTFoLTEiIGZpbGw9IiM2YzljOWMiLz48L2c+PC9zdmc+"
+        func_head.querySelector('.colicon').innerHTML = MIcon;
         func_head.querySelector('.colicon').onclick = function () {
             if (list_page.scrollTop != 0)
                 list_page.scrollTop = 0;
@@ -710,7 +733,7 @@ function FileViewer(opts = {}) {
             let menu_rect = item_menu.getBoundingClientRect();
             let new_menu_top_min = 10
             let new_menu_top_max = (page_rect.height - menu_rect.height - 10)
-            let new_menu_top = node_rect.top - 0.5 * menu_rect.height
+            let new_menu_top = node_rect.top - 0.9 * menu_rect.height
             new_menu_top = Math.min(Math.max(new_menu_top, new_menu_top_min), new_menu_top_max)
             item_menu.style.top = new_menu_top + "px";
             item_menu_icon.innerHTML = node.querySelector(".colicon svg").innerHTML;
@@ -762,7 +785,7 @@ function FileViewer(opts = {}) {
         item_menu.querySelector(".action_item.delete").onclick = function () {
             item_menu.__operation_time__ = Date.now()
             // confirm pop menu
-            actions.remove(item_menu.__fileinfo__.Path);
+            actions.do_remove(item_menu.__fileinfo__.Path);
         }
         item_menu.querySelector(".action_item.detail").onclick = function () {
             item_menu.__operation_time__ = Date.now()
@@ -1040,8 +1063,35 @@ function FileViewer(opts = {}) {
         set_head_path_display();
     }
 
+    function change_auth_state(auth=false) {
+        // do not use archive for now
+        if (!auth) {
+            head_menu.querySelector(".action_item.mkdir").style.display = "none";
+            head_menu.querySelector(".action_item.mkfile").style.display = "none";
+            head_menu.querySelector(".action_item.upload").style.display = "none";
+            head_menu.querySelector(".action_item.archive").style.display = "none";
+            item_menu.querySelector(".action_item.archive").style.display = "none";
+            item_menu.querySelector(".action_item.rename").style.display = "none";
+            item_menu.querySelector(".action_item.moveto").style.display = "none";
+            item_menu.querySelector(".action_item.copyto").style.display = "none";
+            item_menu.querySelector(".action_item.delete").style.display = "none";
+        } else {
+            head_menu.querySelector(".action_item.mkdir").style.display = "";
+            head_menu.querySelector(".action_item.mkfile").style.display = "";
+            head_menu.querySelector(".action_item.upload").style.display = "";
+            head_menu.querySelector(".action_item.archive").style.display = "none";
+            item_menu.querySelector(".action_item.archive").style.display = "none";
+            item_menu.querySelector(".action_item.rename").style.display = "";
+            item_menu.querySelector(".action_item.moveto").style.display = "";
+            item_menu.querySelector(".action_item.copyto").style.display = "";
+            item_menu.querySelector(".action_item.delete").style.display = "";
+        }
+    }
+
+
     return {
         updateInfo: update_info,
+        change_auth_state: change_auth_state,
     }
 }
 

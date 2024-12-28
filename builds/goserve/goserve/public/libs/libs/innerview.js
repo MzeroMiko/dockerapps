@@ -11,15 +11,11 @@ function InnerViewer(opts = {}) {
     let args = {
         box: opts.box,
         html: opts.html,
-        params: {
-
-        },
         styles: {
             basic_size: "12px", innerbox_zindex: 7, innerbox_width: "90%", innerbox_height: "90%",
         },
     }
     for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
-    for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
@@ -237,27 +233,24 @@ function InnerViewer(opts = {}) {
         content.onclick = () => { };
         container.style.display = "none";
     }
-    function isFree() {
+    function is_free() {
         return !content.lastChild;
     }
-    function setView(width = "90%", height = "90%") {
+    function set_view(width = "90%", height = "90%") {
         container.style.width = width;
         container.style.height = height;
     }
-    function setZIndex(zIndex = 7) {
+    function set_zindex(zIndex = 7) {
         container.style["z-index"] = zIndex + "";
     }
 
     return {
-        module: shadow_module,
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
-        setView: setView,
-        setZIndex: setZIndex,
+        set_view: set_view,
+        set_zindex: set_zindex,
         draw: draw,
         hide: hide,
         clear: clear,
-        isFree: isFree,
+        is_free: is_free,
     }
 }
 
@@ -265,14 +258,11 @@ function InnerManager(opts = {}) {
     let args = {
         box: opts.box,
         html: opts.html,
-        params: {
-        },
         styles: {
             basic_size: "12px", zindex_min: 9, zindex_max: 100,
         },
     }
     for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
-    for (let key in opts) if (key in args.params) args.params[key] = opts[key];
 
     let shadow_module = html_to_shadow(args.html)
     args.box.appendChild(shadow_module)
@@ -298,7 +288,7 @@ function InnerManager(opts = {}) {
         zIndexs.sort(function (a, b) { return a - b; }); // min to max
         innerViewList.forEach(function (item) {
             item.zIndex = zIndexs.indexOf(item.zIndex) + config_zindex_min + 1;
-            item.innerView.setZIndex(item.zIndex);
+            item.innerView.set_zindex(item.zIndex);
         });
         maxZIndex = zIndexs.length + config_zindex_min;
     }
@@ -311,7 +301,7 @@ function InnerManager(opts = {}) {
         if (ivobj.zIndex != maxZIndex) {
             maxZIndex += 1;
             ivobj.zIndex = maxZIndex;
-            ivobj.innerView.setZIndex(ivobj.zIndex);
+            ivobj.innerView.set_zindex(ivobj.zIndex);
         }
     }
 
@@ -320,7 +310,7 @@ function InnerManager(opts = {}) {
         let ind = 0;
         let len = innerViewList.length;
         let maxInd = config_zindex_max - config_zindex_min - 5;
-        while (ind < maxInd && (len == ind || innerViewList[ind].innerView.isFree() == false)) {
+        while (ind < maxInd && (len == ind || innerViewList[ind].innerView.is_free() == false)) {
             if (len <= ind) {
                 let innerView = InnerViewer({ 
                     box: all_viewers.appendChild(document.createElement('div')),
@@ -349,7 +339,7 @@ function InnerManager(opts = {}) {
     function setup_new_view(innerView, width = "90%", height = "90%") {
         // use draw blank to keep iview occupied
         let btns = innerView.draw(document.createElement("div"), "blank", []);
-        innerView.setView(width, height);
+        innerView.set_view(width, height);
         btns.minBtn.iview = innerView;
         btns.container.iview = innerView;
         btns.minBtn.onclick = function (evt) {
@@ -407,8 +397,6 @@ function InnerManager(opts = {}) {
     }
 
     return {
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         build_view: build_view,
         open_exist_view: open_exist_view,
     }

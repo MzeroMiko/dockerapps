@@ -184,11 +184,11 @@ document.querySelector(".mainline .flows .card.monitor").onclick = monitor_app.o
 
 
 // files ==================================================
-let windowPush = false;
-let historyMode = false;
+let window_push = false;
+let history_mode = false;
 
 function address_line_init(url) {
-    if (windowPush) {
+    if (window_push) {
         window.addEventListener('popstate', function (evt) {
             try { 
                 open_folder(action_core.urlToPath(evt.state.url), (info)=>{
@@ -201,12 +201,12 @@ function address_line_init(url) {
 
 function address_line_push (url) {
     // update history, not activated by window.onpopState
-    if (!historyMode && windowPush) {
+    if (!history_mode && window_push) {
         window.history.pushState({"title": null, "url": url}, null, url);
     }
 }
 
-let explorer_current_parts = {}
+let explorer_current_parts = {};
 function open_folder(path = "", callback=(info)=>{}, simple=false) {
     action_core.openFolder(path, function (info) {
         // explorer_current_parts = {}

@@ -187,7 +187,7 @@ const popmenu = PopupMenu({
 
 let action_core = AdminCore();
 if (window.location.origin.indexOf("github.io") != -1) action_core = AdminCoreGithubAPI();
-action_core = AdminCoreGithubAPI();
+// action_core = AdminCoreGithubAPI();
 
 
 let file_preview_List = []; // [/xxx,/xxx/xxx] in path decoded

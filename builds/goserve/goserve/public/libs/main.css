@@ -71,9 +71,7 @@ div.mainline {
     position: relative;
     display: block;
     top: 2em;
-    /* background: #fff; */
-    /* height: 100px; */
-    margin: 2em;
+    margin: 2em 10% 2em 10%;
 }
 
 /* ============================================== */
@@ -245,25 +243,54 @@ div.time {
     margin-bottom: 4em;
 }
 .flows .card {
-    display: block;
-    /* width: 30%; */
-    height: 100px;
+    display: flex;
+    height: 5em;
     background-color: #fff;
     border-radius: 1em;
     margin: 1%;
 }
 
-@media (min-width: 800px) {
+.flows .card:hover {
+    box-shadow: 0 0 20px #2a2a2a6b,
+                0 0 1px 1px #ffffff1a, 
+                0 0 20px 5px #0000001a;
+}
+
+.flows .card .colicon {
+    width: 3em;
+    margin: 1em;
+}
+
+.flows .card .colname {
+    flex: auto;
+    font-weight: 800;
+    text-align: center;
+    margin: 1em 1em 1em 0.5em;
+    align-items: center;
+    display: flex;
+}
+
+@media (min-width: 1200px) {
+    .card {
+        width: 18%;
+    }
+}
+@media (max-width: 1200px) {
+    .card {
+        width: 23%;
+    }
+}
+@media (max-width: 960px) {
     .card {
         width: 31%;
     }
 }
-@media (max-width: 800px) {
+@media (max-width: 720px) {
     .card {
         width: 48%;
     }
 }
-@media (max-width: 500px) {
+@media (max-width: 480px) {
     .card {
         width: 96%;
     }

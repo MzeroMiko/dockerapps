@@ -265,7 +265,6 @@ function InnerManager(opts = {}) {
     let args = {
         box: opts.box,
         html: opts.html,
-        innerview_html: opts.innerview_html,
         params: {
         },
         styles: {
@@ -279,11 +278,15 @@ function InnerManager(opts = {}) {
     args.box.appendChild(shadow_module)
     for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
 
-    let itemsample = shadow_module.shadowRoot.querySelector(".minitem");
-    itemsample.remove()
+    let manager = shadow_module.shadowRoot.querySelector(".manager");
+    let icontain = manager.querySelector(".viewlist");
+    let itemsample = manager.querySelector(".minitem");
+    icontain.innerHTML = "";
+    manager.style.display = "block";
+
+    let innerview_html = args.html;
 
     let innerViewList = []; // {innerView, zIndex}
-    let icontain = shadow_module.shadowRoot.querySelector(".viewlist");
     let config_zindex_min = args.styles.zindex_min
     let config_zindex_max = args.styles.zindex_max
     let maxZIndex = config_zindex_min;
@@ -321,7 +324,7 @@ function InnerManager(opts = {}) {
                 innerViewList.push({
                     innerView: InnerViewer({ 
                         box: document.body.appendChild(document.createElement('div')),
-                        html: args.innerview_html,
+                        html: innerview_html,
                         basic_size: args.styles.basic_size,
                     }),
                     zIndex: 0,

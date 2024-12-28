@@ -97,9 +97,9 @@
             </div>
         </div>
         <div class="extendline"></div>
-        <div class="content">
+        <!-- <div class="content">
             <div class="flows"></div>
-        </div>
+        </div> -->
     </div>
 
     <!-- htmlstore is a storage for html components. in js script, you may refer to the component and insert to the right place. -->
@@ -196,42 +196,47 @@
         </module>
         <module class="innerview">
             <link rel="stylesheet" href="./libs/libs/innerview.css">
-            <div class="innerBox">
-                <div class="icontain">
-                    <div class="header">
-                        <div class="ctrlBar">
-                            <div class="ctrlBtn prevBtn">
-                            </div>
-                            <div class="ctrlBtn nextBtn">
-                            </div>
-                            <div class="ctrlBtn downBtn">
-                            </div>
-                            <div class="ctrlBtn minBtn">
-                            </div>
-                            <div class="ctrlBtn maxBtn">
-                            </div>
-                            <div class="ctrlBtn exitBtn">
-                            </div>
-                        </div>
-                        <div class="title" contenteditable="true"></div>
-                    </div>
-                    <div class="content"></div>
-                </div>
-                <div class="resizeTop"></div>
-                <div class="resizeBottom"></div>
-                <div class="resizeLeft"></div>
-                <div class="resizeRight"></div>
-                <div class="resizeTopLeft"></div>
-                <div class="resizeTopRight"></div>
-                <div class="resizeBottomLeft"></div>
-                <div class="resizeBottomRight"></div>
-                
+            <div class="manager">
+                <div class="viewlist"><div class="minitem"></div></div>
             </div>
+            <!-- <div class="iviewer"> -->
+                <div class="innerBox">
+                    <div class="icontain">
+                        <div class="header">
+                            <div class="ctrlBar">
+                                <div class="ctrlBtn prevBtn">
+                                </div>
+                                <div class="ctrlBtn nextBtn">
+                                </div>
+                                <div class="ctrlBtn downBtn">
+                                </div>
+                                <div class="ctrlBtn minBtn">
+                                </div>
+                                <div class="ctrlBtn maxBtn">
+                                </div>
+                                <div class="ctrlBtn exitBtn">
+                                </div>
+                            </div>
+                            <div class="title" contenteditable="true"></div>
+                        </div>
+                        <div class="content"></div>
+                    </div>
+                    <div class="resizeTop"></div>
+                    <div class="resizeBottom"></div>
+                    <div class="resizeLeft"></div>
+                    <div class="resizeRight"></div>
+                    <div class="resizeTopLeft"></div>
+                    <div class="resizeTopRight"></div>
+                    <div class="resizeBottomLeft"></div>
+                    <div class="resizeBottomRight"></div>
+                    
+                </div>
+            <!-- </div> -->
         </module>
-        <module class="innerview_manager">
-            <link rel="stylesheet" href="./libs/libs/imanager.css">
+        <!-- <module class="innerview_manager">
+            <link rel="stylesheet" href="./libs/libs/innerview.css">
             <div class="viewlist"><div class="minitem"></div></div>
-        </module>
+        </module> -->
         <module class="sliderbar">
             <link rel="stylesheet" href="./libs/libs/sliderbar.css">
             <div class="sliderBar">
@@ -618,24 +623,8 @@
                 </div>
             </div>
         </module>
-        <module class="adminview">
-            <div class="content">
-                <div class="itemList">
-                    <div class="padding">
-                        <div class="item">
-                            <div class="progress"></div>
-                            <div class="colline">
-                                <div class="colname"></div>
-                                <div class="colsize"></div>
-                                <div class="colstat"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="blank"></div>
-            </div>
-        </module>
         <module class="codeview">
+            <link rel="stylesheet" href="./libs/libs/codeview.css">
             <div class="codeBox">
                 <div class="ctrlBtn"></div>
                 <div class="container"></div>
@@ -688,8 +677,6 @@
         <script type="text/javascript" src="./libs/libs/player.js"></script>
         <script type="text/javascript" src="./libs/libs/fileview.js"></script>
         <script type="text/javascript" src="./libs/libs/popupmenu.js"></script>
-        <!-- <script type="text/javascript" src="./libs/libs/infoview.js"></script> -->
-        <!-- <script type="text/javascript" src="./libs/libs/adminview.js"></script> -->
         <script type="text/javascript" src="./libs/libs/codeview.js"></script>
         <script type="text/javascript" src="./outLibs/spark-md5.min.js"></script>
         <script type="text/javascript" src="./outLibs/showdown.min.js"></script>

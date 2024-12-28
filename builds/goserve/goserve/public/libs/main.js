@@ -8,15 +8,12 @@ function get_html_and_del(selector) {
 let pie_progress_html = get_html_and_del("htmlstore module.pie_progress")
 let monitor_html = get_html_and_del("htmlstore module.monitor")
 let innerview_html = get_html_and_del("htmlstore module.innerview")
-let innerview_manager_html = get_html_and_del("htmlstore module.innerview_manager")
 let sliderbar_html = get_html_and_del("htmlstore module.sliderbar")
 let musicplayer_html = get_html_and_del("htmlstore module.musicplayer")
 let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
 let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
 let popmenu_html = get_html_and_del("htmlstore module.popmenu")
-// let infoview_html = get_html_and_del("htmlstore module.infoview")
 let codeview_html = get_html_and_del("htmlstore module.codeview")
-// let adminview_html = get_html_and_del("htmlstore module.adminview")
 let plainview_html = get_html_and_del("htmlstore module.plainview")
 let htmlview_html = get_html_and_del("htmlstore module.htmlview")
 let pdfview_html = get_html_and_del("htmlstore module.pdfview")
@@ -26,8 +23,7 @@ let imageview_html = get_html_and_del("htmlstore module.imageview")
 // ========================================================
 let imanager = InnerManager({ 
     box: document.body.appendChild(document.createElement('div')), 
-    html: innerview_manager_html,
-    innerview_html: innerview_html,
+    html: innerview_html,
     zindex_min: 10, 
     zindex_max: 100, 
     basic_size: "12px",
@@ -113,11 +109,6 @@ function next_path(type = ["plain"], tag = "next", path = "") {
 
 // =========================================================
 let adminCore = AdminCore({ authFailCallBack: () => { popMenu.appendMessage("fail", "Authorization Fail"); } });
-// let innerview = new InnerViewer({
-//     box: document.body.appendChild(document.createElement('div')),
-//     html: innerview_html,
-//     basic_size: "12px",
-// })
 {
     function genViewer(width = "90%", height = "90%", iBox = null, types = [], btnShow = [], startAction = null, stopAction = null) {
         let iobj = imanager.buildView({
@@ -412,7 +403,6 @@ let music_app = function () {
    } 
 }()
 
-// music_app.music_show()
 
 // video app ==============================================
 let video_app = function () {
@@ -457,7 +447,6 @@ let video_app = function () {
    } 
 }()
 
-// video_app.video_show()
 
 // codeview app ============================================
 let code_highlight_app = function () {
@@ -500,7 +489,6 @@ let code_highlight_app = function () {
         view_show: view_show,
     }
 }()
-// code_highlight_app.view_show()
 
 // plain app ============================================
 function html_to_shadow(module_html) {
@@ -570,7 +558,6 @@ let plain_viewer_app = function () {
         view_show: view_show,
     }
 }()
-// plain_viewer_app.view_show()
 
 // html app ============================================
 function HtmlViewer(opts = {}) {
@@ -631,8 +618,7 @@ let html_viewer_app = function () {
         view_show: view_show,
     }
 }()
-// html_viewer_app.view_show()
-// html_viewer_app.view_start("https://localhost:9090/")
+// html_viewer_app.view_start("http://localhost:9090/")
 // html_viewer_app.view_start("https://www.bilibili.com/")
 // html_viewer_app.view_start("https://nav.yhz610.com/")
 // html_viewer_app.view_start("https://www.bing.com/")
@@ -676,7 +662,6 @@ let pdf_viewer_app = function () {
         view_show: view_show,
     }
 }()
-// pdf_viewer_app.view_show()
 
 // image app ============================================
 function ImageViewer(opts = {}) {
@@ -736,41 +721,6 @@ let image_viewer_app = function () {
         view_show: view_show,
     }
 }()
-// image_viewer_app.view_show()
-
-// ======================================================
-
-// let admin_view = AdminViewer({ 
-//     html: adminview_html,
-//     fileviewer_html: fileviewer_html,
-//     adminCore: adminCore, 
-//     popMenu: popMenu,
-//     iView: imanager.newView("24em", "80%"), 
-//     PView: FileViewer, 
-// });
-
-// let info_handler = imanager.buildView({
-//     width: "22em", height: "44em", title: "info", 
-//     btnshow: ["min", "max", "exit"],
-//     exit: () => { deltailed_info.setChooseMode(false); info_handler.iview.hide("hide"); }
-// });
-// let deltailed_info = null
-// let deltailed_info = InfoViewer({
-//     box: info_handler.ibox, 
-//     html: infoview_html,
-//     admin_view: admin_view,
-//     pathToUrl: (path) => { return adminCore.pathToUrl(path); },
-//     getAuthStat: () => { return adminCore.getAuthStat(); },
-//     refresh: () => { open_folder(); info_handler.itools.exitBtn.click(); },
-//     tagChosen: (signEle, tag = true) => {
-//         let bg = (tag) ? args.styles.tableItemChose : "";
-//         signEle.style.background = bg;
-//     },
-//     changeCallBack: () => {
-//         info_handler.iview.hide("show");
-//         info_handler.iview.setView("22em", info_handler.ibox.getBoundingClientRect().height + 1.5 * info_handler.itools.titleBar.getBoundingClientRect().height + "px");
-//     },
-// });
 
 // ============================================================
 function buildLinks(exLinks) {

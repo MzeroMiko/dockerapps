@@ -3,6 +3,8 @@
     --innerbox_width: 90%;
     --innerbox_height: 90%;
     --innerbox_zindex: 7;
+    --zindex_min: 9; 
+    --zindex_max: 100;
 }
 .innerBox {
     position:fixed;
@@ -65,3 +67,16 @@
 .resizeTopRight {position:absolute;height:0.5em;width:0.5em;top:0.5em;right:0.5em;cursor:ne-resize;}
 .resizeBottomLeft {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;left:0.5em;cursor:sw-resize;}
 .resizeBottomRight {position:absolute;height:0.5em;width:0.5em;bottom:0.5em;right:0.5em;cursor:se-resize;}
+
+
+.manager {
+    display: none;
+}
+.viewlist {z-index: var(--zindex_min);position:fixed;bottom:1%;left:1%;
+max-width:98%;overflow:auto;background:transparent;white-space:nowrap;
+font-size: var(--basic_size);}
+.minitem {display:inline-block;width:6em;height:100%;border-radius:0.3em;margin:0 0.1em;
+    padding:0.4em;box-sizing:border-box;text-align:center;font-weight:500;
+    cursor:pointer;overflow:hidden;text-overflow:ellipsis;background:#fff;
+    border:solid 2px #ccc;}
+

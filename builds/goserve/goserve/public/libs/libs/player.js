@@ -81,7 +81,7 @@ function MusicPlayer(opts = {}) {
             validSuffix: [".mp3", ".ogg", ".wav", ".acc", ".webm"]
         },
         styles: {
-            basicSize: "14px", backColor: "#bcd", themeColor: "#fff",
+            basicSize: "14px", backColor: "#cdd", themeColor: "#fff",
             playBtnColor: "#aeb", ctrlBackColor: "rgba(0,0,0,0)", listColor: "#222",
             volSliderColor: "#ddd", timeSliderColor: "#ddd", sliderBufferColor: "#aaa",
             listItemColor: "rgba(255,255,255,0.2)", listItemHover: "rgba(196,196,196,0.75)",

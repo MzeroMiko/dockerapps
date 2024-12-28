@@ -89,7 +89,7 @@ div.mainline {
     float:left;
     padding:0 0.5em;
     cursor:pointer;
-    color:#ead;
+    color:#e66;
     font-weight:600;
     font-size:1.4em;
 } 
@@ -255,6 +255,11 @@ div.time {
     background-color: #fff;
     border-radius: 1em;
     margin: 1%;
+    cursor: pointer;
+}
+
+.mainline .flow_wrapper, .mainline .card_wrapper {
+    display: none;
 }
 
 .flows .card:hover {

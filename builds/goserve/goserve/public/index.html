@@ -97,9 +97,9 @@
             </div>
         </div>
         <div class="extendline"></div>
-        <!-- <div class="content">
+        <div class="content">
             <div class="flows"></div>
-        </div> -->
+        </div>
     </div>
 
     <!-- htmlstore is a storage for html components. in js script, you may refer to the component and insert to the right place. -->
@@ -199,8 +199,7 @@
             <div class="manager">
                 <div class="viewlist"><div class="minitem"></div></div>
             </div>
-            <!-- <div class="iviewer"> -->
-                <div class="innerBox">
+            <div class="innerBox">
                     <div class="icontain">
                         <div class="header">
                             <div class="ctrlBar">
@@ -230,13 +229,8 @@
                     <div class="resizeBottomLeft"></div>
                     <div class="resizeBottomRight"></div>
                     
-                </div>
-            <!-- </div> -->
+            </div>
         </module>
-        <!-- <module class="innerview_manager">
-            <link rel="stylesheet" href="./libs/libs/innerview.css">
-            <div class="viewlist"><div class="minitem"></div></div>
-        </module> -->
         <module class="sliderbar">
             <link rel="stylesheet" href="./libs/libs/sliderbar.css">
             <div class="sliderBar">
@@ -633,7 +627,13 @@
         <module class="plainview">
             <style>
                 .plain {
-                    text-align:center;width:100%;height:95%;font-size:1.2em;padding:1em;
+                    position: absolute; 
+                    text-align: center; 
+                    width:100%;
+                    height:100%;
+                    overflow: auto;
+                    font-size:1.2em;
+                    padding:1em;
                 }
             </style>
             <div class="plain"><br><br>binary file<br><br><a></a></div>
@@ -641,7 +641,11 @@
         <module class="htmlview">
             <style>
                 .html {
-                    width:100%;height:100%;position:absolute;
+                    position: absolute; 
+                    text-align: center; 
+                    width:100%;
+                    height:100%;
+                    overflow: auto;
                 }
                 .html iframe {
                     height:100%;width:100%;
@@ -652,7 +656,10 @@
         <module class="pdfview">
             <style>
                 .pdf {
-                    width:100%;height:100%;position:absolute;
+                    position: absolute; 
+                    text-align: center; 
+                    width:100%;
+                    height:100%;
                 }
                 .pdf iframe {
                     height:100%;width:100%;
@@ -663,10 +670,14 @@
         <module class="imageview">
             <style>
                 .image {
-                    text-align:center;width:100%;height:95%;
+                    position: absolute; 
+                    text-align: center; 
+                    width:100%;
+                    height:100%;
+                    overflow: auto;
                 }
                 .image img {
-                    max-width:100%;max-height:100%;
+                    max-width:100%;
                 }
             </style>
             <div class="image"><img src=""></img></div>

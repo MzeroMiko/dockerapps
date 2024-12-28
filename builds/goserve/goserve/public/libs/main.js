@@ -5,39 +5,20 @@ function get_html_and_del(selector) {
     return html
 }
 
-let pie_progress_html = get_html_and_del("htmlstore module.pie_progress")
-let monitor_html = get_html_and_del("htmlstore module.monitor")
-let innerview_html = get_html_and_del("htmlstore module.innerview")
-let sliderbar_html = get_html_and_del("htmlstore module.sliderbar")
-let musicplayer_html = get_html_and_del("htmlstore module.musicplayer")
-let videoplayer_html = get_html_and_del("htmlstore module.videoplayer")
-let fileviewer_html = get_html_and_del("htmlstore module.fileviewer")
-let popmenu_html = get_html_and_del("htmlstore module.popmenu")
-let codeview_html = get_html_and_del("htmlstore module.codeview")
-let plainview_html = get_html_and_del("htmlstore module.plainview")
-let htmlview_html = get_html_and_del("htmlstore module.htmlview")
-let pdfview_html = get_html_and_del("htmlstore module.pdfview")
-let imageview_html = get_html_and_del("htmlstore module.imageview")
+const pie_progress_html = get_html_and_del("htmlstore module.pie_progress");
+const monitor_html = get_html_and_del("htmlstore module.monitor");
+const innerview_html = get_html_and_del("htmlstore module.innerview");
+const sliderbar_html = get_html_and_del("htmlstore module.sliderbar");
+const musicplayer_html = get_html_and_del("htmlstore module.musicplayer");
+const videoplayer_html = get_html_and_del("htmlstore module.videoplayer");
+const fileviewer_html = get_html_and_del("htmlstore module.fileviewer");
+const popmenu_html = get_html_and_del("htmlstore module.popmenu");
+const codeview_html = get_html_and_del("htmlstore module.codeview");
+const plainview_html = get_html_and_del("htmlstore module.plainview");
+const htmlview_html = get_html_and_del("htmlstore module.htmlview");
+const pdfview_html = get_html_and_del("htmlstore module.pdfview");
+const imageview_html = get_html_and_del("htmlstore module.imageview");
 
-
-// ========================================================
-let imanager = InnerManager({ 
-    box: document.body.appendChild(document.createElement('div')), 
-    html: innerview_html,
-    zindex_min: 10, 
-    zindex_max: 100, 
-    basic_size: "12px",
-});
-
-
-// ========================================================
-let popMenu = PopupMenu({ 
-    box: document.body.appendChild(document.createElement('div')), 
-    html: popmenu_html,
-    zindex: 101, 
-});
-
-// ========================================================
 const view_type = {
     "pdf": [".pdf"],
     "html": [".html", ".xhtml", ".shtml", ".htm", ".url", ".xml"],
@@ -47,6 +28,24 @@ const view_type = {
     "audio": [".aac", ".aif", ".aifc", ".aiff", ".ape", ".au", ".flac", ".iff", ".m4a", ".mid", ".mp3", ".mpa", ".ra", ".wav", ".wma", ".f4a", ".f4b", ".oga", ".ogg", ".xm", ".it", ".s3m", ".mod"],
     "video": [".asf", ".asx", ".avi", ".flv", ".mkv", ".mov", ".mp4", ".mpg", ".rm", ".srt", ".swf", ".vob", ".wmv", ".m4v", ".f4v", ".f4p", ".ogv", ".webm"]
 };
+
+const imanager = InnerManager({ 
+    box: document.body.appendChild(document.createElement('div')), 
+    html: innerview_html,
+    zindex_min: 10, 
+    zindex_max: 100, 
+    basic_size: "12px",
+});
+
+const popmenu = PopupMenu({ 
+    box: document.body.appendChild(document.createElement('div')), 
+    html: popmenu_html,
+    zindex: 101, 
+});
+
+const action_core = AdminCore({ authFailCallBack: () => { 
+    popmenu.appendMessage("fail", "Authorization Fail"); 
+}});
 
 let file_preview_List = []; // [/xxx,/xxx/xxx] in path decoded
 let file_preview_list_dict = {};
@@ -78,7 +77,7 @@ function catagory_file_list(file_list) {
 }
 
 function next_path(type = ["plain"], tag = "next", path = "") {
-    let pathList = filePreviewList;
+    let pathList = file_preview_List;
     let pos = pathList.indexOf(path);
     if (pos == -1)
         return { path: path, tag: "", type: "" };
@@ -107,32 +106,31 @@ function next_path(type = ["plain"], tag = "next", path = "") {
     }
 }
 
-// =========================================================
-let adminCore = AdminCore({ authFailCallBack: () => { popMenu.appendMessage("fail", "Authorization Fail"); } });
 {
-    function genViewer(width = "90%", height = "90%", iBox = null, types = [], btnShow = [], startAction = null, stopAction = null) {
-        let iobj = imanager.buildView({
-            box: iBox, width: width, height: height, title: types[0], btnShow: btnShow,
-            prev: () => { startView(iobj.itools._path, "", "", "prev", types); },
-            next: () => { startView(iobj.itools._path, "", "", "next", types); },
-            down: () => { adminCore.download(iobj.itools._path); },
-            exit: () => { stopAction(iobj.itools._path); iobj.iview.hide("hide"); },
-        });
-        let startView = (path = "", type = "", tag = "", next = "", types = []) => {
-            if (next == "prev" || next == "next") {
-                let tmp = next_path(types, next, path);
-                path = tmp.path;
-                type = tmp.type;
-                tag = tmp.tag;
+    function LoginPage() {
+        let authTimeHandler;
+        function login(login = true, loginCallBack = () => { }, logoutCallBack = () => { }) {
+            let waitAuthTimeout = (waitTime) => {
+                if (!action_core.getAuthStat()) { logoutCallBack(); clearTimeout(authTimeHandler); }
+                authTimeHandler = setTimeout(function () { waitAuthTimeout(waitTime); }, waitTime);
             }
-            try {
-                startAction(path, type, tag);
-                iobj.itools._path = path;
-                iobj.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-                iobj.iview.hide("show");
-            } catch (error) { }
+    
+            if (login) {
+                popmenu.appendAuth((name, key) => {
+                    if (!(name + key))
+                        return false;
+                    action_core.askAuthCore(name + key,
+                        () => { waitAuthTimeout(2000); loginCallBack(); },
+                        () => { pop_templates("").authFail(); logoutCallBack(); }
+                    );
+                });
+            } else {
+                action_core.closeSessionCore(function () { logoutCallBack(); });
+            }
         }
-        return {iobj: iobj, start: startView};
+        return {
+            login: login,
+        }
     }
 
     let logAction = (button) => {
@@ -149,7 +147,7 @@ let adminCore = AdminCore({ authFailCallBack: () => { popMenu.appendMessage("fai
 }
 
 // monitor ================================================
-let monitor_app = function () {
+const monitor_app = function () {
     let isMonitorOpen = false
     let monitor_box = document.createElement("div")
     let monitor = new MonitorView({
@@ -158,9 +156,9 @@ let monitor_app = function () {
         pie_html: pie_progress_html,
         basic_size: "14px",
         waitTime: 3000,
-        getMonitor: adminCore.getMonitor,
+        getMonitor: action_core.getMonitor,
     })
-    let monitor_handler = imanager.buildView({
+    let monitor_handler = imanager.build_view({
         box: monitor_box,
         width: "90%", height: "90%", title: "monitor", 
         btnShow: ["min", "max", "exit"],
@@ -172,8 +170,8 @@ let monitor_app = function () {
     });
     let open_monitor = function () {
         if (isMonitorOpen == false) {
-            monitor.open(); 
-            monitor_handler.iview.hide("show"); 
+            monitor.open();
+            imanager.open_exist_view(monitor_handler.iview);
             isMonitorOpen = true;
         }
     }
@@ -183,11 +181,6 @@ let monitor_app = function () {
 }()
 
 document.querySelector(".mainline .flows .card.monitor").onclick = monitor_app.open_monitor
-// // use set timeout to save time for first view rendering
-// setTimeout(()=>{
-//     let monitor_app = monitor_app_builder()
-//     document.querySelector(".mainline .flows .card.monitor").onclick = monitor_app.open_monitor
-// }, 100);
 
 
 // files ==================================================
@@ -198,7 +191,7 @@ function address_line_init(url) {
     if (windowPush) {
         window.addEventListener('popstate', function (evt) {
             try { 
-                open_folder(adminCore.urlToPath(evt.state.url), (info)=>{
+                open_folder(action_core.urlToPath(evt.state.url), (info)=>{
                     file_view.updateInfo(info);
                 });
             } catch (err) { }
@@ -215,11 +208,11 @@ function address_line_push (url) {
 
 let explorer_current_parts = {}
 function open_folder(path = "", callback=(info)=>{}, simple=false) {
-    adminCore.openFolder(path, function (info) {
+    action_core.openFolder(path, function (info) {
         // explorer_current_parts = {}
         callback(info);
         if (!simple) {
-            address_line_push(adminCore.pathToUrl(info.Path))
+            address_line_push(action_core.pathToUrl(info.Path))
         }
     });
 }
@@ -252,9 +245,7 @@ function open_file(path = "") {
     }
 }
 
-
 function pop_templates(sign, finish_callBack) {
-    let popmenu = popMenu;
     if (!popmenu) {
         return {
             authFail: (info) => { console.log("fail" + "Authorization Fail"); },
@@ -275,34 +266,7 @@ function pop_templates(sign, finish_callBack) {
     }
 }
 
-
-function LoginPage() {
-    let authTimeHandler;
-    function login(login = true, loginCallBack = () => { }, logoutCallBack = () => { }) {
-        let waitAuthTimeout = (waitTime) => {
-            if (!adminCore.getAuthStat()) { logoutCallBack(); clearTimeout(authTimeHandler); }
-            authTimeHandler = setTimeout(function () { waitAuthTimeout(waitTime); }, waitTime);
-        }
-
-        if (login) {
-            popMenu.appendAuth((name, key) => {
-                if (!(name + key))
-                    return false;
-                adminCore.askAuthCore(name + key,
-                    () => { waitAuthTimeout(2000); loginCallBack(); },
-                    () => { pop_templates("").authFail(); logoutCallBack(); }
-                );
-            });
-        } else {
-            adminCore.closeSessionCore(function () { logoutCallBack(); });
-        }
-    }
-    return {
-        login: login,
-    }
-}
-
-let explorer_app = function () {
+const explorer_app = function () {
     let is_file_open = false
     let file_box = document.createElement('div');
     let file_view = FileViewer({
@@ -315,29 +279,29 @@ let explorer_app = function () {
             },
             download: (chosenFiles = []) => {
                 chosenFiles.slice(0).forEach((path, index) => {
-                    setTimeout(() => { adminCore.download(path); }, 800 * index);
+                    setTimeout(() => { action_core.download(path); }, 800 * index);
                 });
             },
             mkdir: (path, callBack) => {
-                adminCore.mkdirCore(path, pop_templates("mkdir " + path, callBack));
+                action_core.mkdirCore(path, pop_templates("mkdir " + path, callBack));
             },
             mkfile: (path, content, callback) => {
-                adminCore.mkfileCore(path, content, pop_templates("mkfile " + path, callback));
+                action_core.mkfileCore(path, content, pop_templates("mkfile " + path, callback));
             },
             rename: (src, dst, callback) => {
-                adminCore.renameCore(src, dst, pop_templates("rename " + src + " to " + dst, callback));
+                action_core.renameCore(src, dst, pop_templates("rename " + src + " to " + dst, callback));
             },
             moveto: (src, dst, callback) => {
-                adminCore.renameCore(src, dst, pop_templates("move " + src + " to " + dst, callback));
+                action_core.renameCore(src, dst, pop_templates("move " + src + " to " + dst, callback));
             },
             copyto: (src, dst, callback) => {
-                adminCore.copytoCore(src, dst, pop_templates("copy " + src + " to " + dst, callback));
+                action_core.copytoCore(src, dst, pop_templates("copy " + src + " to " + dst, callback));
             },
             remove: (path, callback) => {
-                adminCore.removeCore(path, pop_templates("remove " + path, callback));
+                action_core.removeCore(path, pop_templates("remove " + path, callback));
             },
     });
-    let file_handler = imanager.buildView({
+    let file_handler = imanager.build_view({
         box: file_box,
         width: "90%", height: "90%", title: "explorer", 
         btnShow: ["min", "max", "exit"],
@@ -353,7 +317,7 @@ let explorer_app = function () {
             }); 
             is_file_open = true;
         }
-        file_handler.iview.hide("show"); 
+        imanager.open_exist_view(file_handler.iview);
     }
 
     return {
@@ -364,20 +328,20 @@ let explorer_app = function () {
 document.querySelector(".mainline .flows .card.explorer").onclick = explorer_app.open_explorer
 
 // music player ===========================================
-let music_app = function () {
+const music_app = function () {
     let is_music_open = false
     let music_box = document.createElement('div');
     let music_player = MusicPlayer({ 
         box: music_box,
         html: musicplayer_html,
         sliderbar_html: sliderbar_html, 
-        pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
+        pathToUrl: (path) => { return action_core.pathToUrl(path); } 
     });
-    let music_handler = imanager.buildView({
+    let music_handler = imanager.build_view({
         box: music_box, 
         width: "22em", height: "44em", title: "muse", 
         btnShow: ["down", "min", "exit"],
-        down: () => { adminCore.download(music_player.getPlayPath()); },
+        down: () => { action_core.download(music_player.getPlayPath()); },
         exit: () => { music_player.playStop(); music_handler.iview.hide("hide"); },
     });
     
@@ -390,10 +354,10 @@ let music_app = function () {
     }
     let music_start = (path, type, tag) => {
         music_player.playThis(path);
-        music_handler.iview.hide("show");
+        imanager.open_exist_view(music_handler.iview);
     }
     let music_show = () => {
-        music_handler.iview.hide("show");
+        imanager.open_exist_view(music_handler.iview);
     }
 
    return {
@@ -405,21 +369,21 @@ let music_app = function () {
 
 
 // video app ==============================================
-let video_app = function () {
+const video_app = function () {
     let video_box = document.createElement('div');
     let video_player = VideoPlayer({
         box: video_box, 
         html: videoplayer_html,
         sliderbar_html: sliderbar_html, 
-        pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
+        pathToUrl: (path) => { return action_core.pathToUrl(path); } 
     });
-    let view_handler = imanager.buildView({
+    let view_handler = imanager.build_view({
         box: video_box, 
         width: "90%", height: "90%", title: "video", 
         btnShow: ["prev", "next", "down", "min", "max", "exit"],
-        prev: () => { video_start(iobj.itools._path, "", "", "prev", ["video"]); },
-        next: () => { video_start(iobj.itools._path, "", "", "next", ["video"]); },
-        down: () => { adminCore.download(view_handler.itools._path); },
+        prev: () => { video_start(view_handler.itools._path, "", "", "prev", ["video"]); },
+        next: () => { video_start(view_handler.itools._path, "", "", "next", ["video"]); },
+        down: () => { action_core.download(view_handler.itools._path); },
         exit: () => { video_player.playStop(); view_handler.iview.hide("hide"); },
     });
 
@@ -432,12 +396,12 @@ let video_app = function () {
             video_player.playThis(path);
             view_handler.itools._path = path;
             view_handler.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-            view_handler.iview.hide("show");
+            imanager.open_exist_view(view_handler.iview);
         } catch (error) { }
     }
 
     let video_show = () => {
-        view_handler.iview.hide("show");
+        imanager.open_exist_view(view_handler.iview);
     }
 
     return {
@@ -449,20 +413,20 @@ let video_app = function () {
 
 
 // codeview app ============================================
-let code_highlight_app = function () {
+const code_highlight_app = function () {
     let code_box = document.createElement('div');
     let code_view = CodeViewer({ 
         box: code_box, 
         html: codeview_html,
-        pathToUrl: (path) => { return adminCore.pathToUrl(path); } 
+        pathToUrl: (path) => { return action_core.pathToUrl(path); } 
     });
-    let view_handler = imanager.buildView({
+    let view_handler = imanager.build_view({
         box: code_box, 
         width: "90%", height: "90%", title: "code", 
         btnShow: ["prev", "next", "down", "min", "max", "exit"],
-        prev: () => { view_start(iobj.itools._path, "", "", "prev", ["markdown", "text"]); },
-        next: () => { view_start(iobj.itools._path, "", "", "next", ["markdown", "text"]); },
-        down: () => { adminCore.download(view_handler.itools._path); },
+        prev: () => { view_start(view_handler.itools._path, "", "", "prev", ["markdown", "text"]); },
+        next: () => { view_start(view_handler.itools._path, "", "", "next", ["markdown", "text"]); },
+        down: () => { action_core.download(view_handler.itools._path); },
         exit: () => { view_handler.iview.hide("hide"); },
     });
 
@@ -473,15 +437,15 @@ let code_highlight_app = function () {
             type = tmp.type;
         }
         try {
-            code_view.showCode(adminCore.pathToUrl(path), (type == "markdown"));
+            code_view.showCode(action_core.pathToUrl(path), (type == "markdown"));
             view_handler.itools._path = path;
             view_handler.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-            view_handler.iview.hide("show");
+            imanager.open_exist_view(view_handler.iview);
         } catch (error) { }
     }
 
     let view_show = () => {
-        view_handler.iview.hide("show");
+        imanager.open_exist_view(view_handler.iview);
     }
 
     return {
@@ -520,19 +484,19 @@ function PlainViewer(opts = {}) {
     }
 }
 
-let plain_viewer_app = function () {
+const plain_viewer_app = function () {
     let box = document.createElement('div');
     let view = PlainViewer({ 
         box: box, 
         html: plainview_html,
     });
-    let view_handler = imanager.buildView({
+    let view_handler = imanager.build_view({
         box: box, 
         width: "90%", height: "90%", title: "plain", 
         btnShow: ["prev", "next", "down", "min", "max", "exit"],
-        prev: () => { view_start(iobj.itools._path, "", "", "prev", ["plain"]); },
-        next: () => { view_start(iobj.itools._path, "", "", "next", ["plain"]); },
-        down: () => { adminCore.download(view_handler.itools._path); },
+        prev: () => { view_start(view_handler.itools._path, "", "", "prev", ["plain"]); },
+        next: () => { view_start(view_handler.itools._path, "", "", "next", ["plain"]); },
+        down: () => { action_core.download(view_handler.itools._path); },
         exit: () => { view.set_info(""); view_handler.iview.hide("hide"); },
     });
 
@@ -542,15 +506,15 @@ let plain_viewer_app = function () {
             path = tmp.path;
         }
         try {
-            view.set_info(adminCore.pathToUrl(path));
+            view.set_info(action_core.pathToUrl(path));
             view_handler.itools._path = path;
             view_handler.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-            view_handler.iview.hide("show");
+            imanager.open_exist_view(view_handler.iview);
         } catch (error) { }
     }
 
     let view_show = () => {
-        view_handler.iview.hide("show");
+        imanager.open_exist_view(view_handler.iview);
     }
 
     return {
@@ -579,19 +543,16 @@ function HtmlViewer(opts = {}) {
     }
 }
 
-let html_viewer_app = function () {
+const html_viewer_app = function () {
     let box = document.createElement('div');
     let view = HtmlViewer({ 
         box: box, 
         html: htmlview_html,
     });
-    let view_handler = imanager.buildView({
+    let view_handler = imanager.build_view({
         box: box, 
         width: "90%", height: "90%", title: "html", 
         btnShow: ["min", "max", "exit"],
-        // prev: () => { view_start(iobj.itools._path, "", "", "prev", ["html"]); },
-        // next: () => { view_start(iobj.itools._path, "", "", "next", ["html"]); },
-        // down: () => { adminCore.download(view_handler.itools._path); },
         exit: () => { view.set_info(""); view_handler.iview.hide("hide"); },
     });
 
@@ -601,16 +562,16 @@ let html_viewer_app = function () {
             path = tmp.path;
         }
         try {
-            link = path.startsWith("http")? path: adminCore.pathToUrl(path)
+            link = path.startsWith("http")? path: action_core.pathToUrl(path)
             view.set_info(link);
             view_handler.itools._path = path;
             view_handler.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-            view_handler.iview.hide("show");
+            imanager.open_exist_view(view_handler.iview);
         } catch (error) { }
     }
 
     let view_show = () => {
-        view_handler.iview.hide("show");
+        imanager.open_exist_view(view_handler.iview);
     }
 
     return {
@@ -624,19 +585,19 @@ let html_viewer_app = function () {
 // html_viewer_app.view_start("https://www.bing.com/")
 
 // pdf app ============================================
-let pdf_viewer_app = function () {
+const pdf_viewer_app = function () {
     let box = document.createElement('div');
     let view = HtmlViewer({ 
         box: box, 
         html: pdfview_html,
     });
-    let view_handler = imanager.buildView({
+    let view_handler = imanager.build_view({
         box: box, 
         width: "90%", height: "90%", title: "pdf", 
         btnShow: ["prev", "next", "down", "min", "max", "exit"],
-        prev: () => { view_start(iobj.itools._path, "", "", "prev", ["pdf"]); },
-        next: () => { view_start(iobj.itools._path, "", "", "next", ["pdf"]); },
-        down: () => { adminCore.download(view_handler.itools._path); },
+        prev: () => { view_start(view_handler.itools._path, "", "", "prev", ["pdf"]); },
+        next: () => { view_start(view_handler.itools._path, "", "", "next", ["pdf"]); },
+        down: () => { action_core.download(view_handler.itools._path); },
         exit: () => { view.set_info(""); view_handler.iview.hide("hide"); },
     });
 
@@ -646,15 +607,15 @@ let pdf_viewer_app = function () {
             path = tmp.path;
         }
         try {
-            view.set_info("./outLibs/pdfjs/web/viewer.html" + '?file=' + encodeURIComponent(adminCore.pathToUrl(path)));
+            view.set_info("./outLibs/pdfjs/web/viewer.html" + '?file=' + encodeURIComponent(action_core.pathToUrl(path)));
             view_handler.itools._path = path;
             view_handler.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-            view_handler.iview.hide("show");
+            imanager.open_exist_view(view_handler.iview);
         } catch (error) { }
     }
 
     let view_show = () => {
-        view_handler.iview.hide("show");
+        imanager.open_exist_view(view_handler.iview);
     }
 
     return {
@@ -683,19 +644,19 @@ function ImageViewer(opts = {}) {
     }
 }
 
-let image_viewer_app = function () {
+const image_viewer_app = function () {
     let box = document.createElement('div');
     let view = ImageViewer({ 
         box: box, 
         html: imageview_html,
     });
-    let view_handler = imanager.buildView({
+    let view_handler = imanager.build_view({
         box: box, 
         width: "90%", height: "90%", title: "image", 
         btnShow: ["prev", "next", "down", "min", "max", "exit"],
-        prev: () => { view_start(iobj.itools._path, "", "", "prev", ["image"]); },
-        next: () => { view_start(iobj.itools._path, "", "", "next", ["image"]); },
-        down: () => { adminCore.download(view_handler.itools._path); },
+        prev: () => { view_start(view_handler.itools._path, "", "", "prev", ["image"]); },
+        next: () => { view_start(view_handler.itools._path, "", "", "next", ["image"]); },
+        down: () => { action_core.download(view_handler.itools._path); },
         exit: () => { view.set_info(""); view_handler.iview.hide("hide"); },
     });
 
@@ -705,15 +666,15 @@ let image_viewer_app = function () {
             path = tmp.path;
         }
         try {
-            view.set_info(adminCore.pathToUrl(path));
+            view.set_info(action_core.pathToUrl(path));
             view_handler.itools._path = path;
             view_handler.itools.titleBar.innerText = path.slice(path.lastIndexOf("/") + 1);
-            view_handler.iview.hide("show");
+            imanager.open_exist_view(view_handler.iview);
         } catch (error) { }
     }
 
     let view_show = () => {
-        view_handler.iview.hide("show");
+        imanager.open_exist_view(view_handler.iview);
     }
 
     return {

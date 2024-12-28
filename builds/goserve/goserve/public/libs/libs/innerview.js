@@ -283,6 +283,8 @@ function InnerManager(opts = {}) {
     let itemsample = manager.querySelector(".minitem");
     icontain.innerHTML = "";
     manager.style.display = "block";
+    let all_viewers = document.createElement('div');
+    document.body.appendChild(all_viewers);
 
     let innerview_html = args.html;
 
@@ -291,63 +293,65 @@ function InnerManager(opts = {}) {
     let config_zindex_max = args.styles.zindex_max
     let maxZIndex = config_zindex_min;
 
-    function newView(width = "90%", height = "90%") {
-        function upperZIndex(iView) {
-            function cleanZIndex() {
-                let zIndexs = innerViewList.map(function (item) { return item.zIndex; });
-                zIndexs.sort(function (a, b) { return a - b; }); // min to max
-                innerViewList.forEach(function (item) {
-                    item.zIndex = zIndexs.indexOf(item.zIndex) + config_zindex_min + 1;
-                    item.innerView.setZIndex(item.zIndex);
-                });
-                maxZIndex = zIndexs.length + config_zindex_min;
-            }
+    function clean_zindex() {
+        let zIndexs = innerViewList.map(function (item) { return item.zIndex; });
+        zIndexs.sort(function (a, b) { return a - b; }); // min to max
+        innerViewList.forEach(function (item) {
+            item.zIndex = zIndexs.indexOf(item.zIndex) + config_zindex_min + 1;
+            item.innerView.setZIndex(item.zIndex);
+        });
+        maxZIndex = zIndexs.length + config_zindex_min;
+    }
 
-            if (maxZIndex > (config_zindex_max - 5)) {
-                cleanZIndex();
-            }
-            innerViewList.forEach(function (item) {
-                if (item.innerView == iView) {
-                    if (item.zIndex != maxZIndex) {
-                        maxZIndex += 1;
-                        item.zIndex = maxZIndex;
-                        item.innerView.setZIndex(item.zIndex);
-                    }
-                }
-            });
+    function upper_zindex(iView) {
+        if (maxZIndex > (config_zindex_max - 5)) {
+            clean_zindex();
         }
+        let ivobj = innerViewList[iView.__list_index__];
+        if (ivobj.zIndex != maxZIndex) {
+            maxZIndex += 1;
+            ivobj.zIndex = maxZIndex;
+            ivobj.innerView.setZIndex(ivobj.zIndex);
+        }
+    }
+
+    function maybe_create_new_view() {
         // choose the free innerView, use maxInd to avoid code error causing while(true)
-        let ind = 0, len = innerViewList.length;
+        let ind = 0;
+        let len = innerViewList.length;
         let maxInd = config_zindex_max - config_zindex_min - 5;
         while (ind < maxInd && (len == ind || innerViewList[ind].innerView.isFree() == false)) {
             if (len <= ind) {
-                innerViewList.push({
-                    innerView: InnerViewer({ 
-                        box: document.body.appendChild(document.createElement('div')),
-                        html: innerview_html,
-                        basic_size: args.styles.basic_size,
-                    }),
-                    zIndex: 0,
-                });
+                let innerView = InnerViewer({ 
+                    box: all_viewers.appendChild(document.createElement('div')),
+                    html: innerview_html,
+                    basic_size: args.styles.basic_size,
+                })
+                innerView.__list_index__ = ind;
+                innerViewList.push({innerView: innerView, zIndex: 0});
                 len = innerViewList.length;
             } else {
                 ind += 1;
             }
         }
-        maxZIndex += 1;
-        let ivobj = innerViewList[ind];
+        return innerViewList[ind].innerView;
+    }
+
+    function open_exist_view(iview) {
         Array.prototype.slice.call(icontain.children).forEach((it) => {
-            if (it.iview == ivobj.innerView)
+            if (it.iview == iview)
                 it.remove();
         });
-        ivobj.zIndex = maxZIndex;
+        upper_zindex(iview);
+        iview.hide("show");
+    }
+
+    function setup_new_view(innerView, width = "90%", height = "90%") {
         // use draw blank to keep iview occupied
-        let btns = ivobj.innerView.draw(document.createElement("div"), "blank", []);
-        ivobj.innerView.hide("hide");
-        ivobj.innerView.setView(width, height);
-        ivobj.innerView.setZIndex(ivobj.zIndex);
-        btns.minBtn.iview = ivobj.innerView;
-        btns.container.iview = ivobj.innerView;
+        let btns = innerView.draw(document.createElement("div"), "blank", []);
+        innerView.setView(width, height);
+        btns.minBtn.iview = innerView;
+        btns.container.iview = innerView;
         btns.minBtn.onclick = function (evt) {
             evt.cancelBubble = true;
             evt.returnValue = false;
@@ -364,7 +368,7 @@ function InnerManager(opts = {}) {
                     if (it.iview == item.iview)
                         it.remove();
                 });
-                upperZIndex(item.iview);
+                upper_zindex(item.iview);
                 item.remove();
             };
             icontain.appendChild(item);
@@ -372,19 +376,25 @@ function InnerManager(opts = {}) {
         btns.container.onclick = function (evt) {
             evt.cancelBubble = true;
             evt.returnValue = false;
-            upperZIndex(this.iview);
+            upper_zindex(this.iview);
         }
-        return ivobj.innerView;
+        return innerView;
     }
 
-    function buildView(opts = {}) {
+    function build_view(opts = {}) {
         let defopts = {
             width: "90%", height: "90%", title: "", btnShow: ["min", "max", "exit"],
             prev: () => { }, next: () => { }, down: () => { }, exit: () => { },
         }
         for (let key in opts) if (key in defopts) defopts[key] = opts[key];
         let ibox = ("box" in opts && opts.box) ? opts.box : document.createElement('div');
-        let iview = newView(defopts.width, defopts.height);
+        let iview = maybe_create_new_view();
+        Array.prototype.slice.call(icontain.children).forEach((it) => {
+            if (it.iview == iview)
+                it.remove();
+        });
+        upper_zindex(iview);
+        iview = setup_new_view(iview, defopts.width, defopts.height);
         let itools = iview.draw(ibox, defopts.title, defopts.btnShow);
         iview.hide("hide");
         itools.prevBtn.onclick = () => { defopts.prev(); };
@@ -399,8 +409,8 @@ function InnerManager(opts = {}) {
     return {
         getArgs: () => { return args; },
         setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
-        newView: newView,
-        buildView: buildView,
+        build_view: build_view,
+        open_exist_view: open_exist_view,
     }
 }
 

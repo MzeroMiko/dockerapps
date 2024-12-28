@@ -977,17 +977,21 @@ function FileViewer(opts = {}) {
     function set_item_action(item = null) {
         item.__fileinfo__ = JSON.parse(decodeURIComponent(item.getAttribute("raw")));
         item.setAttribute("raw", "");
-        item.querySelector(".colicon").onclick = function () {
+        item.querySelector(".colicon").onclick = function (evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
             let node = this.parentNode;
             open_path(node.__fileinfo__.Path, node.__fileinfo__.IsDir);
             return no_mask_link;
         };
-        item.querySelector(".colname").onclick = function () {
+        item.querySelector(".colname").onclick = function (evt) {
+            evt.cancelBubble = true;
+            evt.returnValue = false;
             let node = this.parentNode.parentNode;
             open_path(node.__fileinfo__.Path, node.__fileinfo__.IsDir);
             return no_mask_link;
         };
-        item.querySelector(".colmenu").onclick = function () {
+        item.querySelector(".colmenu").onclick = function (evt) {
             let node = this.parentNode;
             if (choose_mode) {
                 choose_item(node)

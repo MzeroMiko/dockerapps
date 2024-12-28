@@ -64,8 +64,6 @@ function SliderBar(opts = {}) {
     }
 
     return {
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         updateCurrent: updateCurrent,
         updateBuffer: updateBuffer,
     }
@@ -332,8 +330,6 @@ function MusicPlayer(opts = {}) {
     }
 
     return {
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         thisPos: thisPos,
         playThis: playThis,
         playStop: playStop,
@@ -621,8 +617,6 @@ function VideoPlayer(opts = {}) {
     }
 
     return {
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         playThis: playThis,
         playPause: playPause,
         playStop: playStop,

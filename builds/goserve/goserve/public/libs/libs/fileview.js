@@ -393,8 +393,8 @@ function SimpPageActions(simple_page, operations, popmenu=null) {
         this_info.FileList.sort(sortf);
         update_info_callback();
 
-        let htmlFolder = this_info.FolderList.map(function (value) { return operations.get_item_html(value, current_path); });
-        // let htmlFile = this_info.FileList.map(function (value) { return operations.get_item_html(value, current_path); });
+        let htmlFolder = this_info.FolderList.map(function (value) { return operations.get_item_html(value, current_path, true); });
+        // let htmlFile = this_info.FileList.map(function (value) { return operations.get_item_html(value, current_path, false); });
         simple_page_item_folder.innerHTML = htmlFolder.join("");
         // simple_page_item_file.innerHTML = htmlFile.join("");
         
@@ -597,9 +597,9 @@ function FileViewer(opts = {}) {
         return item_html_list
     })()
 
-    function get_item_html(item = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", FileNum: "", FolderNum: "" }, current_path) {
+    function get_item_html(item = { Name: "", Size: "", Mode: "", Mtim: "", Ctim: "", FileNum: "", FolderNum: "" }, current_path, is_dir="unknown") {
         item.Path = current_path.replace(/(\/$)/g, "") + "/" + item.Name;
-        item.IsDir = (item.FileNum != "");
+        item.IsDir = (is_dir == "unknwn")? (item.FileNum != ""): ((is_dir)?true: false);
         let item_html = item_html_list[0] + encodeURIComponent(JSON.stringify(item)) + item_html_list[1] + choose_icon(item.Name, item.IsDir) + item_html_list[2] + item.Name + item_html_list[3] + new Date(Number(item.Mtim + "000")).toISOString().slice(0, -5) + item_html_list[4] +  format_size(Number(item.Size)) + item_html_list[5];
         return item_html;
     }
@@ -1005,8 +1005,8 @@ function FileViewer(opts = {}) {
     function update_items(fileList = [], folderList = [], updateCallBack = null) {
         // update list_page_folder and list_page_file
         let current_path = current_info.Path;
-        let htmlFolder = folderList.map(function (value) { return get_item_html(value, current_path); });
-        let htmlFile = fileList.map(function (value) { return get_item_html(value, current_path); });
+        let htmlFolder = folderList.map(function (value) { return get_item_html(value, current_path, true); });
+        let htmlFile = fileList.map(function (value) { return get_item_html(value, current_path, false); });
         list_page_folder.innerHTML = htmlFolder.join("");
         list_page_file.innerHTML = htmlFile.join("");
         // append onclick

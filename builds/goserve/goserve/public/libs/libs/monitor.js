@@ -60,9 +60,6 @@ function PieProgress(opts={}) {
     }
 
     return {
-        module: shadow_module,
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         update: updateProg,
     }
 }
@@ -216,9 +213,6 @@ function MonitorView(opts={}) {
     }
 
     return {
-        module: shadow_module,
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         open: getInfo,
         close: close,
     }

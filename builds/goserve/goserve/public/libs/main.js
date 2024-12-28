@@ -130,7 +130,6 @@ function init_apps() {
     }
 }
 
-
 function init_login() {
 
 }
@@ -182,9 +181,14 @@ const popmenu = PopupMenu({
     zindex: 101, 
 });
 
-const action_core = AdminCore({ authFailCallBack: () => { 
-    popmenu.appendMessage("fail", "Authorization Fail"); 
-}});
+// const action_core = AdminCore({ authFailCallBack: () => { 
+//     popmenu.appendMessage("fail", "Authorization Fail"); 
+// }});
+
+let action_core = AdminCore();
+if (window.location.origin.indexOf("github.io") != -1) action_core = AdminCoreGithubAPI();
+action_core = AdminCoreGithubAPI();
+
 
 let file_preview_List = []; // [/xxx,/xxx/xxx] in path decoded
 let file_preview_list_dict = {};
@@ -323,37 +327,17 @@ const monitor_app = function () {
 
 
 // files ==================================================
-let window_push = false;
-let history_mode = false;
 
-function address_line_init(url) {
-    if (window_push) {
-        window.addEventListener('popstate', function (evt) {
-            try { 
-                open_folder(action_core.urlToPath(evt.state.url), (info)=>{
-                    file_view.updateInfo(info);
-                });
-            } catch (err) { }
-        });
-    }
-}
-
-function address_line_push (url) {
-    // update history, not activated by window.onpopState
-    if (!history_mode && window_push) {
-        window.history.pushState({"title": null, "url": url}, null, url);
-    }
-}
 
 let explorer_current_parts = {};
-function open_folder(path = "", callback=(info)=>{}, simple=false) {
+function open_folder(path = "", callback=(info)=>{}, simple=false, is_url=false) {
     action_core.openFolder(path, function (info) {
         // explorer_current_parts = {}
         callback(info);
         if (!simple) {
-            address_line_push(action_core.pathToUrl(info.Path))
+            // address_line_push(action_core.pathToUrl(info.Path))
         }
-    });
+    }, is_url);
 }
 
 function open_file(path = "") {
@@ -834,3 +818,126 @@ function set_outer_links() {
     xhr.send(null);
 }
 
+function insertStyleHtml(container = null, styleText = "", mainHtml = "") {
+    let uniqueStyle = (styleText = "", useID = false) => {
+        // find uniqueID =================================
+        let prefix = (useID) ? "#ID" : ".ID";
+        let uniqueID = "";
+        while (true) {
+            uniqueID = prefix + Math.floor(new Date().getTime() * Math.random());
+            if (document.querySelector(uniqueID) == null) break;
+        }
+        // sort style text ===============================
+        // thinking @media{.a{}}
+        if (styleText.indexOf("<style") != -1) {
+            styleText = styleText.slice(styleText.indexOf("<style") + 6);
+            styleText = styleText.slice(styleText.indexOf(">") + 1);
+        }
+        if (styleText.indexOf("</style>") != -1)
+            styleText = styleText.slice(0, styleText.indexOf("</style>"));
+        let styleGroups = styleText.split('@');
+        let newStyleGroups = [];
+        let styleStore = [{ head: "main", tags: [] }];
+        for (let g = 0; g < styleGroups.length; g++) {
+            let styleText = styleGroups[g].trim();
+            let headInfo = "";
+            if (styleText == "") continue;
+            // g!=0 means has @ before
+            if (g != 0) {
+                headInfo = "@" + styleText.slice(0, styleText.indexOf("{")).trim();
+                styleText = styleText.slice(styleText.indexOf("{") + 1, styleText.lastIndexOf("}")).trim();
+                styleStore.push({ head: headInfo.slice(0), tags: [] });
+            }
+            let oriStyles = styleText.split('}'), newStyles = [];
+            for (let i = 0; i < oriStyles.length; i++) {
+                let style = oriStyles[i].trim(), styleT = "";
+                if (style == "") continue;
+                style = style + "}";
+                let selecters = style.slice(0, style.indexOf("{")).split(',');
+                for (let j = 0; j < selecters.length; j++) {
+                    let selecter = selecters[j].trim();
+                    // if (selecter != "") styleT += uniqueID + " " + selecter + ", ";
+                    if (selecter != "") {
+                        // generate styleT
+                        styleT += selecter.split(" ").map(function (item) { return item + uniqueID; }).join(" ") + ", ";
+                        // append styleStore
+                        selecter.split(" ").forEach(function (item) {
+                            // fix styleStore: delete a from .a#b.c; if xx#a.b, then item[0] == "x"
+                            item.slice(1).split(".").concat(item[0]).forEach(function (item1, index, array) {
+                                if (item1 == "" || index == (array.length - 1)) return;
+                                item1 = (index == 0) ? (array[array.length - 1] + item1) : ("." + item1);
+                                item1.slice(1).split("#").concat(item1[0]).forEach(function (item2, index, array) {
+                                    if (item2 == "" || index == (array.length - 1)) return;
+                                    item2 = (index == 0) ? (array[array.length - 1] + item2) : ("#" + item2);
+                                    if (styleStore[g].tags.indexOf(item2) == -1) styleStore[g].tags.push(item2);
+                                });
+                            });
+                        });
+                    }
+                }
+                if (styleT != "") // slice(0, -2) to remove ", "
+                    newStyles.push(styleT.slice(0, -2) + style.slice(style.indexOf("{")));
+            }
+            if (headInfo == "") newStyleGroups.push(newStyles.join(" "));
+            else newStyleGroups.push(headInfo + "{" + newStyles.join(" ") + "}");
+        }
+
+        return {
+            uniqueID: uniqueID, styleStore: styleStore,
+            styleText: "<style>" + newStyleGroups.join(" ") + "</style>"
+        };
+    }
+
+    let uniqueHtml = (uniqueID, styleStore, htmlText) => {
+        if (uniqueID[0] != "#" && uniqueID[0] != ".") return;
+        let tag = (uniqueID[0] == "#") ? "id" : "className";
+        let div = document.createElement('div');
+        div.innerHTML = htmlText;
+        for (let g = 0; g < styleStore.length; g++) {
+            for (let b = 0; b < styleStore[g].tags.length; b++) {
+                let items = div.querySelectorAll(styleStore[g].tags[b]);
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i][tag].indexOf(uniqueID.slice(1)) == -1) items[i][tag] += " " + uniqueID.slice(1);
+                }
+            }
+        }
+        htmlText = div.innerHTML;
+        div.remove();
+        return htmlText;
+    }
+
+    let unique = uniqueStyle(styleText);
+    mainHtml = uniqueHtml(unique.uniqueID, unique.styleStore, mainHtml);
+    container.innerHTML = unique.styleText + mainHtml;
+    if (unique.uniqueID[0] == "#") container.id += " " + unique.uniqueID.slice(1);
+    else if (unique.uniqueID[0] == ".") container.className += " " + unique.uniqueID.slice(1);
+    return function (htmlText) { return uniqueHtml(unique.uniqueID, unique.styleStore, htmlText); };
+}
+
+function htmltoElement(html = "") {
+    let div = document.createElement('div');
+    div.innerHTML = html;
+    div.remove();
+    return div.firstChild;
+}
+
+let window_push = false;
+let history_mode = false;
+function address_line_init(url) {
+    if (window_push) {
+        window.addEventListener('popstate', function (evt) {
+            try { 
+                open_folder(evt.state.url, (info)=>{
+                    file_view.updateInfo(info);
+                }, true, true);
+            } catch (err) { }
+        });
+    }
+}
+
+function address_line_push (url) {
+    // update history, not activated by window.onpopState
+    if (!history_mode && window_push) {
+        window.history.pushState({"title": null, "url": url}, null, url);
+    }
+}

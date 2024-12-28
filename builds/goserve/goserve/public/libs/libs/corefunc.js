@@ -1,278 +1,113 @@
 "use strict"
 
-function htmltoElement(html = "") {
-    let div = document.createElement('div');
-    div.innerHTML = html;
-    div.remove();
-    return div.firstChild;
+function get_url_parts(iurl = "", host="") {
+    // asset url: currentHost + [/xxx] + [?a=x&b=x] + [#x]
+    // asset no "?" or "&" or "=" in (a=)x
+    let url = iurl.slice(host.length);
+    let hashPos = url.indexOf("#");
+    let hashStr = (hashPos == -1) ? "" : url.slice(hashPos + 1);
+    url = (hashPos == -1) ? url : url.slice(0, hashPos);
+    let queryPos = url.indexOf("?");
+    let queryStr = (queryPos == -1) ? "" : url.slice(queryPos + 1);
+    let pathStr = (queryPos == -1) ? url : url.slice(0, queryPos);
+    let queryList = queryStr.split("&");
+    let queryDict = {};
+    for (let i = 0; i < queryList.length; i++) {
+        let query = queryList[i];
+        let keyPos = query.indexOf("=");
+        if (keyPos != -1) {
+            let key = query.slice(0, keyPos);
+            queryDict[key] = (key in queryDict) ? (queryDict[key] + query.slice(keyPos + 1)) : query.slice(keyPos + 1);
+        }
+    }
+    return { path: pathStr, query: queryDict, hash: hashStr };
 }
 
-function insertStyleHtml(container = null, styleText = "", mainHtml = "") {
-    let uniqueStyle = (styleText = "", useID = false) => {
-        // find uniqueID =================================
-        let prefix = (useID) ? "#ID" : ".ID";
-        let uniqueID = "";
-        while (true) {
-            uniqueID = prefix + Math.floor(new Date().getTime() * Math.random());
-            if (document.querySelector(uniqueID) == null) break;
-        }
-        // sort style text ===============================
-        // thinking @media{.a{}}
-        if (styleText.indexOf("<style") != -1) {
-            styleText = styleText.slice(styleText.indexOf("<style") + 6);
-            styleText = styleText.slice(styleText.indexOf(">") + 1);
-        }
-        if (styleText.indexOf("</style>") != -1)
-            styleText = styleText.slice(0, styleText.indexOf("</style>"));
-        let styleGroups = styleText.split('@');
-        let newStyleGroups = [];
-        let styleStore = [{ head: "main", tags: [] }];
-        for (let g = 0; g < styleGroups.length; g++) {
-            let styleText = styleGroups[g].trim();
-            let headInfo = "";
-            if (styleText == "") continue;
-            // g!=0 means has @ before
-            if (g != 0) {
-                headInfo = "@" + styleText.slice(0, styleText.indexOf("{")).trim();
-                styleText = styleText.slice(styleText.indexOf("{") + 1, styleText.lastIndexOf("}")).trim();
-                styleStore.push({ head: headInfo.slice(0), tags: [] });
-            }
-            let oriStyles = styleText.split('}'), newStyles = [];
-            for (let i = 0; i < oriStyles.length; i++) {
-                let style = oriStyles[i].trim(), styleT = "";
-                if (style == "") continue;
-                style = style + "}";
-                let selecters = style.slice(0, style.indexOf("{")).split(',');
-                for (let j = 0; j < selecters.length; j++) {
-                    let selecter = selecters[j].trim();
-                    // if (selecter != "") styleT += uniqueID + " " + selecter + ", ";
-                    if (selecter != "") {
-                        // generate styleT
-                        styleT += selecter.split(" ").map(function (item) { return item + uniqueID; }).join(" ") + ", ";
-                        // append styleStore
-                        selecter.split(" ").forEach(function (item) {
-                            // fix styleStore: delete a from .a#b.c; if xx#a.b, then item[0] == "x"
-                            item.slice(1).split(".").concat(item[0]).forEach(function (item1, index, array) {
-                                if (item1 == "" || index == (array.length - 1)) return;
-                                item1 = (index == 0) ? (array[array.length - 1] + item1) : ("." + item1);
-                                item1.slice(1).split("#").concat(item1[0]).forEach(function (item2, index, array) {
-                                    if (item2 == "" || index == (array.length - 1)) return;
-                                    item2 = (index == 0) ? (array[array.length - 1] + item2) : ("#" + item2);
-                                    if (styleStore[g].tags.indexOf(item2) == -1) styleStore[g].tags.push(item2);
-                                });
-                            });
-                        });
-                    }
-                }
-                if (styleT != "") // slice(0, -2) to remove ", "
-                    newStyles.push(styleT.slice(0, -2) + style.slice(style.indexOf("{")));
-            }
-            if (headInfo == "") newStyleGroups.push(newStyles.join(" "));
-            else newStyleGroups.push(headInfo + "{" + newStyles.join(" ") + "}");
-        }
-
-        return {
-            uniqueID: uniqueID, styleStore: styleStore,
-            styleText: "<style>" + newStyleGroups.join(" ") + "</style>"
-        };
+function merge_url_parts(path = "", query = {}, hash = "", host="") {
+    let url = host + path + "?";
+    for (let key in query) {
+        if (query[key] != "undefined" && query[key] != undefined)
+            url += key + "=" + query[key] + "&";
     }
-
-    let uniqueHtml = (uniqueID, styleStore, htmlText) => {
-        if (uniqueID[0] != "#" && uniqueID[0] != ".") return;
-        let tag = (uniqueID[0] == "#") ? "id" : "className";
-        let div = document.createElement('div');
-        div.innerHTML = htmlText;
-        for (let g = 0; g < styleStore.length; g++) {
-            for (let b = 0; b < styleStore[g].tags.length; b++) {
-                let items = div.querySelectorAll(styleStore[g].tags[b]);
-                for (let i = 0; i < items.length; i++) {
-                    if (items[i][tag].indexOf(uniqueID.slice(1)) == -1) items[i][tag] += " " + uniqueID.slice(1);
-                }
-            }
-        }
-        htmlText = div.innerHTML;
-        div.remove();
-        return htmlText;
-    }
-
-    let unique = uniqueStyle(styleText);
-    mainHtml = uniqueHtml(unique.uniqueID, unique.styleStore, mainHtml);
-    container.innerHTML = unique.styleText + mainHtml;
-    if (unique.uniqueID[0] == "#") container.id += " " + unique.uniqueID.slice(1);
-    else if (unique.uniqueID[0] == ".") container.className += " " + unique.uniqueID.slice(1);
-    return function (htmlText) { return uniqueHtml(unique.uniqueID, unique.styleStore, htmlText); };
+    url = url.slice(0, url.length - 1) + ((hash != "") ? ("#" + hash) : "");
+    return url;
 }
 
-function Comm(opts) {
-    let params = {
-        prefix: "/home",
-        useQueryPath: false,
-        currentHost: window.location.origin,
+function uri_encode_path(upath = "", keepSlash = true) {
+    // assert upath = "/x", x is not URIEncoded
+    let pathList = [];
+    let upathList = upath.split("/").filter(Boolean);
+    let slash = (keepSlash) ? "/" : encodeURIComponent("/");
+    // format path
+    for (let i = 0; i < upathList.length; i++) {
+        if (upathList[i].trim() == "..")
+            pathList.pop();
+        else if (upathList[i].trim() != "")
+            pathList.push(upathList[i]);
     }
-    for (let key in opts) if (key in params) params[key] = opts[key];
+    // URIEncode path
+    pathList = pathList.map((value, index, array) => { return encodeURIComponent(value); });
+    return slash + pathList.join(slash);
+}
 
-    function getUrlParts(iurl = "") {
-        // asset url: currentHost + [/xxx] + [?a=x&b=x] + [#x]
-        // asset no "?" or "&" or "=" in (a=)x
-        let url = iurl.slice(params.currentHost.length);
-        let hashPos = url.indexOf("#");
-        let hashStr = (hashPos == -1) ? "" : url.slice(hashPos + 1);
-        url = (hashPos == -1) ? url : url.slice(0, hashPos);
-        let queryPos = url.indexOf("?");
-        let queryStr = (queryPos == -1) ? "" : url.slice(queryPos + 1);
-        let pathStr = (queryPos == -1) ? url : url.slice(0, queryPos);
-        let queryList = queryStr.split("&");
-        let queryDict = {};
-        for (let i = 0; i < queryList.length; i++) {
-            let query = queryList[i];
-            let keyPos = query.indexOf("=");
-            if (keyPos != -1) {
-                let key = query.slice(0, keyPos);
-                queryDict[key] = (key in queryDict) ? (queryDict[key] + query.slice(keyPos + 1)) : query.slice(keyPos + 1);
-            }
-        }
-        return { path: pathStr, query: queryDict, hash: hashStr };
+function uri_decode_path(upath = "") {
+    let pathList = [];
+    let upathList = (upath.indexOf("/") == -1) ? upath.split(encodeURIComponent("/")).filter(Boolean) : upath.split("/").filter(Boolean);
+    // URIDncode path
+    upathList = upathList.map((value, index, array) => { return decodeURIComponent(value); });
+    // format path
+    for (let i = 0; i < upathList.length; i++) {
+        if (upathList[i].trim() == "..")
+            pathList.pop();
+        else if (upathList[i].trim() != "")
+            pathList.push(upathList[i]);
     }
+    return "/" + pathList.join("/");
+}
 
-    function mergeUrlParts(path = "", query = {}, hash = "") {
-        let url = params.currentHost + path + "?";
-        for (let key in query) {
-            if (query[key] != "undefined" && query[key] != undefined)
-                url += key + "=" + query[key] + "&";
-        }
-        url = url.slice(0, url.length - 1) + ((hash != "") ? ("#" + hash) : "");
-        return url;
-    }
+function get_action(url = "", callback = (result) => { }, after_get=()=>{}) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.setRequestHeader("Cache-Control", "no-cache"); // disable cache
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState == 4 && xhr.status == 200)
+            callback(xhr.responseText);
+    };
+    xhr.send(null);
+    after_get();
+}
 
-    function encodePath(upath = "", keepSlash = true) {
-        // assert upath = "/x", x is not URIEncoded
-        let pathList = [];
-        let upathList = upath.split("/").filter(Boolean);
-        let slash = (keepSlash) ? "/" : encodeURIComponent("/");
-        // format path
-        for (let i = 0; i < upathList.length; i++) {
-            if (upathList[i].trim() == "..")
-                pathList.pop();
-            else if (upathList[i].trim() != "")
-                pathList.push(upathList[i]);
-        }
-        // URIEncode path
-        pathList = pathList.map((value, index, array) => { return encodeURIComponent(value); });
-        return slash + pathList.join(slash);
-    }
-
-    function decodePath(upath = "") {
-        let pathList = [];
-        let upathList = (upath.indexOf("/") == -1) ? upath.split(encodeURIComponent("/")).filter(Boolean) : upath.split("/").filter(Boolean);
-        // URIDncode path
-        upathList = upathList.map((value, index, array) => { return decodeURIComponent(value); });
-        // format path
-        for (let i = 0; i < upathList.length; i++) {
-            if (upathList[i].trim() == "..")
-                pathList.pop();
-            else if (upathList[i].trim() != "")
-                pathList.push(upathList[i]);
-        }
-        return "/" + pathList.join("/");
-    }
-
-    function getAction(url = "", callback = (result) => { }, after_get=()=>{}) {
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.setRequestHeader("Cache-Control", "no-cache"); // disable cache
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4 && xhr.status == 200)
-                callback(xhr.responseText);
-        };
-        xhr.send(null);
-        after_get();
-    }
-
-    function postAction(url = "", postData = null, addition = (xhr) => { }, callback=(result)=>{}, after_post=()=>{}) {
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Cache-Control", "no-cache"); // disable cache
-        addition(xhr);
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4 && xhr.status == 200)
-                callback(xhr.responseText);
-        };
-        xhr.send(postData);
-        after_post();
-    }
-
-    function pathToUrl(path = "", currentParts, addtion = (parts) => { }) {
-        // assert path = /x/x/x or / is URIDecoded
-        let parts = { path: currentParts.path, query: {}, hash: currentParts.hash };
-        for (let key in currentParts.query)
-            parts.query[key] = currentParts.query[key];
-        // When the first time to start without query.path:
-        if (params.useQueryPath && !("path" in parts.query))
-            parts.query.path = encodePath("/");
-        // when path == "", do not change path
-        if (path != "" && path != ".") {
-            if (params.useQueryPath)
-                parts.query.path = encodePath(path == ""? "/": path);
-            else {
-                let _prefix = params.prefix;
-                _prefix = (_prefix.slice(0,1) == "/")? _prefix : "/" + _prefix;
-                _prefix = (_prefix.slice(-1) == "/")? _prefix.slice(0, -1): _prefix; // like "/home" but not "home" or "/home/"
-                parts.path = encodePath(path);
-                parts.path = (parts.path.slice(0, 1) == "/")? _prefix + parts.path: _prefix + "/" + parts.path;
-            }
-        }
-        addtion(parts);
-        return mergeUrlParts(parts.path, parts.query, parts.hash);
-    }
-
-    function urlToPath(url = "", currentParts) {
-        if (params.useQueryPath)
-            return decodePath((url == "") ? currentParts.query.path : getUrlParts(url).query.path);
-        let rawpath = decodePath((url == "") ? currentParts.path : getUrlParts(url).path);
-        let _prefix = params.prefix;
-        _prefix = (_prefix.slice(0,1) == "/")? _prefix : "/" + _prefix;
-        _prefix = (_prefix.slice(-1) == "/")? _prefix.slice(0, -1): _prefix; // like "/home" but not "home" or "/home/"
-        if (rawpath.indexOf(_prefix) == 0) {
-            if (rawpath.length == _prefix.length) return "/";
-            else rawpath = rawpath.slice(_prefix.length);
-            if (rawpath.slice(0, 1) == "/") return rawpath;
-        }
-        console.log("url not valid: ", url);
-        return "/";
-    }
-
-    return {
-        getArgs: () => { return params; },
-        setArgs: (opts) => { for (let key in opts) if (key in params) params[key] = opts[key]; },
-        getUrlParts: getUrlParts,
-        getAction: getAction,
-        postAction: postAction,
-        encodePath: encodePath,
-        pathToUrl: pathToUrl,
-        urlToPath: urlToPath,
-    }
+function post_action(url = "", postData = null, addition = (xhr) => { }, callback=(result)=>{}, after_post=()=>{}) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Cache-Control", "no-cache"); // disable cache
+    addition(xhr);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState == 4 && xhr.status == 200)
+            callback(xhr.responseText);
+    };
+    xhr.send(postData);
+    after_post();
 }
 
 function AdminCore(opts = {}) {
     let args = {
         params: {
             prefix: "/home",
-            reAuthTime: 5, useQueryPath: false,
+            reAuthTime: 5, 
+            useQueryPath: false,
             authFail: "authFail", signPass: "pass", signExist: "exist", signFail: "fail",
             chunkSize: 2 << 20, // 2MB 
             uploadConcurrent: 3, // max concurrent
             currentHost: window.location.origin,
-            currentParts: {},
         },
     }
-    let params = args.params
-    let comm = Comm(args.params)
-    params.currentParts = comm.getUrlParts(window.location.href); // when assignned, dict is refered as a point, not value!
+    let params = args.params;
+    let currentParts = get_url_parts(window.location.href, params.currentHost); // when assignned, dict is refered as a point, not value!
     for (let key in opts) if (key in params) params[key] = opts[key];
 
     let authTimeOut = new Number();
     let currentToken = "";
-
     
     function postAction(url = "", callbacks = {}, postData = null, addition = (xhr) => { }) {
         let signs = {
@@ -310,36 +145,72 @@ function AdminCore(opts = {}) {
             try { clearTimeout(authTimeOut); } catch (err) { }
             authTimeOut = setTimeout(() => { closeSessionCore(); }, params.reAuthTime * 60000);
         }
-        comm.postAction(url, postData, addition, parseSigns, after_post)
+        post_action(url, postData, addition, parseSigns, after_post)
     }
 
-    function pathToUrl(path = "", addtion = (parts) => { }) {
-        return comm.pathToUrl(path, params.currentParts, addtion)
+    function path_to_direct_link(path = "", addtion = (parts) => { }) {
+        let useQueryPath = params.useQueryPath;
+        let prefix = params.prefix;
+        // let currentParts = currentParts;
+        let currentHost = params.currentHost;
+        
+        // assert path = /x/x/x or / is URIDecoded
+        let parts = { path: currentParts.path, query: {}, hash: currentParts.hash };
+        for (let key in currentParts.query)
+            parts.query[key] = currentParts.query[key];
+        // When the first time to start without query.path:
+        if (useQueryPath && !("path" in parts.query))
+            parts.query.path = uri_encode_path("/");
+        // when path == "", do not change path
+        if (path != "" && path != ".") {
+            if (useQueryPath)
+                parts.query.path = uri_encode_path(path == ""? "/": path);
+            else {
+                let _prefix = prefix;
+                _prefix = (_prefix.slice(0,1) == "/")? _prefix : "/" + _prefix;
+                _prefix = (_prefix.slice(-1) == "/")? _prefix.slice(0, -1): _prefix; // like "/home" but not "home" or "/home/"
+                parts.path = uri_encode_path(path);
+                parts.path = (parts.path.slice(0, 1) == "/")? _prefix + parts.path: _prefix + "/" + parts.path;
+            }
+        }
+        addtion(parts);
+        return merge_url_parts(parts.path, parts.query, parts.hash, currentHost);
     }
 
-    function urlToPath(url = "") {
-        return comm.urlToPath(url, params.currentParts)
+    function direct_link_to_path(url = "") {
+        let useQueryPath = params.useQueryPath;
+        let prefix = params.prefix;
+        // let currentParts = currentParts;
+        let currentHost = params.currentHost;
+
+        if (useQueryPath)
+            return uri_decode_path((url == "") ? currentParts.query.path : get_url_parts(url, currentHost).query.path);
+        let rawpath = uri_decode_path((url == "") ? currentParts.path : get_url_parts(url, currentHost).path);
+        let _prefix = prefix;
+        _prefix = (_prefix.slice(0,1) == "/")? _prefix : "/" + _prefix;
+        _prefix = (_prefix.slice(-1) == "/")? _prefix.slice(0, -1): _prefix; // like "/home" but not "home" or "/home/"
+        if (rawpath.indexOf(_prefix) == 0) {
+            if (rawpath.length == _prefix.length) return "/";
+            else rawpath = rawpath.slice(_prefix.length);
+            if (rawpath.slice(0, 1) == "/") return rawpath;
+        }
+        console.log("url not valid: ", url);
+        return "/";
     }
 
     function download(path = "") {
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "getfile";
         });
         window.open(url, "_self");
     }
 
-    function openFolder(path = "", callback = (info) => { }) {
-        let newParts = {};
-        let url = comm.pathToUrl(path, params.currentParts, (parts) => {
+    function openFolder(path = "", callback = (info) => { }, is_url=false) {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "getdir";
-            newParts = parts;
         });
-        comm.getAction(url, (result) => {
-            // if (updateCurrentPath) {
-            //     params.currentParts.path = newParts.path;
-            //     params.currentParts.query.path = newParts.query.path;
-            //     params.currentParts.hash = newParts.hash;
-            // }
+        if (is_url) url = path;
+        get_action(url, (result) => {
             try {
                 // tmpele: <pre name="" size="" mode="" mtim="" ctim="" error="" filenum="1" foldernum="3"> <div type="folder"><a href="" name="" size="" mode="" mtim="" ctim="" filenum="10" foldernum="0">__BACK</a><br></div><div type="file"></div></pre>
                 // info: {Name:"", Size:"", Mode:"", Mtim:"", Ctim:"", Path:"", FileList:[], FolderList:[]}
@@ -352,7 +223,7 @@ function AdminCore(opts = {}) {
                     fileEle = tmpele.firstElementChild;
                 }
                 let info = {
-                    Path: urlToPath(url), Name: tmpele.getAttribute("name"), Size: tmpele.getAttribute("size"), Mode: tmpele.getAttribute("mode"),
+                    Path: direct_link_to_path(url), Name: tmpele.getAttribute("name"), Size: tmpele.getAttribute("size"), Mode: tmpele.getAttribute("mode"),
                     Mtim: tmpele.getAttribute("mtim"), Ctim: tmpele.getAttribute("ctim"), Error: tmpele.getAttribute("error"),
                     FileList: Array.from(fileEle.querySelectorAll("a")).map(function(item) {
                         return {
@@ -377,9 +248,22 @@ function AdminCore(opts = {}) {
         });
     }
 
+    function getMonitor(callback = (info) => { }) {
+        let url = path_to_direct_link("/home", (parts) => {
+            parts.query.method = "monitor";
+        })
+        get_action(url, (result) => {
+            try { callback(JSON.parse(result)); }
+            catch (err) {
+                console.log(err);
+                console.log("Error Get Info, Received:", result);
+            }
+        });
+    }
+
     function askAuthCore(key = "", passCallBack = () => { }, failCallBack = () => { }) {
         let authKey = SparkMD5.hash(key);
-        let url = pathToUrl(".");
+        let url = path_to_direct_link(".");
         postAction(url, {
             all: (result) => {
                 let fail = (result.trim() == "" || result.toLowerCase().indexOf(params.authFail) != -1);
@@ -397,7 +281,7 @@ function AdminCore(opts = {}) {
     }
 
     function closeSessionCore(callback = () => { }) {
-        postAction(pathToUrl("."), {}, null, (xhr)=> {
+        postAction(path_to_direct_link("."), {}, null, (xhr)=> {
             xhr.setRequestHeader("Authorization", "Basic " + btoa("close" + currentToken));
         });
         currentToken = "";
@@ -408,21 +292,8 @@ function AdminCore(opts = {}) {
         return (currentToken != "");
     }
 
-    function getMonitor(callback = (info) => { }) {
-        let url = comm.pathToUrl("/home", params.currentParts, (parts) => {
-            parts.query.method = "monitor";
-        })
-        comm.getAction(url, (result) => {
-            try { callback(JSON.parse(result)); }
-            catch (err) {
-                console.log(err);
-                console.log("Error Get Info, Received:", result);
-            }
-        });
-    }
-
     function mkdirCore(path = "", callbacks = {}) {
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "mkdir";
         });
         postAction(url, callbacks, null, (xhr)=> {
@@ -432,7 +303,7 @@ function AdminCore(opts = {}) {
 
     function mkfileCore(path = "", content = "", callbacks = {}) {
         let blob = new Blob([content], { type: 'text/plain' });
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "mkfile";
         });
         let postData = new FormData();
@@ -443,7 +314,7 @@ function AdminCore(opts = {}) {
     }
 
     function removeCore(path = "", callbacks = {}) {
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "remove";
         });
         postAction(url, callbacks, null, (xhr)=> {
@@ -452,9 +323,9 @@ function AdminCore(opts = {}) {
     }
 
     function renameCore(path = "", dstPath = "", callbacks = {}) {
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "rename";
-            parts.query.destpath = comm.encodePath(dstPath);
+            parts.query.destpath = uri_encode_path(dstPath);
         });
         postAction(url, callbacks, null, (xhr)=> {
             xhr.setRequestHeader("Authorization", "Basic " + btoa(currentToken));
@@ -462,9 +333,9 @@ function AdminCore(opts = {}) {
     }
 
     function copytoCore(path = "", dstPath = "", callbacks = {}) {
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "copyto";
-            parts.query.destpath = comm.encodePath(dstPath);
+            parts.query.destpath = uri_encode_path(dstPath);
         });
         postAction(url, callbacks, null, (xhr)=> {
             xhr.setRequestHeader("Authorization", "Basic " + btoa(currentToken));
@@ -472,10 +343,10 @@ function AdminCore(opts = {}) {
     }
 
     function archiveCore(path = "", dstPath = "", format = "zip", callbacks = {}) {
-        let url = pathToUrl(path, (parts) => {
+        let url = path_to_direct_link(path, (parts) => {
             parts.query.method = "archive";
             parts.query.format = format; // zip or targz
-            parts.query.destpath = comm.encodePath(dstPath);
+            parts.query.destpath = uri_encode_path(dstPath);
         });
         postAction(url, callbacks, null, (xhr)=> {
             xhr.setRequestHeader("Authorization", "Basic " + btoa(currentToken));
@@ -522,7 +393,7 @@ function AdminCore(opts = {}) {
         }
 
         let uploadCheck = (fileMd5 = "", chunks = 0, path = "", callback = (exist, finishList) => { }) => {
-            let url = pathToUrl(path, (parts) => {
+            let url = path_to_direct_link(path, (parts) => {
                 parts.query.method = "check";
                 parts.query.fileMd5 = fileMd5;
                 parts.query.chunks = chunks.toString();
@@ -538,7 +409,7 @@ function AdminCore(opts = {}) {
         }
 
         let uploadChunk = (fileMd5 = "", currentChunk = 0, file = null, path = "", callbacks = {}) => {
-            let url = pathToUrl(path, (parts) => {
+            let url = path_to_direct_link(path, (parts) => {
                 parts.query.method = "chunk";
                 parts.query.fileMd5 = fileMd5;
                 parts.query.currentChunk = currentChunk.toString();
@@ -558,7 +429,7 @@ function AdminCore(opts = {}) {
         }
 
         let uploadMerge = (fileMd5 = "", chunks = 0, path = "", callbacks = {}) => {
-            let url = pathToUrl(path, (parts) => {
+            let url = path_to_direct_link(path, (parts) => {
                 parts.query.method = "merge";
                 parts.query.fileMd5 = fileMd5;
                 parts.query.chunks = chunks.toString();
@@ -670,10 +541,7 @@ function AdminCore(opts = {}) {
     }
 
     return {
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in params) params[key] = opts[key]; },
-        pathToUrl: pathToUrl,
-        urlToPath: urlToPath,
+        pathToUrl: path_to_direct_link,
         download: download,
         openFolder: openFolder,
         askAuthCore: askAuthCore,
@@ -687,6 +555,108 @@ function AdminCore(opts = {}) {
         copytoCore: copytoCore,
         archiveCore: archiveCore,
         uploadFile: uploadFile,
+    }
+}
+
+function AdminCoreGithubAPI(opts = {}) {
+    const REPO = "https://api.github.com/repos/MzeroMiko/MzeroMiko.github.io/contents";
+    const RAW = "https://raw.githubusercontent.com/MzeroMiko/MzeroMiko.github.io/refs/heads/main";
+
+    let args = {
+        params: {
+            prefix: "/home",
+            currentHost: window.location.origin,
+        },
+    }
+    let params = args.params;
+    for (let key in opts) if (key in params) params[key] = opts[key];
+    
+    function path_to_direct_link(path = "", addtion = (parts) => { }) {
+        let url = ""
+        if (path.startsWith(params.prefix)) {
+            url = path.replace(params.prefix, RAW);
+        } else if (path == "" || path == "/" || path == "//") {
+            url = RAW
+        }
+        return url;
+    }
+
+    function download(path = "") {
+        let url = ""
+        if (path.startsWith(params.prefix)) {
+            url = path.replace(params.prefix, RAW);
+        } else if (path == "" || path == "/" || path == "//") {
+            url = RAW
+        }
+        window.open(url, "_self");
+    }
+
+    function openFolder(path = "", callback = (info) => { }, is_url=false) {
+        let url = "";
+        if (path.startsWith(params.prefix)) {
+            url = path.replace(params.prefix, REPO);
+        } else if (path == "" || path == "/" || path == "//") {
+            url = REPO
+        }
+
+        if (is_url) url = path;
+
+        get_action(url, (result) => {
+            try {
+                // [{"name": "Readme.md", "path": "Readme.md", "sha": "26af290b66af341c9f21217b5610bf2f7b98dffb",
+                //   "size": 107, 
+                // "url": "https://api.github.com/repos/MzeroMiko/MzeroMiko.github.io/contents/Readme.md?ref=main", 
+                // "html_url": "https://github.com/MzeroMiko/MzeroMiko.github.io/blob/main/Readme.md",
+                //   "git_url": "",
+                //   "download_url": "https://raw.githubusercontent.com/MzeroMiko/MzeroMiko.github.io/main/Readme.md",
+                //   "type": "file",},...]
+                let file_folder_list = JSON.parse(result);
+                let file_list = [];
+                let folder_list = [];
+
+                for (let i = 0; i< file_folder_list.length; i++) {
+                    let name = file_folder_list[i]["name"];
+                    let size = file_folder_list[i]["size"];
+                    let isdir = file_folder_list[i]["type"] == "dir";
+                    if (isdir) {
+                        folder_list.push({Name: name, Size: size, Mode: "", Mtim: "", Ctim: "", FileNum: 0, FolderNum: 0})
+                    } else {
+                        file_list.push({Name: name, Size: size, Mode: "", Mtim: "", Ctim: "", FileNum: 0, FolderNum: 0})
+                    }
+                }
+                let info = {
+                    Path: url.replace(REPO, params.prefix), 
+                    // Path: url.replace(REPO, "/"), 
+                    Name: path.split("/")[-1], Size: "", Mode: "",
+                    Mtim: "", Ctim: "", Error: "",
+                    FileList: file_list, FolderList: folder_list
+                } 
+                if (info.Path == "/") info.Name = "Home";
+                callback(info);
+            } catch (err) {
+                console.log(err);
+                console.log("Error Get Info, Received:\n", result);
+            }
+        });
+    }
+
+    let empty = (a=null, b=null, c=null, d=null, e=null, f=null) => {};
+
+    return {
+        pathToUrl: path_to_direct_link,
+        download: download,
+        openFolder: openFolder,
+        getMonitor: empty,
+        askAuthCore: empty,
+        closeSessionCore: empty,
+        getAuthStat: empty,
+        mkdirCore: empty,
+        mkfileCore: empty,
+        removeCore: empty,
+        renameCore: empty,
+        copytoCore: empty,
+        archiveCore: empty,
+        uploadFile: empty,
     }
 }
 

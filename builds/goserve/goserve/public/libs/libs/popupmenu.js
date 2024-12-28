@@ -99,8 +99,6 @@ function PopupMenu(opts = {}) {
     }
 
     return {
-        getArgs: () => { return args; },
-        setArgs: (opts) => { for (let key in opts) if (key in args.params) args.params[key] = opts[key]; },
         clearAll: clearAll,
         appendMessage: appendMessage,
         appendAuth: appendAuth,

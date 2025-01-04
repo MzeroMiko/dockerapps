@@ -542,7 +542,7 @@ function FileViewer(opts = {}) {
         choose_icon: choose_icon,
         get_item_html: (item, path) => {return get_item_html(item, path);},
         get_open_folder_info: (info) => {return get_open_folder_info(info); },
-        refresh: () => {open_path(current_info.Path, True)},
+        refresh: () => {open_path(current_info.Path, true)},
         openfile: args.params.openfile,
         openfolder: args.params.openfolder,
         download: args.params.download,

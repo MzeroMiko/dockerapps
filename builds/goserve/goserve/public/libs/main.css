@@ -127,6 +127,11 @@ div.mainline {
 .item.login::before {
     content: "\e61e";
 }
+
+.item.login:hover {
+    color: #4e73dfaa;
+}
+
 /* ================================================ */
 
 div.time {

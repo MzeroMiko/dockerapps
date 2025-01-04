@@ -156,6 +156,7 @@ const plainview_html = get_html_and_del("htmlstore module.plainview");
 const htmlview_html = get_html_and_del("htmlstore module.htmlview");
 const pdfview_html = get_html_and_del("htmlstore module.pdfview");
 const imageview_html = get_html_and_del("htmlstore module.imageview");
+const loginpage_html = get_html_and_del("htmlstore module.loginpage");
 
 const view_type = {
     "pdf": [".pdf"],
@@ -249,44 +250,118 @@ function next_path(type = ["plain"], tag = "next", path = "") {
     }
 }
 
-{
-    function LoginPage() {
-        let authTimeHandler;
-        function login(login = true, loginCallBack = () => { }, logoutCallBack = () => { }) {
-            let waitAuthTimeout = (waitTime) => {
-                if (!action_core.getAuthStat()) { logoutCallBack(); clearTimeout(authTimeHandler); }
-                authTimeHandler = setTimeout(function () { waitAuthTimeout(waitTime); }, waitTime);
-            }
-    
-            if (login) {
-                popmenu.appendAuth((name, key) => {
-                    if (!(name + key))
-                        return false;
-                    action_core.askAuthCore(name + key,
-                        () => { waitAuthTimeout(2000); loginCallBack(); },
-                        () => { pop_templates("").authFail(); logoutCallBack(); }
-                    );
-                });
-            } else {
-                action_core.closeSessionCore(function () { logoutCallBack(); });
-            }
-        }
-        return {
-            login: login,
+function LoginPage(opts={}) {
+    let args = {
+        box: opts.box,
+        html: opts.html,
+        params: {
+            get_auth_stat: () => {},
+            ask_auth_core: (name_key, pass_callback, fail_callback)=> {},
+            close_session_core: (callback) => {},
+            login_callback: () => {},
+            login_fail_callback: () => {},
+            logout_callback: () => {},
+        },
+        styles: {},
+    }
+    for (let key in opts) if (key in args.styles) args.styles[key] = opts[key];
+    for (let key in opts) if (key in args.params) args.params[key] = opts[key];
+
+    let shadow_module = html_to_shadow(args.html)
+    args.box.appendChild(shadow_module)
+    for (let key in args.styles) shadow_module.style.setProperty('--' + key, args.styles[key]);
+
+    const login_box = shadow_module.shadowRoot.querySelector(".login_box");
+    const login_user = login_box.querySelector(".input .user") 
+    const login_pass = login_box.querySelector(".input .pass") 
+    const login_submit = login_box.querySelector(".login.button") 
+
+    login_submit.onclick = function () {
+        if (login_user.value != "" && login_pass.value != "") {
+            let key = login_user.value + login_pass.value;
+            args.params.ask_auth_core(key,
+                () => { wait_auth_timeout(2000, true); args.params.login_callback(); },
+                () => { args.params.login_fail_callback(); }
+            );
+            clear();
         }
     }
 
-    let logAction = (button) => {
-        button.innerText = "IN";
-        button.onclick = function () {
-            let button = this;
-            LoginPage().login((button.innerText == "IN"), function () {
-                button.innerText = "OUT";
-            }, function () {
-                button.innerText = "IN";
-            });
-        };
+
+    let authTimeHandler;
+    function wait_auth_timeout(waitTime, start=false, end=false) {
+        clearTimeout(authTimeHandler);
+        if (end) return null;
+        if (!start && !args.params.get_auth_stat()) {
+            logout();
+        } else {
+            authTimeHandler = setTimeout(function () { wait_auth_timeout(waitTime); }, waitTime);
+        }
     }
+
+    function logout() {
+        clear();
+        args.params.close_session_core();
+        args.params.logout_callback();
+        wait_auth_timeout(0, false, true);
+    }
+
+    function clear() {
+        login_user.value = ""
+        login_pass.value = ""
+    }
+
+    return {
+        clear: clear,
+        logout: logout,
+    }
+}
+
+let logged_in = false;
+const login_app = function () {
+    let view_box = document.createElement('div');
+    let login_page = LoginPage({
+        box: view_box, 
+        html: loginpage_html,
+        get_auth_stat: action_core.getAuthStat,
+        ask_auth_core: action_core.askAuthCore,
+        close_session_core: action_core.closeSessionCore,
+        login_callback: () => {
+            popmenu.appendMessage("pass", "logged in");
+            login_page.clear();
+            view_handler.iview.hide("hide");
+            logged_in = true;
+            document.querySelector(".headline .login").style.color = "#ed6666";
+
+        },
+        login_fail_callback: () => {
+            popmenu.appendMessage("fail", "auth failed");
+            login_page.clear();
+            logged_in = false;
+            document.querySelector(".headline .login").style.color = "#888";
+        },
+        logout_callback: () => {
+            popmenu.appendMessage("info", "logged out");
+            logged_in = false;
+            document.querySelector(".headline .login").style.color = "#888";
+        },
+    })
+    let view_handler = imanager.build_view({
+        box: view_box, 
+        width: "42em", height: "32em", title: "", 
+        btnShow: ["exit"],
+        exit: () => {login_page.clear(); view_handler.iview.hide("hide"); },
+    });
+
+   return {
+        open: () => { imanager.open_exist_view(view_handler.iview); },
+        logout: () => { login_page.logout(); }
+   } 
+}()
+
+document.querySelector(".headline .login").onclick = function () {
+    if (!logged_in) login_app.open();
+    else login_app.logout();
 }
 
 // monitor ================================================
@@ -448,6 +523,7 @@ const explorer_app = function () {
         update_info: file_view.updateInfo,
     }
 }()
+
 
 const music_app = function () {
     let music_box = document.createElement('div');

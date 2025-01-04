@@ -355,6 +355,7 @@
     border-top:1px solid rgba(0, 0, 0, 0.125);
     background:var(--listItemColor);
     min-height: 3em;
+    position: relative;
 }
 
 .simple_page .item:hover { 
@@ -493,7 +494,7 @@
     height:1em;
     width:0%;
     font-weight:900;
-    background-color:#8ac9;
+    background-color:#88c9;
 }
 
 .simple_page .upload .final {

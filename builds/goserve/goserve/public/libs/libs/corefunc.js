@@ -400,7 +400,9 @@ function AdminCore(opts = {}) {
             });
             postAction(url, {
                 info: (result) => {
-                    let finishList = JSON.parse(result);
+                    let finishList = [];
+                    try {finishList = JSON.parse(result);}
+                    catch (e) {console.log(e); console.log(result); }
                     callback(finishList[0] != "", finishList.slice(1).map(function (item) { return Number(item); }));
                 }
             }, null, (xhr)=> {

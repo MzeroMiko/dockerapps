@@ -4,7 +4,6 @@ const main_page = document.querySelector(".mainPage");
 init_headline();
 init_searchline();
 init_apps();
-init_login();
 
 function init_headline() {
     const main_headline = main_page.querySelector(".headline");
@@ -12,8 +11,9 @@ function init_headline() {
     
     }
     
-    main_headline.querySelector(".head_menu .login").onclick = () => {
-    
+    main_headline.querySelector(".head_menu .login").onclick = function () {
+        if (!logged_in) login_app.open();
+        else login_app.logout();
     }
 }
 
@@ -128,10 +128,6 @@ function init_apps() {
             }
         }
     }
-}
-
-function init_login() {
-
 }
 
 // ==================================================================
@@ -359,10 +355,6 @@ const login_app = function () {
    } 
 }()
 
-document.querySelector(".headline .login").onclick = function () {
-    if (!logged_in) login_app.open();
-    else login_app.logout();
-}
 
 // monitor ================================================
 const monitor_app = function () {
@@ -397,9 +389,6 @@ const monitor_app = function () {
         open: open_monitor,
     }
 }()
-
-// document.querySelector(".mainline .flows .card.monitor").onclick = monitor_app.open_monitor
-
 
 // files ==================================================
 
@@ -498,6 +487,9 @@ const explorer_app = function () {
             remove: (path, callback) => {
                 action_core.removeCore(path, pop_templates("remove " + path, callback));
             },
+            upload: (file, path, callback) => {
+                action_core.uploadFile(file, path, callback);
+            }
     });
     let file_handler = imanager.build_view({
         box: file_box,

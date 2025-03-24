@@ -29,9 +29,8 @@ COPY ./kasmvnc.yaml /root/.vnc/kasmvnc.yaml.default
 COPY ./entrypoint.sh /entrypoint.sh
 COPY ./entrypoint_user.sh /entrypoint_user.sh
 COPY ./entrypoint_desktop.sh /entrypoint_desktop.sh
-RUN chmod +x /entrypoint.sh /entrypoint_user.sh
-RUN chmod +x ./entrypoint_desktop.sh /entrypoint_desktop.sh
-ENV PUID=0 PGID=0 ROOTPASS="root" USERPASS="user"
+RUN chmod +x /entrypoint.sh /entrypoint_user.sh /entrypoint_desktop.sh
+ENV PUID=0 PGID=0 DISPLAY=":1" ROOTPASS="root" USERPASS="user"
 VOLUME ["/downloads", "/config"]
 EXPOSE 6901
 ENTRYPOINT ["/entrypoint.sh"]

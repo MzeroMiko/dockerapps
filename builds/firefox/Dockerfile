@@ -21,16 +21,31 @@ RUN apt install -y --no-install-recommends fcitx fcitx-module-dbus fcitx-ui-clas
 # install firefox
 RUN apt install -y --no-install-recommends firefox-esr
 
-# build entry | http:8000; https:8001
-COPY ./novnc/noVNC* /novnc/noVNC
-COPY ./novnc/wsnovnc /novnc/wsnovnc
+# install kasmvnc
+COPY ./kasmvncserver_*.deb /tmp/kasmvncserver.deb
+RUN apt install -y /tmp/kasmvncserver.deb
+COPY ./kasmvnc.yaml /root/.vnc/kasmvnc.yaml.default
+
 COPY ./entrypoint.sh /entrypoint.sh
 COPY ./entrypoint_user.sh /entrypoint_user.sh
-RUN cp /novnc/noVNC/vnc.html /novnc/noVNC/index.html
-RUN chmod +x /novnc/wsnovnc
+COPY ./entrypoint_desktop.sh /entrypoint_desktop.sh
 RUN chmod +x /entrypoint.sh /entrypoint_user.sh
-ENV PUID=0 PGID=0 TZ=Asia/Shanghai DISPLAY=":1" RESOLUTION=1280x720x24 VNCPATH="/websockify" PASSWORD="" \
-    CERTFILE="ssl.crt" KEYFILE="ssl.key" ROOTPASS="root" USERPASS="user"
+RUN chmod +x ./entrypoint_desktop.sh /entrypoint_desktop.sh
+ENV PUID=0 PGID=0 ROOTPASS="root" USERPASS="user"
 VOLUME ["/downloads", "/config"]
-EXPOSE 8000 8001
+EXPOSE 6901
 ENTRYPOINT ["/entrypoint.sh"]
+
+
+# # build entry | http:8000; https:8001
+# COPY ./novnc/noVNC* /novnc/noVNC
+# COPY ./novnc/wsnovnc /novnc/wsnovnc
+# COPY ./entrypoint.sh /entrypoint.sh
+# COPY ./entrypoint_user.sh /entrypoint_user.sh
+# RUN cp /novnc/noVNC/vnc.html /novnc/noVNC/index.html
+# RUN chmod +x /novnc/wsnovnc
+# RUN chmod +x /entrypoint.sh /entrypoint_user.sh
+# ENV PUID=0 PGID=0 TZ=Asia/Shanghai DISPLAY=":1" RESOLUTION=1280x720x24 VNCPATH="/websockify" PASSWORD="" ROOTPASS="root" USERPASS="user"
+# VOLUME ["/downloads", "/config"]
+# EXPOSE 8000 8001
+# ENTRYPOINT ["/entrypoint.sh"]

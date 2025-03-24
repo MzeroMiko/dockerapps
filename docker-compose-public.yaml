@@ -94,11 +94,9 @@ services:
     environment: 
       - PUID=1000
       - PGID=1000
-      - PASSWORD=pass
+      - PASSWORD=kasmvncpass
     ports:
-      # - 8011:8000
-      # - 8012:8001
-      - 8005:8001
+      - 8005:6901
     volumes:
       - ./volumes/firefox.data:/config
       - /media/Data/Downloads:/downloads

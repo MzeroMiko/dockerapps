@@ -112,34 +112,32 @@ services:
     environment: 
       - PUID=1000
       - PGID=1000
-      - PASSWORD=pass
+      - PASSWORD=kasmvncpass
     ports:
-      # - 8013:8000
-      # - 8014:8001
-      - 8006:8001
+      - 8006:6901
     volumes:
       - ./volumes/baidunetdisk.data:/config
       - /media/Data/Downloads:/downloads
 
-  # code-server:
-  #   restart: unless-stopped
-  #   network_mode: bridge
-  #   image: code-server:debian
-  #   container_name: code-server
-  #   build:
-  #     context: ./builds/code-server
-  #     dockerfile: ./Dockerfile
-  #   environment: 
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - PASSWORD=pass
-  #   ports:
-  #     # - 8015:8000
-  #     # - 8016:8001
-  #     - 8007:8001
-  #   volumes:
-  #     - ./volumes/code-server.data:/config
-  #     - /home:/workspace
+  code-server:
+    restart: unless-stopped
+    network_mode: bridge
+    image: code-server:debian
+    container_name: code-server
+    build:
+      context: ./builds/code-server
+      dockerfile: ./Dockerfile
+    environment: 
+      - PUID=1000
+      - PGID=1000
+      - PASSWORD=pass
+    ports:
+      # - 8015:8000
+      # - 8016:8001
+      - 8007:8001
+    volumes:
+      - ./volumes/code-server.data:/config
+      - /home:/workspace
   
   kodbox:
     restart: unless-stopped

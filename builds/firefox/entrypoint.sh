@@ -10,17 +10,16 @@ echo "user:$USERPASS" | chpasswd
 echo "user        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers   
 
 # run user:group
-mkdir -p /config/ssl $_HOME/.fluxbox     
+mkdir -p /config/ssl /config/vnc $_HOME/.fluxbox     
 echo -e 'alias ll="ls -last"' >> $_HOME/.bashrc     
 echo -e "session.screen0.toolbar.placement: TopCenter \nsession.screen0.workspaces:     1 " >> $_HOME/.fluxbox/init     
-chown $PUID:$PGID -R /config $_HOME     
+chown $PUID:$PGID -R /config /downloads $_HOME    
 
 
 # ================================
 if [ ! -f /config/ssl/cert.key ]; then openssl req -x509 -nodes -keyout /config/ssl/cert.key -out /config/ssl/cert.pem -days 3650 -newkey rsa:2048 -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=tmp.com"; fi;
-if [ ! -f /config/kasmvnc.yaml ]; then cp -rp /root/.vnc/kasmvnc.yaml.default /config/kasmvnc.yaml; fi;
-chown user:user /config;
-
+if [ ! -f /config/vnc/kasmvnc.yaml ]; then cp -rp /root/.vnc/kasmvnc.yaml.default /config/vnc/kasmvnc.yaml; fi;
+chown $PUID:$PGID -R /config /downloads $_HOME   
 # rm -r /tmp/.X* ; # rm /tmp/.X* to rm previous Xvfb running     
 
 # cp -rp /config/kasmvnc.yaml /root/.vnc/kasmvnc.yaml;

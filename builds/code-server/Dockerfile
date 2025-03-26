@@ -23,7 +23,7 @@ RUN /bin/echo -e "Port 22\nPermitRootLogin yes\nListenAddress 0.0.0.0\nListenAdd
 
 # install code-server
 COPY ./code-server*.deb /tmp/code-server.deb
-RUN dpkg -i /tmp/code-server.deb && rm /tmp/code-server.deb
+RUN apt install -y --no-install-recommends /tmp/code-server.deb
 
 # build entry | http:8000; https:8001
 COPY ./entrypoint.sh /entrypoint.sh
